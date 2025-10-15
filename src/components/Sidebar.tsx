@@ -43,7 +43,6 @@ const Sidebar = () => {
 
         <div className="border-t border-vanta-border my-6"></div>
 
-        <h2 className="text-sm font-semibold text-vanta-text-medium mb-3 uppercase tracking-wider">Bumble B Hub</h2>
         <ul className="space-y-2">
           {secondaryLinks.map((link) => (
             <li key={link.name}>
