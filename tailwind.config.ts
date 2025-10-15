@@ -63,7 +63,7 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         // Custom colors for the new design
-        'vanta-blue-dark': '#0A0E26',
+        'vanta-blue-dark': '#06002E',
         'vanta-blue-medium': '#1A1F3D',
         'vanta-blue-light': '#2A3052',
         'vanta-accent-blue': '#00C2FF',
