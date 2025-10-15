@@ -1,49 +1,42 @@
 "use client";
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Home, BarChart2, Settings, Users, Package, ShoppingCart, CreditCard, Bell, HelpCircle, LogOut } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { Home, Wallet, Calendar, Settings, HelpCircle, FileText, Mail, Gamepad2, Award } from 'lucide-react';
 
 const Sidebar = () => {
-  const location = useLocation();
-
-  const navItems = [
-    { name: 'Dashboard', icon: Home, path: '/' },
-    { name: 'Analytics', icon: BarChart2, path: '/analytics' },
-    { name: 'Customers', icon: Users, path: '/customers' },
-    { name: 'Products', icon: Package, path: '/products' },
-    { name: 'Orders', icon: ShoppingCart, path: '/orders' },
-    { name: 'Payments', icon: CreditCard, path: '/payments' },
-    { name: 'Notifications', icon: Bell, path: '/notifications' },
+  const primaryNavItems = [
+    { name: 'Home', icon: Home, path: '/' },
+    { name: 'Games', icon: Gamepad2, path: '/games' },
+    { name: 'Pools', icon: Calendar, path: '/pools' },
+    { name: 'Leaderboard', icon: Award, path: '/leaderboard' },
+    { name: 'Wallet', icon: Wallet, path: '/wallet' },
   ];
 
-  const bottomNavItems = [
-    { name: 'Settings', icon: Settings, path: '/settings' },
-    { name: 'Help & Support', icon: HelpCircle, path: '/help' },
-    { name: 'Logout', icon: LogOut, path: '/logout' },
+  const rewardsHubItems = [ // Renamed from bumbleBHubItems
+    { name: 'User Settings', icon: Settings, path: '/settings' },
+    { name: 'Terms of Use', icon: FileText, path: '/terms' },
+    { name: 'Help & Information', icon: HelpCircle, path: '/help' },
+    { name: 'Contact Us', icon: Mail, path: '/contact' },
   ];
 
   return (
     <div className="fixed top-0 left-0 h-screen w-64 flex flex-col border-r border-vanta-border bg-vanta-blue-dark p-4 z-50">
       {/* Logo */}
       <div className="flex items-center justify-center h-16 mb-6">
-        <h1 className="text-sm font-bold text-vanta-text-light">VANTA WIN</h1>
+        <h1 className="text-2xl font-bold text-vanta-text-light">VANTA WIN</h1>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-grow">
-        <ul>
-          {navItems.map((item) => (
-            <li key={item.name} className="mb-2">
+      {/* Primary Navigation */}
+      <nav className="mb-8">
+        <ul className="space-y-2">
+          {primaryNavItems.map((item) => (
+            <li key={item.name}>
               <Link
                 to={item.path}
-                className={cn(
-                  "flex items-center p-3 rounded-md text-vanta-text-muted hover:bg-vanta-active-bg hover:text-vanta-text-light transition-colors",
-                  location.pathname === item.path && "bg-vanta-active-bg text-vanta-text-light"
-                )}
+                className="flex items-center space-x-3 p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
               >
-                <item.icon className="mr-3 h-5 w-5" />
+                <item.icon className="h-5 w-5" />
                 <span>{item.name}</span>
               </Link>
             </li>
@@ -51,25 +44,26 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      {/* Bottom Navigation */}
-      <nav className="mt-auto border-t border-vanta-border pt-4">
-        <ul>
-          {bottomNavItems.map((item) => (
-            <li key={item.name} className="mb-2">
+      {/* Separator */}
+      <hr className="my-4 border-t border-vanta-border" />
+
+      {/* Rewards Hub Section */}
+      <div className="mt-4">
+        <h2 className="text-vanta-text-muted text-xs font-semibold uppercase tracking-wider mb-4">Rewards Hub</h2> {/* Changed title */}
+        <ul className="space-y-2">
+          {rewardsHubItems.map((item) => (
+            <li key={item.name}>
               <Link
                 to={item.path}
-                className={cn(
-                  "flex items-center p-3 rounded-md text-vanta-text-muted hover:bg-vanta-active-bg hover:text-vanta-text-light transition-colors",
-                  location.pathname === item.path && "bg-vanta-active-bg text-vanta-text-light"
-                )}
+                className="flex items-center space-x-3 p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
               >
-                <item.icon className="mr-3 h-5 w-5" />
+                <item.icon className="h-5 w-5" />
                 <span>{item.name}</span>
               </Link>
             </li>
           ))}
         </ul>
-      </nav>
+      </div>
     </div>
   );
 };
