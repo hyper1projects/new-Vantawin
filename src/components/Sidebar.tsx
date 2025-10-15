@@ -1,42 +1,44 @@
-"use client";
-
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Home, Wallet, Calendar, Settings, HelpCircle, FileText, Mail, Gamepad2, Award } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, BarChart2, Settings, Users, Folder, Bell, HelpCircle, LogOut } from 'lucide-react';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
 
-const Sidebar = () => {
-  const primaryNavItems = [
-    { name: 'Home', icon: Home, path: '/' },
-    { name: 'Games', icon: Gamepad2, path: '/games' },
-    { name: 'Pools', icon: Calendar, path: '/pools' },
-    { name: 'Leaderboard', icon: Award, path: '/leaderboard' },
-    { name: 'Wallet', icon: Wallet, path: '/wallet' },
-  ];
+const primaryNavItems = [
+  { name: 'Home', icon: Home, path: '/' },
+  { name: 'Analytics', icon: BarChart2, path: '/analytics' },
+  { name: 'Projects', icon: Folder, path: '/projects' },
+  { name: 'Team', icon: Users, path: '/team' },
+];
 
-  const rewardsHubItems = [ // Renamed from bumbleBHubItems
-    { name: 'User Settings', icon: Settings, path: '/settings' },
-    { name: 'Terms of Use', icon: FileText, path: '/terms' },
-    { name: 'Help & Information', icon: HelpCircle, path: '/help' },
-    { name: 'Contact Us', icon: Mail, path: '/contact' },
-  ];
+const secondaryNavItems = [
+  { name: 'Notifications', icon: Bell, path: '/notifications' },
+  { name: 'Settings', icon: Settings, path: '/settings' },
+  { name: 'Help & Support', icon: HelpCircle, path: '/help' },
+];
+
+const Sidebar: React.FC = () => {
+  const location = useLocation();
 
   return (
-    <div className="fixed top-0 left-0 h-screen w-64 flex flex-col border-r border-vanta-border bg-vanta-blue-dark p-4 z-50">
-      {/* Logo */}
-      <div className="flex items-center justify-center h-16 mb-6">
-        <h1 className="text-2xl font-bold text-vanta-text-light">VANTA WIN</h1>
+    <aside className="w-64 bg-sidebar-background text-sidebar-foreground p-6 flex flex-col h-full border-r border-sidebar-border">
+      <div className="flex items-center mb-8">
+        <span className="text-2xl font-bold text-vanta-accent-blue">Vanta</span>
       </div>
 
-      {/* Primary Navigation */}
       <nav className="mb-8">
         <ul className="space-y-2">
           {primaryNavItems.map((item) => (
             <li key={item.name}>
               <Link
                 to={item.path}
-                className="flex items-center space-x-3 p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
+                className={`flex items-center p-3 rounded-md transition-colors duration-200 text-sm
+                  ${location.pathname === item.path
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                    : 'text-vanta-text-light hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="mr-3 h-5 w-5" />
                 <span>{item.name}</span>
               </Link>
             </li>
@@ -44,27 +46,38 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      {/* Separator */}
-      <hr className="my-4 border-t border-vanta-border" />
+      <Separator className="bg-sidebar-border mb-8" />
 
-      {/* Rewards Hub Section */}
-      <div className="mt-4">
-        <h2 className="text-vanta-text-muted text-xs font-semibold uppercase tracking-wider mb-4">Rewards Hub</h2> {/* Changed title */}
+      <nav className="mb-auto">
         <ul className="space-y-2">
-          {rewardsHubItems.map((item) => (
+          {secondaryNavItems.map((item) => (
             <li key={item.name}>
               <Link
                 to={item.path}
-                className="flex items-center space-x-3 p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
+                className={`flex items-center p-3 rounded-md transition-colors duration-200 text-sm
+                  ${location.pathname === item.path
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                    : 'text-vanta-text-light hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="mr-3 h-5 w-5" />
                 <span>{item.name}</span>
               </Link>
             </li>
           ))}
         </ul>
+      </nav>
+
+      <div className="mt-8">
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-vanta-text-light hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
+        >
+          <LogOut className="mr-3 h-5 w-5" />
+          Logout
+        </Button>
       </div>
-    </div>
+    </aside>
   );
 };
 
