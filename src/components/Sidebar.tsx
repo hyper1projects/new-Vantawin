@@ -2,23 +2,25 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Gamepad, Wallet, Trophy, Users, Settings, FileText, HelpCircle, Mail, Gift } from 'lucide-react';
+import { Home, Trophy, Wallet, Settings, HelpCircle, FileText, Mail, Gift, Calendar } from 'lucide-react';
 
 const Sidebar = () => {
-  const primaryLinks = [
+  const navItems = [
     { name: 'Home', icon: Home, path: '/' },
-    { name: 'Games', icon: Gamepad, path: '/games' },
-    // { name: 'Pools', icon: Wallet, path: '/pools' }, // Removed Pools link
-    { name: 'Leaderboard', icon: Trophy, path: '/leaderboard' },
+    { name: 'My Bets', icon: Trophy, path: '/my-bets' },
     { name: 'Wallet', icon: Wallet, path: '/wallet' },
+    { name: 'Pools', icon: Calendar, path: '/pools' }, // Added Pools section
   ];
 
-  const secondaryLinks = [
-    { name: 'Rewards Hub', icon: Gift, path: '/rewards', isGold: true },
-    { name: 'User Settings', icon: Settings, path: '/settings' },
-    { name: 'Terms of Use', icon: FileText, path: '/terms' },
-    { name: 'Help & Information', icon: HelpCircle, path: '/help' },
-    { name: 'Contact Us', icon: Mail, path: '/contact' },
+  const legalItems = [
+    { name: 'Terms', icon: FileText, path: '/terms' },
+    { name: 'Help', icon: HelpCircle, path: '/help' },
+    { name: 'Contact', icon: Mail, path: '/contact' },
+  ];
+
+  const bottomItems = [
+    { name: 'Rewards', icon: Gift, path: '/rewards' },
+    { name: 'Settings', icon: Settings, path: '/settings' },
   ];
 
   return (
@@ -28,34 +30,53 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-grow">
-        <ul className="space-y-2 mb-6">
-          {primaryLinks.map((link) => (
-            <li key={link.name}>
+        <ul className="space-y-2">
+          {navItems.map((item) => (
+            <li key={item.name}>
               <Link
-                to={link.path}
-                className="flex items-center p-2 text-vanta-text-light hover:bg-vanta-blue-light rounded-md transition-colors"
+                to={item.path}
+                className="flex items-center space-x-3 p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
               >
-                <link.icon className="mr-3 h-5 w-5" />
-                {link.name}
+                <item.icon className="h-5 w-5" />
+                <span>{item.name}</span>
               </Link>
             </li>
           ))}
         </ul>
 
+        <div className="mt-8 pt-8 border-t border-vanta-border">
+          <h2 className="text-vanta-text-muted text-xs font-semibold uppercase tracking-wider mb-4">Legal</h2>
+          <ul className="space-y-2">
+            {legalItems.map((item) => (
+              <li key={item.name}>
+                <Link
+                  to={item.path}
+                  className="flex items-center space-x-3 p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span>{item.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      <div className="mt-auto pt-8 border-t border-vanta-border">
         <ul className="space-y-2">
-          {secondaryLinks.map((link) => (
-            <li key={link.name}>
+          {bottomItems.map((item) => (
+            <li key={item.name}>
               <Link
-                to={link.path}
-                className={`flex items-center p-2 hover:bg-vanta-blue-light rounded-md transition-colors text-sm ${link.isGold ? 'text-yellow-400' : 'text-vanta-text-light'}`}
+                to={item.path}
+                className="flex items-center space-x-3 p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
               >
-                <link.icon className="mr-3 h-4 w-4" />
-                {link.name}
+                <item.icon className="h-5 w-5" />
+                <span>{item.name}</span>
               </Link>
             </li>
           ))}
         </ul>
-      </nav>
+      </div>
     </div>
   );
 };
