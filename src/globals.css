@@ -1,3 +1,48 @@
+/*
+|--------------------------------------------------------------------------
+| CUSTOM FONT: SAPRONA
+|--------------------------------------------------------------------------
+| Defines the 'Saprona' font family with Light (300), Bold (700), and Black (900) weights.
+| Assumes font files are located in the /public/fonts/ directory.
+*/
+
+@font-face {
+font-family: 'Saprona';
+/* Light (300) /
+src: url('/fonts/Saprona-Light.woff2') format('woff2'),
+url('/fonts/Saprona-Light.woff') format('woff'),
+url('/fonts/Saprona-Light.ttf') format('truetype');
+font-weight: 300;
+font-style: normal;
+font-display: swap; / Tells browser to use a fallback while loading */
+}
+
+@font-face {
+font-family: 'Saprona';
+/* Bold (700) */
+src: url('/fonts/Saprona-Bold.woff2') format('woff2'),
+url('/fonts/Saprona-Bold.woff') format('woff'),
+url('/fonts/Saprona-Bold.ttf') format('truetype');
+font-weight: 700;
+font-style: normal;
+font-display: swap;
+}
+
+@font-face {
+font-family: 'Saprona';
+/* Black (900) */
+src: url('/fonts/Saprona-Black.woff2') format('woff2'),
+url('/fonts/Saprona-Black.woff') format('woff'),
+url('/fonts/Saprona-Black.ttf') format('truetype');
+font-weight: 900;
+font-style: normal;
+font-display: swap;
+}
+
+/* Keep the Tailwind directives below the @font-face rules */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
