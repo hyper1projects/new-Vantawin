@@ -1,18 +1,14 @@
 import React from 'react';
-import BottomBanner from '@/components/BottomBanner';
-import PointsMultiplierSection from '@/components/PointsMultiplierSection';
-import TopGamesSection from '@/components/TopGamesSection';
-import { Card, CardContent } from '@/components/ui/card';
+// MainHeader is now rendered in App.tsx, so no need to import here
+// Removed imports for BottomBanner, PointsMultiplierSection, TopGamesSection, Card, CardContent
 
 const Index: React.FC = () => {
   return (
     <div className="min-h-screen bg-vanta-blue-dark text-vanta-text-light">
       <div className="container mx-auto py-6">
-        <div className="grid grid-cols-1 gap-6">
-          <TopGamesSection />
-          <PointsMultiplierSection />
-          <BottomBanner />
-        </div>
+        {/* Content for the Index page will go here */}
+        <h1 className="text-2xl font-bold mb-4">Welcome to VantaWin!</h1>
+        <p className="text-vanta-text-medium">Select a game from the sidebar to get started.</p>
       </div>
     </div>
   );

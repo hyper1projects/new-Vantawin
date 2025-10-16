@@ -18,6 +18,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Saprona', 'sans-serif'], // Set Saprona as the default sans font
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
