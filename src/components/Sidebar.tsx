@@ -27,18 +27,14 @@ const Sidebar = () => {
 
         {/* Primary Navigation Items */}
         {primaryNavItems.map((item) => (
-          <React.Fragment key={item.name}>
-            <Link
-              to={item.path}
-              className="flex items-center gap-3 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors"
-            >
-              <item.icon size={20} />
-              <span className="text-lg font-medium">{item.name}</span>
-            </Link>
-            {item.name === "Wallet" && (
-              <div className="border-t border-vanta-blue-dark my-2"></div>
-            )}
-          </React.Fragment>
+          <Link
+            key={item.name}
+            to={item.path}
+            className="flex items-center gap-3 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors"
+          >
+            <item.icon size={20} />
+            <span className="text-lg font-medium">{item.name}</span>
+          </Link>
         ))}
 
         {/* Secondary Navigation Items pushed to the bottom */}
