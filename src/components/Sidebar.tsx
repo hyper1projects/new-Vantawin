@@ -9,6 +9,7 @@ const Sidebar = () => {
     { name: "Pools", icon: Trophy, path: "/pools" },
     { name: "Leaderboard", icon: Users, path: "/leaderboard" },
     { name: "Wallet", icon: Wallet, path: "/wallet" },
+    // Separator will be added here
     { name: "Terms of Use", icon: BookText, path: "/terms" },
     { name: "Help and Information", icon: HelpCircle, path: "/help" },
     { name: "Contact Us", icon: Mail, path: "/contact" },
@@ -16,26 +17,26 @@ const Sidebar = () => {
 
   return (
     <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light p-6 flex flex-col z-50">
-      {/* New rectangle section now includes the logo */}
       <div className="bg-vanta-blue-medium rounded-lg p-4 mb-6 flex flex-col gap-2">
-        {/* VANTAWIN logo moved here */}
-        <div className="flex items-center mb-4"> {/* Adjusted mb-10 to mb-4 */}
+        <div className="flex items-center mb-4">
           <span className="text-2xl font-bold text-vanta-text-light">VANTA</span>
           <span className="text-2xl font-bold text-vanta-accent-blue">WIN</span>
         </div>
-        {navItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className="flex items-center gap-3 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors"
-          >
-            <item.icon size={20} />
-            <span className="text-lg font-medium">{item.name}</span>
-          </Link>
+        {navItems.map((item, index) => (
+          <React.Fragment key={item.name}>
+            <Link
+              to={item.path}
+              className="flex items-center gap-3 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors"
+            >
+              <item.icon size={20} />
+              <span className="text-lg font-medium">{item.name}</span>
+            </Link>
+            {item.name === "Wallet" && ( // Conditionally render the separator after "Wallet"
+              <div className="border-t border-vanta-blue-dark my-2"></div>
+            )}
+          </React.Fragment>
         ))}
       </div>
-
-      {/* Any other existing content in the main sidebar div would go here */}
     </div>
   );
 };
