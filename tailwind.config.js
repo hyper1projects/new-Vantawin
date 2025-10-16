@@ -52,7 +52,7 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         // Custom VantaWin colors
-        'vanta-blue-dark': '#0A1128',
+        'vanta-blue-dark': '#06002E', // Updated color
         'vanta-blue-medium': '#001F54',
         'vanta-blue-light': '#034078',
         'vanta-accent-orange': '#FDC700',
