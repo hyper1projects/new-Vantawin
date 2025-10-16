@@ -45,7 +45,7 @@ const MainHeader = () => {
           to="/register"
           className="px-4 py-2 rounded-[14px] bg-[#00eeee] text-[#081028] hover:opacity-90 transition-opacity font-outfit text-base"
         >
-          Register
+          Sign Up
         </Link>
       </div>
     </div>
