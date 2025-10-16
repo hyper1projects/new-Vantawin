@@ -3,6 +3,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import MainHeader from './components/MainHeader';
 import Index from './pages/Index';
 import Games from './pages/Games';
 import Pools from './pages/Pools';
@@ -22,7 +23,7 @@ function App() {
       <div className="flex min-h-screen bg-vanta-blue-dark text-vanta-text-light">
         <Sidebar />
         <div className="flex-1 ml-[19rem] mt-4 mr-4 mb-4 rounded-xl overflow-hidden">
-          {/* MainHeader component removed */}
+          <MainHeader />
           <div className="p-4">
             <Routes>
               <Route path="/" element={<Index />} />
