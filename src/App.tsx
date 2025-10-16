@@ -24,24 +24,25 @@ function App() {
         <Sidebar />
         <div className="flex-1 ml-[19rem] mt-4 mr-4 mb-4 rounded-xl overflow-hidden">
           <MainHeader />
-          {/* Removed global p-4 here to allow individual pages to control their padding */}
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/pools" element={<Pools />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/wallet" element={<Wallet />} />
-            {/* Removed Rewards and UserSettings routes */}
-            <Route path="/users" element={<Users />} />
-            <Route path="/terms-of-use" element={<Terms />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/sports/:category" element={<div className="p-4">Sport Category Page</div>} />
-            <Route path="/how-it-works" element={<div className="p-4">How It Works Page</div>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="p-4">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/pools" element={<Pools />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/wallet" element={<Wallet />} />
+              {/* Removed Rewards and UserSettings routes */}
+              <Route path="/users" element={<Users />} />
+              <Route path="/terms-of-use" element={<Terms />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/sports/:category" element={<div>Sport Category Page</div>} />
+              <Route path="/how-it-works" element={<div>How It Works Page</div>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </div>
       </div>
     </Router>
