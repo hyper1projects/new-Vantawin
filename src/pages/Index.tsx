@@ -8,19 +8,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 const Index = () => {
   return (
     <div className="relative h-full bg-gradient-to-br from-gray-900 to-black text-white rounded-xl p-8">
-      {/* Hero Section */}
-      <section className="text-center mb-16">
-        <h2 className="text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
-          Welcome to Dyad
-        </h2>
-        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Your ultimate platform for managing predictions and engaging with your community.
-        </p>
-        <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-4 rounded-full shadow-lg">
-          Get Started
-        </Button>
-      </section>
-
       {/* Features Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
         <Card className="bg-gray-800 border-gray-700 text-white">
