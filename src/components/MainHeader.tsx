@@ -1,23 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Info } from 'lucide-react';
 import SearchInput from './SearchInput';
-import { Button } from './ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+import Button from './Button';
 
-const MainHeader: React.FC = () => {
+const MainHeader = () => {
+  const location = useLocation();
+
   const sportsCategories = [
-    { name: 'Football', path: '/football' },
-    { name: 'Basketball', path: '/basketball' },
-    { name: 'Tennis', path: '/tennis' },
-    { name: 'Esports', path: '/esports' },
+    { name: "Football", path: "/sports/football" },
+    { name: "Basketball", path: "/sports/basketball" },
+    { name: "Tennis", path: "/sports/tennis" },
+    { name: "A.Football", path: "/sports/afootball" },
+    { name: "Golf", path: "/sports/golf" },
   ];
 
   return (
@@ -25,39 +20,27 @@ const MainHeader: React.FC = () => {
       {/* Left Section: Sports Categories */}
       <div className="flex items-center space-x-8">
         {sportsCategories.map((category) => (
-          <Link key={category.name} to={category.path} className="text-white text-base font-outfit hover:text-vanta-neon-blue transition-colors">
+          <Link
+            key={category.name}
+            to={category.path}
+            className={`relative transition-colors font-outfit text-base
+              ${location.pathname === category.path ? 'text-vanta-neon-blue' : 'text-vanta-text-light hover:text-vanta-neon-blue'}
+            `}
+          >
             {category.name}
           </Link>
         ))}
-        <Link to="/how-to-play" className="text-white text-base font-outfit hover:text-vanta-neon-blue transition-colors">
-          How to Play
-        </Link>
       </div>
 
-      {/* Right Section: Search, Login/Signup, Avatar */}
+      {/* Right Section: How it works, Search, Login, Register */}
       <div className="flex items-center space-x-4">
+        <Link to="/how-it-works" className="flex items-center gap-1 text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
+          <Info size={18} />
+          How it works
+        </Link>
         <SearchInput />
-        <Button variant="ghost" className="text-white text-base font-outfit hover:text-vanta-neon-blue">
-          Login
-        </Button>
-        <Button className="bg-vanta-neon-blue text-white text-base font-outfit hover:bg-vanta-neon-blue/90">
-          Sign Up
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="cursor-pointer">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button variant="outline">Login</Button>
+        <Button variant="primary">Register</Button>
       </div>
     </div>
   );
