@@ -24,7 +24,7 @@ const Sidebar = () => {
       <div className="bg-vanta-blue-medium rounded-r-2xl flex flex-col gap-2 flex-grow">
         <div className="flex items-center justify-center p-4 mb-4">
           <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
-          <span className="text-xl font-bold text-vanta-accent-blue">WIN</span>
+          <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
         </div>
 
         {/* Primary Navigation Items */}
