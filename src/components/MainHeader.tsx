@@ -23,7 +23,7 @@ const MainHeader: React.FC = () => {
   return (
     <div className="w-full h-16 flex items-center justify-between pl-0 pr-8 border-b border-gray-700">
       {/* Left Section: Sports Categories */}
-      <div className="flex items-center space-x-4"> {/* Changed space-x-8 to space-x-4 */}
+      <div className="flex items-center space-x-8">
         {sportsCategories.map((category) => (
           <Link key={category.name} to={category.path} className="text-white text-base font-outfit hover:text-vanta-neon-blue transition-colors">
             {category.name}
