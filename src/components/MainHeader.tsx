@@ -9,7 +9,7 @@ const MainHeader = () => {
   const sportsCategories = [
     { name: 'Football', path: '/football' },
     { name: 'Basketball', path: '/basketball' },
-    { name: 'Tennis', path: '/tennis' },
+    { name: 'Tennis', 'path': '/tennis' },
     { name: 'Esports', path: '/esports' },
   ];
 
@@ -41,13 +41,13 @@ const MainHeader = () => {
       <div className="flex items-center space-x-4 ml-auto">
         <Link
           to="/login"
-          className="px-4 py-2 rounded-md border border-[#00eeee] text-white hover:bg-[#00eeee] hover:text-[#081028] transition-colors font-outfit text-base"
+          className="px-4 py-2 rounded-[14px] border border-[#00eeee] text-white hover:bg-[#00eeee] hover:text-[#081028] transition-colors font-outfit text-base"
         >
           Login
         </Link>
         <Link
           to="/register"
-          className="px-4 py-2 rounded-md bg-[#00eeee] text-[#081028] hover:opacity-90 transition-opacity font-outfit text-base"
+          className="px-4 py-2 rounded-[14px] bg-[#00eeee] text-[#081028] hover:opacity-90 transition-opacity font-outfit text-base"
         >
           Register
         </Link>
