@@ -4,7 +4,7 @@ const Index: React.FC = () => {
   return (
     <div className="relative w-full h-full">
       {/* Container for images positioned at the top right */}
-      <div className="absolute top-0 right-0 p-4 flex flex-col gap-4">
+      <div className="absolute top-[-2rem] right-0 px-4 flex flex-col gap-4">
         <img 
           src="/images/Group 1000005755.png" 
           alt="Leaderboard" 
