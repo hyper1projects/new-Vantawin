@@ -1,46 +1,39 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Info } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SearchInput from './SearchInput';
 import Button from './Button';
 
-const MainHeader = () => {
-  const location = useLocation();
+const sportsCategories = [
+  { name: 'Football', icon: '⚽' },
+  { name: 'Basketball', icon: '🏀' },
+  { name: 'Tennis', icon: '🎾' },
+  { name: 'Esports', icon: '🎮' },
+];
 
-  const sportsCategories = [
-    { name: "Football", path: "/sports/football" },
-    { name: "Basketball", path: "/sports/basketball" },
-    { name: "Tennis", path: "/sports/tennis" },
-    { name: "A.Football", path: "/sports/afootball" },
-    { name: "Golf", path: "/sports/golf" },
-  ];
-
+const MainHeader: React.FC = () => {
   return (
     <div className="w-full h-16 flex items-center justify-between pl-0 pr-8 border-b border-gray-700">
       {/* Left Section: Sports Categories */}
       <div className="flex items-center space-x-8">
+        <div className="flex items-center h-16 px-8 bg-vanta-blue-light text-vanta-neon-blue font-outfit text-lg font-semibold">
+          VANTA
+        </div>
         {sportsCategories.map((category) => (
-          <Link
-            key={category.name}
-            to={category.path}
-            className={`relative transition-colors font-outfit text-base
-              ${location.pathname === category.path ? 'text-vanta-neon-blue' : 'text-vanta-text-light hover:text-vanta-neon-blue'}
-            `}
-          >
-            {category.name}
+          <Link key={category.name} to={`/sports/${category.name.toLowerCase()}`} className="flex items-center space-x-2 text-vanta-text-light hover:text-vanta-neon-blue transition-colors duration-200">
+            <span className="text-xl">{category.icon}</span>
+            <span className="text-base font-outfit">{category.name}</span>
           </Link>
         ))}
       </div>
 
-      {/* Right Section: How it works, Search, Login, Register */}
+      {/* Right Section: Search, How it works, Login/Register */}
       <div className="flex items-center space-x-4">
-        <Link to="/how-it-works" className="flex items-center gap-1 text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
-          <Info size={18} />
+        <SearchInput />
+        <Link to="/how-it-works" className="text-vanta-text-light hover:text-vanta-neon-blue cursor-pointer text-base font-outfit transition-colors duration-200">
           How it works
         </Link>
-        <SearchInput />
         <Button variant="outline">Login</Button>
-        <Button variant="primary">Register</Button>
+        <Button>Register</Button>
       </div>
     </div>
   );
