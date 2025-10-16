@@ -18,11 +18,11 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light flex flex-col z-50">
+    <div className="fixed left-0 top-0 h-screen w-60 bg-vanta-blue-dark text-vanta-text-light flex flex-col z-50 rounded-r-2xl"> {/* Changed w-72 to w-60 and added rounded-r-2xl */}
       <div className="bg-vanta-blue-medium rounded-r-2xl flex flex-col gap-2 flex-grow">
         <div className="flex items-center justify-center p-4 mb-4">
-          <span className="text-xl font-bold text-vanta-text-light">VANTA</span> {/* Changed from text-2xl to text-xl */}
-          <span className="text-xl font-bold text-vanta-accent-blue">WIN</span> {/* Changed from text-2xl to text-xl */}
+          <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
+          <span className="text-xl font-bold text-vanta-accent-blue">WIN</span>
         </div>
 
         {/* Primary Navigation Items */}
@@ -33,8 +33,8 @@ const Sidebar = () => {
               to={item.path}
               className="flex items-center gap-3 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors"
             >
-              <item.icon size={18} /> {/* Changed icon size from 20 to 18 */}
-              <span className="text-base font-medium">{item.name}</span> {/* Changed from text-lg to text-base */}
+              <item.icon size={18} />
+              <span className="text-base font-medium">{item.name}</span>
             </Link>
           ))}
         </div>
@@ -47,8 +47,8 @@ const Sidebar = () => {
               to={item.path}
               className="flex items-center gap-3 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors"
             >
-              <item.icon size={18} /> {/* Changed icon size from 20 to 18 */}
-              <span className="text-base font-medium">{item.name}</span> {/* Changed from text-lg to text-base */}
+              <item.icon size={18} />
+              <span className="text-base font-medium">{item.name}</span>
             </Link>
           ))}
         </div>
