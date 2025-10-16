@@ -18,7 +18,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light p-6 flex flex-col z-50 font-saprona">
+    <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light p-6 flex flex-col z-50">
       <div className="bg-vanta-blue-medium rounded-lg p-4 flex flex-col gap-2 flex-grow">
         <div className="flex items-center mb-4">
           <span className="text-2xl font-bold text-vanta-text-light">VANTA</span>
