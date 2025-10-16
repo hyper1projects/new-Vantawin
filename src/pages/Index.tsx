@@ -71,20 +71,6 @@ const Index = () => {
           Sign Up Free
         </Button>
       </section>
-
-      {/* Images Section */}
-      <div className="absolute top-1/2 right-8 transform -translate-y-1/2 flex flex-col gap-4">
-        <img
-          src="/images/Group 1000005755.png"
-          alt="Leaderboard"
-          className="w-full max-w-xs rounded-xl"
-        />
-        <img
-          src="/images/Group 1000005762.png"
-          alt="Prediction Card"
-          className="w-full max-w-xs rounded-xl"
-        />
-      </div>
     </div>
   );
 };
