@@ -31,7 +31,7 @@ const Sidebar = () => {
             <Link
               key={item.name}
               to={item.path}
-              className="flex items-center gap-4 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors" // Changed gap-3 to gap-4
+              className="flex items-center gap-4 py-2 px-3 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors" // Changed p-2 to py-2 px-3
             >
               <item.icon size={18} />
               <span className="text-base font-medium">{item.name}</span>
@@ -45,7 +45,7 @@ const Sidebar = () => {
             <Link
               key={item.name}
               to={item.path}
-              className="flex items-center gap-3 p-2 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors"
+              className="flex items-center gap-3 py-2 px-3 rounded-md text-vanta-text-light hover:bg-vanta-accent-blue hover:text-white transition-colors" // Changed p-2 to py-2 px-3
             >
               <item.icon size={18} />
               <span className="text-base font-medium">{item.name}</span>
