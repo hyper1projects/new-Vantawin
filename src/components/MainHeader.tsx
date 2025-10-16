@@ -1,28 +1,30 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Settings, UserCircle } from 'lucide-react'; // Assuming these icons are used
+import { Info } from 'lucide-react'; // Using Info icon for "How it works"
+import SearchInput from './SearchInput';
+import Button from './Button';
 
 const MainHeader = () => {
   const location = useLocation();
 
   const sportsCategories = [
-    { name: "All Sports", path: "/sports/all" },
     { name: "Football", path: "/sports/football" },
     { name: "Basketball", path: "/sports/basketball" },
     { name: "Tennis", path: "/sports/tennis" },
-    { name: "Esports", path: "/sports/esports" },
+    { name: "A.Football", path: "/sports/afootball" }, // Assuming 'A.Football' is a category
+    { name: "Golf", path: "/sports/golf" },
   ];
 
   return (
-    <div className="w-full h-16 bg-vanta-blue-dark border-b border-vanta-border flex items-center justify-between px-4 mb-6">
+    <div className="w-full h-16 bg-black flex items-center justify-between px-8">
       {/* Left Section: Sports Categories */}
-      <div className="flex items-center space-x-6">
+      <div className="flex items-center space-x-8">
         {sportsCategories.map((category) => (
           <Link
             key={category.name}
             to={category.path}
-            className={`relative pb-2 transition-colors font-outfit text-sm
-              ${location.pathname === category.path ? 'text-vanta-neon-blue border-b-2 border-vanta-neon-blue' : 'text-vanta-text-light hover:text-vanta-neon-blue'}
+            className={`relative transition-colors font-outfit text-base
+              ${location.pathname === category.path ? 'text-vanta-neon-blue' : 'text-vanta-text-light hover:text-vanta-neon-blue'}
             `}
           >
             {category.name}
@@ -30,18 +32,15 @@ const MainHeader = () => {
         ))}
       </div>
 
-      {/* Right Section: User Actions */}
+      {/* Right Section: How it works, Search, Login, Register */}
       <div className="flex items-center space-x-4">
-        <button className="text-vanta-text-light hover:text-vanta-neon-blue transition-colors">
-          <Bell size={20} />
-        </button>
-        <button className="text-vanta-text-light hover:text-vanta-neon-blue transition-colors">
-          <Settings size={20} />
-        </button>
-        <button className="flex items-center gap-2 text-vanta-text-light hover:text-vanta-neon-blue transition-colors">
-          <UserCircle size={24} />
-          <span className="text-sm font-outfit">Username</span> {/* Apply font to username too */}
-        </button>
+        <Link to="/how-it-works" className="flex items-center gap-1 text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
+          <Info size={18} />
+          How it works
+        </Link>
+        <SearchInput />
+        <Button variant="outline">Login</Button>
+        <Button variant="primary">Register</Button>
       </div>
     </div>
   );
