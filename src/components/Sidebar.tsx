@@ -11,11 +11,11 @@ const Sidebar = () => {
     { name: "Home", icon: Home, path: "/" },
     { name: "Games", icon: Gamepad2, path: "/games" },
     { name: "Pools", icon: Trophy, path: "/pools" },
+    { name: "Leaderboard", icon: Users, path: "/leaderboard" },
     { name: "Wallet", icon: Wallet, path: "/wallet" },
   ];
 
   const secondaryNavItems = [
-    { name: "Leaderboard", icon: Users, path: "/leaderboard" }, // Leaderboard moved here
     { name: "Terms of Use", icon: BookText, path: "/terms" },
     { name: "Help and Information", icon: HelpCircle, path: "/help" },
     { name: "Contact Us", icon: Mail, path: "/contact" },
