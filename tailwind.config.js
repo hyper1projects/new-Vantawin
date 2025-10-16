@@ -52,11 +52,14 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         // Custom VantaWin colors
-        'vanta-blue-dark': '#06002E', // Updated color
-        'vanta-blue-medium': '#001F54',
+        'vanta-blue-dark': '#06002E',
+        'vanta-blue-medium': '#011B47', // Updated to match sidebar
         'vanta-blue-light': '#034078',
+        'vanta-accent-blue': '#007BFF',
+        'vanta-accent-dark-blue': '#014568',
+        'vanta-neon-blue': '#00eeee',
         'vanta-accent-orange': '#FDC700',
-        'vanta-text-light': '#FDF0D5',
+        'vanta-text-light': '#E0E0E0', // Updated to match sidebar
         'vanta-text-medium': '#8A93A6',
         'vanta-text-dark': '#4A505E',
       },
@@ -80,7 +83,7 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        outfit: ['Outfit', 'sans-serif'], // Adding Outfit font
+        outfit: ['Outfit', 'sans-serif'],
       },
     },
   },
