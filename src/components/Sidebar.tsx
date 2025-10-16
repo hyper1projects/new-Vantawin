@@ -1,6 +1,8 @@
+"use client";
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail, ChevronRight } from 'lucide-react'; // Import ChevronRight
+import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail, ChevronRight } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -35,12 +37,12 @@ const Sidebar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`relative flex items-center gap-4 py-2 pr-3 rounded-md text-vanta-text-light transition-colors overflow-hidden
+                className={`relative flex items-center gap-4 py-2 pr-3 rounded-md text-vanta-text-light transition-colors overflow-hidden mb-2
                   ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
                 `}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-full"></div>
+                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-lg"></div>
                 )}
                 <item.icon size={18} />
                 <span className="text-base font-medium">{item.name}</span>
@@ -62,13 +64,13 @@ const Sidebar = () => {
                 `}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-full"></div>
+                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-lg"></div>
                 )}
-                <div className="flex items-center gap-3"> {/* Group icon and text */}
+                <div className="flex items-center gap-3">
                   <item.icon size={18} />
-                  <span className="text-sm font-normal">{item.name}</span> {/* Smaller font */}
+                  <span className="text-sm font-normal">{item.name}</span>
                 </div>
-                <ChevronRight size={16} className="text-vanta-text-light" /> {/* Forward arrow */}
+                <ChevronRight size={16} className="text-vanta-text-light" />
               </Link>
             );
           })}
