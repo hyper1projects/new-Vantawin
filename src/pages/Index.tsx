@@ -3,13 +3,8 @@ import React from 'react';
 const Index: React.FC = () => {
   return (
     <div className="relative w-full h-full">
-      {/* Container for images positioned at the top right */}
-      <div className="absolute top-[-2rem] right-0 px-4 flex flex-col gap-4">
-        <img 
-          src="/images/Group 1000005755.png" 
-          alt="Leaderboard" 
-          className="w-full max-w-xs rounded-xl" 
-        />
+      {/* Prediction Card image centered vertically on the right */}
+      <div className="absolute top-1/2 right-0 px-4 transform -translate-y-1/2">
         <img 
           src="/images/Group 1000005762.png" 
           alt="Prediction Card" 
