@@ -34,7 +34,13 @@ const Sidebar = () => {
           </li>
         </ul>
 
-        {/* The Rewards Hub section has been removed from here */}
+        <div className="mt-4">
+          <Link to="/rewards" className="text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-4 flex items-center gap-2 p-2 hover:bg-gray-800 hover:text-white rounded-md transition-colors duration-200">
+            <Award className="h-4 w-4" />
+            Rewards Hub
+            <ChevronRight className="h-3 w-3 ml-auto" />
+          </Link>
+        </div>
 
         <div className="mt-4">
           <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">Legal</h3>
