@@ -18,15 +18,11 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light flex flex-col z-50"> {/* Removed p-6 */}
-      <div className="bg-vanta-blue-medium flex flex-col gap-2 flex-grow"> {/* Removed rounded-lg and p-4 */}
-        <div className="flex items-center p-4 mb-4"> {/* Added p-4 here for internal padding */}
-          <span className="text-2xl font-bold text-vanta-text-light">VANTA</span>
-          <span className="text-2xl font-bold text-vanta-accent-blue">WIN</span>
-        </div>
+    <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light flex flex-col z-50">
+      <div className="bg-vanta-blue-medium flex flex-col flex-grow"> {/* Removed gap-2 */}
 
         {/* Primary Navigation Items */}
-        <div className="px-4"> {/* Added px-4 for horizontal padding */}
+        <div className="px-4 pt-4 flex flex-col gap-2"> {/* Added pt-4 and flex-col gap-2 for spacing */}
           {primaryNavItems.map((item) => (
             <Link
               key={item.name}
@@ -39,8 +35,20 @@ const Sidebar = () => {
           ))}
         </div>
 
+        {/* Spacer to push logo down */}
+        <div className="flex-grow"></div>
+
+        {/* Logo Section - Centered */}
+        <div className="flex items-center justify-center p-4"> {/* Removed mb-4, added justify-center */}
+          <span className="text-2xl font-bold text-vanta-text-light">VANTA</span>
+          <span className="text-2xl font-bold text-vanta-accent-blue">WIN</span>
+        </div>
+
+        {/* Spacer to push logo up */}
+        <div className="flex-grow"></div>
+
         {/* Secondary Navigation Items pushed to the bottom */}
-        <div className="mt-auto flex flex-col gap-2 px-4 pb-4"> {/* Added px-4 and pb-4 for padding */}
+        <div className="flex flex-col gap-2 px-4 pb-4">
           {secondaryNavItems.map((item) => (
             <Link
               key={item.name}
