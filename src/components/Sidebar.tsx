@@ -1,87 +1,74 @@
 "use client";
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Wallet, Calendar, Settings, HelpCircle, FileText, Mail, Gamepad2, Award, Bell, ChevronRight, LayoutGrid } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { Award, ChevronRight, Home, Settings, Users, FileText, Gift, HelpCircle, LogOut } from 'lucide-react';
 
 const Sidebar = () => {
-  const location = useLocation();
-
-  const primaryNavItems = [
-    { name: 'Home', icon: Home, path: '/' },
-    { name: 'Games', icon: Gamepad2, path: '/games' },
-    { name: 'Pools', icon: Calendar, path: '/pools' },
-    { name: 'Leaderboard', icon: Award, path: '/leaderboard' },
-    { name: 'Wallet', icon: Wallet, path: '/wallet' },
-  ];
-
-  const rewardsHubItems = [
-    { name: 'User Settings', icon: Bell, path: '/settings' },
-    { name: 'Terms of Use', icon: Bell, path: '/terms' },
-    { name: 'Help & Information', icon: Bell, path: '/help' },
-    { name: 'Contact Us', icon: LayoutGrid, path: '/contact' },
-  ];
-
   return (
-    <div className="fixed top-0 left-0 h-screen w-64 flex flex-col border-r border-vanta-border bg-vanta-blue-dark p-4 z-50">
-      {/* Logo */}
-      <div className="flex items-center justify-center h-16 mb-6">
-        <h1 className="text-2xl font-bold text-vanta-text-light">
-          VANTA<span className="text-vanta-accent-blue">WIN</span>
-        </h1>
+    <div className="w-64 bg-gray-900 text-white p-4 flex flex-col h-full">
+      <div className="flex items-center mb-6">
+        <img src="/logo.png" alt="Vanta Logo" className="h-8 w-8 mr-2" />
+        <h1 className="text-xl font-bold">Vanta</h1>
       </div>
 
-      {/* Primary Navigation */}
-      <nav className="mb-8">
-        <ul className="space-y-2">
-          {primaryNavItems.map((item) => (
-            <li key={item.name}>
-              <Link
-                to={item.path}
-                className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg transition-colors relative",
-                  location.pathname === item.path
-                    ? "bg-vanta-blue-medium text-white"
-                    : "text-vanta-text-light hover:bg-vanta-blue-light"
-                )}
-              >
-                {location.pathname === item.path && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-3/4 bg-vanta-accent-blue rounded-r-sm" />
-                )}
-                <item.icon className="h-5 w-5" />
-                <span>{item.name}</span>
+      <nav className="flex-grow">
+        <ul>
+          <li className="mb-2">
+            <Link to="/" className="flex items-center p-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors duration-200">
+              <Home className="h-5 w-5 mr-3" />
+              Dashboard
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link to="/users" className="flex items-center p-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors duration-200">
+              <Users className="h-5 w-5 mr-3" />
+              Users
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link to="/settings" className="flex items-center p-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors duration-200">
+              <Settings className="h-5 w-5 mr-3" />
+              Settings
+            </Link>
+          </li>
+        </ul>
+
+        {/* The Rewards Hub section has been removed from here */}
+
+        <div className="mt-4">
+          <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">Legal</h3>
+          <ul>
+            <li className="mb-2">
+              <Link to="/terms-of-use" className="flex items-center p-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors duration-200">
+                <FileText className="h-5 w-5 mr-3" />
+                Terms of Use
               </Link>
             </li>
-          ))}
-        </ul>
+            <li className="mb-2">
+              <Link to="/privacy-policy" className="flex items-center p-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors duration-200">
+                <FileText className="h-5 w-5 mr-3" />
+                Privacy Policy
+              </Link>
+            </li>
+          </ul>
+        </div>
       </nav>
 
-      {/* Separator */}
-      <hr className="my-4 border-t border-vanta-border" />
-
-      {/* Rewards Hub Section */}
-      <div className="mt-4">
-        <h2 className="text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
-          <Award className="h-4 w-4" />
-          Rewards Hub
-          <ChevronRight className="h-3 w-3 ml-auto" />
-        </h2>
-        <ul className="space-y-2">
-          {rewardsHubItems.map((item) => (
-            <li key={item.name}>
-              <Link
-                to={item.path}
-                className="flex items-center justify-between p-3 rounded-lg text-vanta-text-light hover:bg-vanta-blue-light transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.name}</span>
-                </div>
-                <ChevronRight className="h-4 w-4 text-vanta-text-muted" />
-              </Link>
-            </li>
-          ))}
+      <div className="mt-auto">
+        <ul>
+          <li className="mb-2">
+            <Link to="/support" className="flex items-center p-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors duration-200">
+              <HelpCircle className="h-5 w-5 mr-3" />
+              Support
+            </Link>
+          </li>
+          <li>
+            <button className="flex items-center p-2 text-red-400 hover:bg-gray-800 hover:text-red-300 rounded-md transition-colors duration-200 w-full">
+              <LogOut className="h-5 w-5 mr-3" />
+              Logout
+            </button>
+          </li>
         </ul>
       </div>
     </div>
