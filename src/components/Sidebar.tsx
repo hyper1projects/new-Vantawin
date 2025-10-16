@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Gamepad2, BarChart3, Wallet, FileText, HelpCircle, Mail, Gift, Bell } from 'lucide-react'; // Added Gift and Bell icons
+import { Home, Gamepad2, BarChart3, Wallet, FileText, HelpCircle, Mail, CalendarDays, ChevronRight } from 'lucide-react'; // Added CalendarDays and ChevronRight
 import { cn } from '@/lib/utils';
 
 const Sidebar = () => {
@@ -11,21 +11,19 @@ const Sidebar = () => {
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
     { name: 'Games', path: '/games', icon: Gamepad2 },
-    { name: 'Pools', path: '/pools', icon: BarChart3 }, // Changed icon to BarChart3 as per image
-    { name: 'Leaderboard', path: '/leaderboard', icon: Wallet }, // Changed icon to Wallet as per image
-    { name: 'Wallet', path: '/wallet', icon: Gift }, // Changed icon to Gift as per image
+    { name: 'Pools', path: '/pools', icon: CalendarDays }, // Icon changed to CalendarDays
+    { name: 'Leaderboard', path: '/leaderboard', icon: BarChart3 }, // Icon changed to BarChart3
+    { name: 'Wallet', path: '/wallet', icon: Wallet }, // Icon changed to Wallet
   ];
 
   const bottomItems = [
-    { name: 'Rewards Hub', path: '/rewards', icon: Gift },
-    { name: 'User Settings', path: '/user-settings', icon: Bell },
     { name: 'Terms of use', path: '/terms-of-use', icon: FileText },
     { name: 'Help & Information', path: '/help', icon: HelpCircle },
     { name: 'Contact Us', path: '/contact', icon: Mail },
   ];
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light p-6 flex flex-col rounded-xl z-50 m-4"> {/* Added m-4 for margin and rounded-xl for all corners */}
+    <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light p-6 flex flex-col rounded-xl z-50 m-4">
       <div className="flex items-center mb-10">
         <span className="text-2xl font-bold text-vanta-text-light">VANTA</span>
         <span className="text-2xl font-bold text-vanta-accent-blue">WIN</span>
@@ -38,16 +36,16 @@ const Sidebar = () => {
               <Link
                 to={item.path}
                 className={cn(
-                  "relative flex items-center py-3 rounded-lg transition-colors duration-200",
+                  "relative flex items-center py-3 transition-colors duration-200",
                   location.pathname === item.path
-                    ? "bg-vanta-active-bg text-vanta-text-light font-semibold pl-5" // Adjusted padding for accent bar
-                    : "text-vanta-text-light hover:bg-vanta-blue-medium pl-3"
+                    ? "bg-vanta-active-bg text-vanta-text-light font-semibold pl-5 rounded-lg" // Active state styling
+                    : "text-vanta-text-light hover:bg-vanta-blue-medium pl-3 rounded-lg" // Inactive state styling
                 )}
               >
                 {location.pathname === item.path && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-3/4 w-1 bg-vanta-accent-blue rounded-full" />
+                  <div className="absolute left-0 top-0 h-full w-1 bg-vanta-accent-blue rounded-full" /> // Accent bar
                 )}
-                <item.icon className={cn("h-5 w-5 mr-3", location.pathname === item.path ? "ml-0" : "ml-2")} /> {/* Adjusted icon margin */}
+                <item.icon className={cn("h-5 w-5 mr-3", location.pathname === item.path ? "ml-0" : "ml-2")} />
                 {item.name}
               </Link>
             </li>
@@ -55,7 +53,7 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      <div className="mt-auto"> {/* Pushes this section to the bottom */}
+      <div className="mt-auto">
         <ul>
           {bottomItems.map((item) => (
             <li key={item.name} className="mb-2">
@@ -65,7 +63,7 @@ const Sidebar = () => {
               >
                 <item.icon className="h-5 w-5 mr-3" />
                 {item.name}
-                {/* ChevronRight is not in the image for these items, removing it */}
+                <ChevronRight className="h-4 w-4 ml-auto text-vanta-text-muted" /> {/* Re-added ChevronRight */}
               </Link>
             </li>
           ))}

@@ -9,8 +9,6 @@ import Games from './pages/Games';
 import Pools from './pages/Pools';
 import Leaderboard from './pages/Leaderboard';
 import Wallet from './pages/Wallet';
-import Rewards from './pages/Rewards'; // New import
-import UserSettings from './pages/UserSettings'; // New import
 import NotFound from './pages/NotFound';
 import Terms from './pages/Terms';
 import Help from './pages/Help';
@@ -24,7 +22,7 @@ function App() {
     <Router>
       <div className="flex min-h-screen bg-vanta-blue-dark text-vanta-text-light">
         <Sidebar />
-        <div className="flex-1 ml-[19rem] mt-4 mr-4 mb-4 rounded-xl overflow-hidden"> {/* Adjusted margin-left for wider sidebar + its margin, added margin and rounded-xl to main content */}
+        <div className="flex-1 ml-[19rem] mt-4 mr-4 mb-4 rounded-xl overflow-hidden">
           <MainHeader />
           <div className="p-4">
             <Routes>
@@ -33,8 +31,7 @@ function App() {
               <Route path="/pools" element={<Pools />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/wallet" element={<Wallet />} />
-              <Route path="/rewards" element={<Rewards />} /> {/* New route */}
-              <Route path="/user-settings" element={<UserSettings />} /> {/* New route */}
+              {/* Removed Rewards and UserSettings routes */}
               <Route path="/users" element={<Users />} />
               <Route path="/terms-of-use" element={<Terms />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
