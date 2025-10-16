@@ -39,7 +39,10 @@ const MainHeader = () => {
 
       {/* Far Right Section: Login and Register */}
       <div className="flex items-center space-x-4 ml-auto">
-        <Link to="/login" className="text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
+        <Link
+          to="/login"
+          className="px-4 py-2 rounded-md border border-[#00eeee] text-white hover:bg-[#00eeee] hover:text-[#081028] transition-colors font-outfit text-base"
+        >
           Login
         </Link>
         <Link
