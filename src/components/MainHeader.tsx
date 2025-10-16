@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Info } from 'lucide-react'; // Using Info icon for "How it works"
+import { Info } from 'lucide-react';
 import SearchInput from './SearchInput';
 import Button from './Button';
 
@@ -11,12 +11,12 @@ const MainHeader = () => {
     { name: "Football", path: "/sports/football" },
     { name: "Basketball", path: "/sports/basketball" },
     { name: "Tennis", path: "/sports/tennis" },
-    { name: "A.Football", path: "/sports/afootball" }, // Assuming 'A.Football' is a category
+    { name: "A.Football", path: "/sports/afootball" },
     { name: "Golf", path: "/sports/golf" },
   ];
 
   return (
-    <div className="w-full h-16 bg-black flex items-center justify-between px-8">
+    <div className="w-full h-16 flex items-center justify-between px-8 border-b border-gray-700">
       {/* Left Section: Sports Categories */}
       <div className="flex items-center space-x-8">
         {sportsCategories.map((category) => (
