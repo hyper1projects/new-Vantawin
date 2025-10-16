@@ -28,19 +28,23 @@ const MainHeader = () => {
         ))}
       </div>
 
-      {/* Right Section: How to Play Link, Login, Register, and Search */}
+      {/* Middle-Right Section: How to Play Link and Search */}
       <div className="flex items-center space-x-4">
         <Link to="/how-to-play" className="flex items-center gap-1 text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
           <Info size={18} />
           How to Play
         </Link>
+        <SearchInput />
+      </div>
+
+      {/* Far Right Section: Login and Register */}
+      <div className="flex items-center space-x-4 ml-auto">
         <Link to="/login" className="text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
           Login
         </Link>
         <Link to="/register" className="text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
           Register
         </Link>
-        <SearchInput />
       </div>
     </div>
   );
