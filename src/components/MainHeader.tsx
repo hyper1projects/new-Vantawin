@@ -28,17 +28,13 @@ const MainHeader = () => {
         ))}
       </div>
 
-      {/* Middle-Right Section: How to Play Link and Search */}
+      {/* Right Section: How to Play, Search, Login, and Register */}
       <div className="flex items-center space-x-4">
         <Link to="/how-to-play" className="flex items-center gap-1 text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
           <Info size={18} />
           How to Play
         </Link>
         <SearchInput />
-      </div>
-
-      {/* Far Right Section: Login and Register */}
-      <div className="flex items-center space-x-4 ml-auto">
         <Link
           to="/login"
           className="px-4 py-2 rounded-[14px] border border-[#00eeee] text-white hover:bg-[#00eeee] hover:text-[#081028] transition-colors font-outfit text-base"
