@@ -10,7 +10,9 @@ export default {
         'vanta-blue-dark': '#06002E',
         'vanta-accent-blue': '#007BFF',
         'vanta-text-light': '#E0E0E0',
-        'vanta-blue-medium': '#011B47', // New color added
+        'vanta-blue-medium': '#011B47',
+        'vanta-accent-dark-blue': '#014568', // New color for active tab background
+        'vanta-neon-blue': '#00eeee',       // New color for vertical accent bar
       },
     },
   },

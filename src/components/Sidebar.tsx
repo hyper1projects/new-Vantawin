@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom'; // Import useLocation
+import { Link, useLocation } from 'react-router-dom';
 import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail } from 'lucide-react';
 
 const Sidebar = () => {
-  const location = useLocation(); // Get current location to determine active link
+  const location = useLocation();
 
   const primaryNavItems = [
     { name: "Home", icon: Home, path: "/" },
@@ -36,11 +36,11 @@ const Sidebar = () => {
                 key={item.name}
                 to={item.path}
                 className={`relative flex items-center gap-4 py-2 pr-3 rounded-md text-vanta-text-light transition-colors overflow-hidden
-                  ${isActive ? 'bg-vanta-blue-medium pl-4' : 'hover:bg-vanta-blue-medium pl-3'}
+                  ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
                 `}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-accent-blue rounded-full"></div>
+                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-full"></div>
                 )}
                 <item.icon size={18} />
                 <span className="text-base font-medium">{item.name}</span>
@@ -58,11 +58,11 @@ const Sidebar = () => {
                 key={item.name}
                 to={item.path}
                 className={`relative flex items-center gap-3 py-2 pr-3 rounded-md text-vanta-text-light transition-colors overflow-hidden
-                  ${isActive ? 'bg-vanta-blue-medium pl-4' : 'hover:bg-vanta-blue-medium pl-3'}
+                  ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
                 `}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-accent-blue rounded-full"></div>
+                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-full"></div>
                 )}
                 <item.icon size={18} />
                 <span className="text-base font-medium">{item.name}</span>
