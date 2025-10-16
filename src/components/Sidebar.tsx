@@ -19,8 +19,8 @@ const Sidebar = () => {
 
   return (
     <div className="fixed left-0 top-0 h-screen w-72 bg-vanta-blue-dark text-vanta-text-light flex flex-col z-50">
-      <div className="bg-vanta-blue-medium flex flex-col gap-2 flex-grow">
-        <div className="flex items-center justify-center p-4 mb-4"> {/* Added justify-center */}
+      <div className="bg-vanta-blue-medium rounded-r-2xl flex flex-col gap-2 flex-grow"> {/* Added rounded-r-2xl */}
+        <div className="flex items-center justify-center p-4 mb-4">
           <span className="text-2xl font-bold text-vanta-text-light">VANTA</span>
           <span className="text-2xl font-bold text-vanta-accent-blue">WIN</span>
         </div>
