@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail, ChevronRight } from 'lucide-react'; // Import ChevronRight
@@ -28,7 +30,7 @@ const Sidebar = () => {
         </div>
 
         {/* Primary Navigation Items */}
-        <div className="px-4">
+        <div className="px-4 flex flex-col gap-y-3">
           {primaryNavItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
@@ -50,7 +52,7 @@ const Sidebar = () => {
         </div>
 
         {/* Secondary Navigation Items pushed to the bottom */}
-        <div className="mt-auto flex flex-col gap-2 px-4 pb-4">
+        <div className="mt-auto flex flex-col gap-y-3 px-4 pb-4">
           {secondaryNavItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
