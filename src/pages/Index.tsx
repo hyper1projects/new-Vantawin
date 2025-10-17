@@ -10,7 +10,7 @@ const Index = () => {
         <img
           src="/images/Group 1000005755.png"
           alt="Leaderboard"
-          className="max-w-full h-auto"
+          className="w-[400px] h-[300px] object-contain" {/* Set fixed width and height */}
         />
       </Link>
       <div className="pt-28 flex flex-col items-center justify-center gap-4"> {/* Add padding-top to push other content down, adjust as needed */}
