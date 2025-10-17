@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import MainHeader from './components/MainHeader';
+import RightSidebar from './components/RightSidebar'; // Import the new RightSidebar
 import Index from './pages/Index';
 import Games from './pages/Games';
 import Pools from './pages/Pools';
@@ -22,7 +23,8 @@ function App() {
     <Router>
       <div className="flex min-h-screen bg-vanta-blue-dark text-vanta-text-light">
         <Sidebar />
-        <div className="flex-1 ml-[19rem] mt-4 mr-4 mb-4 rounded-xl overflow-hidden">
+        {/* Adjusted margin-right to accommodate the new RightSidebar */}
+        <div className="flex-1 ml-[19rem] mt-4 mr-[21rem] mb-4 rounded-xl overflow-hidden">
           <MainHeader />
           <div className="p-4">
             <Routes>
@@ -31,7 +33,6 @@ function App() {
               <Route path="/pools" element={<Pools />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/wallet" element={<Wallet />} />
-              {/* Removed Rewards and UserSettings routes */}
               <Route path="/users" element={<Users />} />
               <Route path="/terms-of-use" element={<Terms />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -44,6 +45,7 @@ function App() {
             </Routes>
           </div>
         </div>
+        <RightSidebar /> {/* Add the RightSidebar component */}
       </div>
     </Router>
   );
