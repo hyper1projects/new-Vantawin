@@ -53,20 +53,20 @@ const PredictionSlipCard: React.FC = () => {
             </div>
 
             {/* Amount Section and Quick Amount Buttons */}
-            <div className="flex flex-col gap-2 mt-2">
+            <div className="flex flex-col gap-2 mt-2"> {/* New container for stacking */}
               <div className="flex items-center justify-between">
                 <span className="text-base text-vanta-text-light opacity-80">Amount</span>
                 <span className="text-2xl font-bold text-vanta-text-light">₦ {selectedAmount}</span>
               </div>
 
               {/* Quick Amount Buttons - now beneath the amount */}
-              <div className="flex gap-2 justify-start">
+              <div className="flex gap-2 justify-start"> {/* Changed justify-end to justify-start, removed mt-2 */}
                 {[100, 200, 500].map((amount) => (
                   <Button
                     key={amount}
                     variant={selectedAmount === amount ? "primary" : "outline"}
                     onClick={() => handleAmountSelect(amount)}
-                    className="px-2 py-1 text-xs" {/* Changed text-sm to text-xs */}
+                    className="px-2 py-1 text-sm"
                   >
                     ₦ {amount}
                   </Button>
