@@ -4,7 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
 import Sidebar from './components/Sidebar';
-import Header from './components/Header';
+import MainHeader from './components/MainHeader'; // Corrected import
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Wallet from './pages/Wallet';
@@ -18,7 +18,7 @@ function App() {
       <div className="flex min-h-screen bg-vanta-blue-dark text-vanta-text-light">
         <Sidebar />
         <div className="flex-1 flex flex-col">
-          <Header />
+          <MainHeader /> {/* Using MainHeader component */}
           <main className="flex-1 p-6">
             <Routes>
               <Route path="/" element={<Index />} />
