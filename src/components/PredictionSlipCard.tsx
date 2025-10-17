@@ -44,32 +44,34 @@ const PredictionSlipCard: React.FC = () => {
           <div className="flex flex-col gap-4">
             {/* Match Info */}
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold">Aston Villa Vs Crystal Palace</h3> {/* Changed text-lg to text-base */}
+              <h3 className="text-base font-semibold">Aston Villa Vs Crystal Palace</h3>
               <div className="flex items-center gap-2">
                 {/* Placeholder images for team logos. Replace with actual logos when available. */}
-                <img src="https://picsum.photos/48/48?random=1" alt="Team 1 Logo" className="w-6 h-6 rounded-full" /> {/* Updated src */}
-                <img src="https://picsum.photos/48/48?random=2" alt="Team 2 Logo" className="w-6 h-6 rounded-full" /> {/* Updated src */}
+                <img src="https://picsum.photos/48/48?random=1" alt="Team 1 Logo" className="w-6 h-6 rounded-full" />
+                <img src="https://picsum.photos/48/48?random=2" alt="Team 2 Logo" className="w-6 h-6 rounded-full" />
               </div>
             </div>
 
-            {/* Amount Section */}
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-base text-vanta-text-light opacity-80">Amount</span>
-              <span className="text-2xl font-bold text-vanta-text-light">₦ {selectedAmount}</span>
-            </div>
+            {/* Amount Section and Quick Amount Buttons */}
+            <div className="flex flex-col gap-2 mt-2"> {/* New container for stacking */}
+              <div className="flex items-center justify-between">
+                <span className="text-base text-vanta-text-light opacity-80">Amount</span>
+                <span className="text-2xl font-bold text-vanta-text-light">₦ {selectedAmount}</span>
+              </div>
 
-            {/* Quick Amount Buttons */}
-            <div className="flex gap-2 mt-2 justify-end">
-              {[100, 200, 500].map((amount) => (
-                <Button
-                  key={amount}
-                  variant={selectedAmount === amount ? "primary" : "outline"}
-                  onClick={() => handleAmountSelect(amount)}
-                  className="px-2 py-1 text-sm"
-                >
-                  ₦ {amount}
-                </Button>
-              ))}
+              {/* Quick Amount Buttons - now beneath the amount */}
+              <div className="flex gap-2 justify-start"> {/* Changed justify-end to justify-start, removed mt-2 */}
+                {[100, 200, 500].map((amount) => (
+                  <Button
+                    key={amount}
+                    variant={selectedAmount === amount ? "primary" : "outline"}
+                    onClick={() => handleAmountSelect(amount)}
+                    className="px-2 py-1 text-sm"
+                  >
+                    ₦ {amount}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             {/* To Win Section */}
