@@ -20,7 +20,7 @@ const PredictionSlipCard: React.FC = () => {
           <TabsTrigger
             value="predict"
             className={cn(
-              "text-base font-medium py-2 transition-all duration-300 ease-in-out", // Added transition classes
+              "text-base font-medium py-1 transition-all duration-300 ease-in-out", // Changed py-2 to py-1
               activeTab === "predict"
                 ? "text-vanta-neon-blue border-b-2 border-vanta-neon-blue"
                 : "text-vanta-text-light hover:text-vanta-neon-blue"
@@ -31,7 +31,7 @@ const PredictionSlipCard: React.FC = () => {
           <TabsTrigger
             value="redeem"
             className={cn(
-              "text-base font-medium py-2 transition-all duration-300 ease-in-out", // Added transition classes
+              "text-base font-medium py-1 transition-all duration-300 ease-in-out", // Changed py-2 to py-1
               activeTab === "redeem"
                 ? "text-vanta-neon-blue border-b-2 border-vanta-neon-blue"
                 : "text-vanta-text-light hover:text-vanta-neon-blue"
