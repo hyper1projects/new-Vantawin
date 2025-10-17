@@ -7,6 +7,7 @@ import MainHeader from './components/MainHeader';
 import Index from './pages/Index';
 import Games from './pages/Games';
 import Pools from './pages/Pools';
+import Leaderboard from './pages/Leaderboard';
 import Wallet from './pages/Wallet';
 import NotFound from './pages/NotFound';
 import Terms from './pages/Terms';
@@ -15,7 +16,6 @@ import Contact from './pages/Contact';
 import Users from './pages/Users';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
-import { Toaster } from 'sonner';
 
 function App() {
   return (
@@ -29,8 +29,9 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/games" element={<Games />} />
               <Route path="/pools" element={<Pools />} />
-              {/* Removed Leaderboard route */}
+              <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/wallet" element={<Wallet />} />
+              {/* Removed Rewards and UserSettings routes */}
               <Route path="/users" element={<Users />} />
               <Route path="/terms-of-use" element={<Terms />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -44,7 +45,6 @@ function App() {
           </div>
         </div>
       </div>
-      <Toaster />
     </Router>
   );
 }

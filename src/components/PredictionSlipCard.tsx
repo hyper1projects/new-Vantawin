@@ -1,118 +1,92 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
-import { showSuccess, showError } from "@/utils/toast"; // Import from your existing toast utility
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Button from "@/components/Button"; // Using the custom Button component
+import { cn } from "@/lib/utils";
 
-const PredictionSlipCard = () => {
-  const [selectedAmount, setSelectedAmount] = useState(100);
-  const [potentialWin, setPotentialWin] = useState(0);
-  const [multiplier, setMultiplier] = useState(2.0); // Default multiplier
+const PredictionSlipCard: React.FC = () => {
+  const [activeTab, setActiveTab] = React.useState("predict");
+  const [selectedAmount, setSelectedAmount] = React.useState<number>(0);
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value) && value >= 0) {
-      setSelectedAmount(value);
-      calculatePotentialWin(value, multiplier);
-    } else if (e.target.value === "") {
-      setSelectedAmount(0);
-      calculatePotentialWin(0, multiplier);
-    }
-  };
-
-  const handleQuickAmountClick = (amount: number) => {
+  const handleAmountSelect = (amount: number) => {
     setSelectedAmount(amount);
-    calculatePotentialWin(amount, multiplier);
-  };
-
-  const handleMultiplierChange = (value: number[]) => {
-    const newMultiplier = value[0];
-    setMultiplier(newMultiplier);
-    calculatePotentialWin(selectedAmount, newMultiplier);
-  };
-
-  const calculatePotentialWin = (amount: number, currentMultiplier: number) => {
-    setPotentialWin(amount * currentMultiplier);
-  };
-
-  const handlePlaceBet = () => {
-    if (selectedAmount <= 0) {
-      showError("Please enter a valid bet amount."); // Using showError from utility
-      return;
-    }
-    showSuccess( // Using showSuccess from utility
-      `Bet placed: ₦${selectedAmount} at ${multiplier.toFixed(
-        2
-      )}x multiplier. Potential win: ₦${potentialWin.toFixed(2)}`
-    );
-    // Here you would typically send the bet to a backend service
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-sm">
-      <h2 className="text-lg font-semibold mb-4">Prediction Slip</h2>
+    <div className="w-[300px] bg-vanta-blue-medium rounded-2xl p-6 font-outfit text-vanta-text-light">
+      <Tabs defaultValue="predict" className="w-full" onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger
+            value="predict"
+            className={cn(
+              "text-base font-medium py-1 transition-all duration-300 ease-in-out",
+              activeTab === "predict"
+                ? "text-vanta-neon-blue border-b-2 border-vanta-neon-blue"
+                : "text-vanta-text-light hover:text-vanta-neon-blue"
+            )}
+          >
+            Predict
+          </TabsTrigger>
+          <TabsTrigger
+            value="redeem"
+            className={cn(
+              "text-base font-medium py-1 transition-all duration-300 ease-in-out",
+              activeTab === "redeem"
+                ? "text-vanta-neon-blue border-b-2 border-vanta-neon-blue"
+                : "text-vanta-text-light hover:text-vanta-neon-blue"
+            )}
+          >
+            Redeem
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="predict">
+          <div className="flex flex-col gap-4">
+            {/* Match Info */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-semibold">Aston Villa Vs Crystal Palace</h3>
+              <div className="flex items-center gap-2">
+                {/* Placeholder images for team logos. Replace with actual logos when available. */}
+                <img src="https://picsum.photos/48/48?random=1" alt="Team 1 Logo" className="w-6 h-6 rounded-full" />
+                <img src="https://picsum.photos/48/48?random=2" alt="Team 2 Logo" className="w-6 h-6 rounded-full" />
+              </div>
+            </div>
 
-      <div className="mb-4">
-        <label htmlFor="betAmount" className="block text-sm font-medium text-gray-700 mb-1">
-          Bet Amount
-        </label>
-        <div className="flex items-center border rounded-md overflow-hidden">
-          <span className="px-3 text-gray-500">₦</span>
-          <Input
-            id="betAmount"
-            type="number"
-            value={selectedAmount}
-            onChange={handleAmountChange}
-            className="border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            placeholder="Enter amount"
-            min="0"
-          />
-        </div>
-      </div>
+            {/* Amount Section and Quick Amount Buttons */}
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="flex items-center justify-between">
+                <span className="text-base text-vanta-text-light opacity-80">Amount</span>
+                <span className="text-2xl font-bold text-vanta-text-light">₦ {selectedAmount}</span>
+              </div>
 
-      <div className="mb-4">
-        <p className="text-sm font-medium text-gray-700 mb-1">Quick Amounts</p>
-        {/* Quick Amount Buttons - now beneath the amount */}
-        <div className="flex gap-2 justify-start">
-          {[100, 200, 500].map((amount) => (
-            <Button
-              key={amount}
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickAmountClick(amount)}
-              className="text-xs px-2 py-1"
-            >
-              ₦{amount}
-            </Button>
-          ))}
-        </div>
-      </div>
+              {/* Quick Amount Buttons - now beneath the amount */}
+              <div className="flex gap-2 justify-start">
+                {[100, 200, 500].map((amount) => (
+                  <Button
+                    key={amount}
+                    variant={selectedAmount === amount ? "primary" : "outline"}
+                    onClick={() => handleAmountSelect(amount)}
+                    className="px-2 py-1 text-xs" {/* Changed text-sm to text-xs */}
+                  >
+                    ₦ {amount}
+                  </Button>
+                ))}
+              </div>
+            </div>
 
-      <div className="mb-4">
-        <label htmlFor="multiplier" className="block text-sm font-medium text-gray-700 mb-1">
-          Multiplier: {multiplier.toFixed(2)}x
-        </label>
-        <Slider
-          id="multiplier"
-          min={1.0}
-          max={10.0}
-          step={0.1}
-          value={[multiplier]}
-          onValueChange={handleMultiplierChange}
-          className="w-full"
-        />
-      </div>
-
-      <div className="mb-4 p-3 bg-gray-50 rounded-md">
-        <p className="text-sm font-medium text-gray-700">Potential Win</p>
-        <p className="text-xl font-bold text-green-600">₦{potentialWin.toFixed(2)}</p>
-      </div>
-
-      <Button onClick={handlePlaceBet} className="w-full">
-        Place Bet
-      </Button>
+            {/* To Win Section */}
+            <div className="flex items-center justify-between mt-4">
+              <span className="text-base text-vanta-text-light opacity-80">To win</span>
+              <span className="text-xl font-bold text-vanta-neon-blue">500 XP</span>
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="redeem">
+          <div className="text-center py-8 text-vanta-text-light opacity-70">
+            Redeem content will go here.
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
