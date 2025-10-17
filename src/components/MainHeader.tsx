@@ -31,11 +31,11 @@ const MainHeader = () => {
             </Button>
           </Link>
         ))}
-        {/* How It Works link */}
-        <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
-          <AlertCircle size={18} className="text-[#00EEEE]" /> {/* Icon color changed */}
-          <Button variant="ghost" className="text-[#B4B2C0] font-medium text-sm hover:bg-transparent p-0 h-auto"> {/* Text color, font weight, and size changed */}
-            How it works
+        {/* How to play link */}
+        <Link to="/how-to-play" className="flex items-center space-x-1 ml-4"> {/* Updated 'to' prop */}
+          <AlertCircle size={18} className="text-[#00EEEE]" />
+          <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto"> {/* Updated text and color */}
+            How to play
           </Button>
         </Link>
       </div>
