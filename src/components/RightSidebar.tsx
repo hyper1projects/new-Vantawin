@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner'; // Changed from react-hot-toast to sonner
 
 const RightSidebar = () => {
   const [activeTab, setActiveTab] = useState('predict');
