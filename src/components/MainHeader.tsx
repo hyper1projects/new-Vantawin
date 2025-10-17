@@ -10,7 +10,7 @@ const MainHeader = () => {
   const sportsCategories = ['Football', 'Basketball', 'Tennis', 'A.Football', 'Golf'];
 
   return (
-    <div className="fixed top-0 left-60 right-80 h-16 flex items-center justify-between px-8 border-b border-gray-700 z-50"> {/* Added border-b and border-gray-700 */}
+    <div className="fixed top-0 left-60 right-0 h-16 flex items-center justify-between px-8 pr-20 border-b border-gray-700 z-50"> {/* Changed right-80 to right-0 and added pr-20 */}
       {/* Left Section: Sports Categories and How It Works */}
       <div className="flex items-center space-x-6">
         {sportsCategories.map((category) => (
