@@ -16,6 +16,7 @@ import Contact from './pages/Contact';
 import Users from './pages/Users';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
+import { Toaster } from 'sonner'; // Import Toaster from sonner
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           </div>
         </div>
       </div>
+      <Toaster /> {/* Add the Toaster component here */}
     </Router>
   );
 }

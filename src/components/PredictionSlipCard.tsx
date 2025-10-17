@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { toast } from "react-hot-toast";
+import { showSuccess, showError } from "@/utils/toast"; // Import from your existing toast utility
 
 const PredictionSlipCard = () => {
   const [selectedAmount, setSelectedAmount] = useState(100);
@@ -39,10 +39,10 @@ const PredictionSlipCard = () => {
 
   const handlePlaceBet = () => {
     if (selectedAmount <= 0) {
-      toast.error("Please enter a valid bet amount.");
+      showError("Please enter a valid bet amount."); // Using showError from utility
       return;
     }
-    toast.success(
+    showSuccess( // Using showSuccess from utility
       `Bet placed: ₦${selectedAmount} at ${multiplier.toFixed(
         2
       )}x multiplier. Potential win: ₦${potentialWin.toFixed(2)}`
