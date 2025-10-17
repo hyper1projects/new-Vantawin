@@ -20,7 +20,7 @@ const PredictionSlipCard: React.FC = () => {
           <TabsTrigger
             value="predict"
             className={cn(
-              "text-base font-medium py-1 transition-all duration-300 ease-in-out", // Changed py-2 to py-1
+              "text-base font-medium py-1 transition-all duration-300 ease-in-out",
               activeTab === "predict"
                 ? "text-vanta-neon-blue border-b-2 border-vanta-neon-blue"
                 : "text-vanta-text-light hover:text-vanta-neon-blue"
@@ -31,7 +31,7 @@ const PredictionSlipCard: React.FC = () => {
           <TabsTrigger
             value="redeem"
             className={cn(
-              "text-base font-medium py-1 transition-all duration-300 ease-in-out", // Changed py-2 to py-1
+              "text-base font-medium py-1 transition-all duration-300 ease-in-out",
               activeTab === "redeem"
                 ? "text-vanta-neon-blue border-b-2 border-vanta-neon-blue"
                 : "text-vanta-text-light hover:text-vanta-neon-blue"
@@ -59,13 +59,13 @@ const PredictionSlipCard: React.FC = () => {
             </div>
 
             {/* Quick Amount Buttons */}
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2 mt-2 justify-end"> {/* Added justify-end */}
               {[100, 200, 500].map((amount) => (
                 <Button
                   key={amount}
                   variant={selectedAmount === amount ? "primary" : "outline"}
                   onClick={() => handleAmountSelect(amount)}
-                  className="px-4 py-2 text-sm"
+                  className="px-2 py-1 text-sm" {/* Changed px-4 py-2 to px-2 py-1 */}
                 >
                   ₦ {amount}
                 </Button>
