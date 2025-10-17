@@ -1,21 +1,15 @@
 "use client";
 
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link
+// Link is no longer needed as there's no clickable content
+// import { Link } from 'react-router-dom'; 
 
 const Index = () => {
   return (
-    <div className="relative w-full h-full"> {/* Make this div relative */}
-      <Link to="/leaderboard" className="absolute top-0 right-0"> {/* Position leaderboard image absolutely */}
-        {/* The leaderboard image has been removed */}
-      </Link>
-      <div className="pt-28 flex flex-col items-center justify-center gap-4"> {/* Add padding-top to push other content down, adjust as needed */}
-        <img
-          src="/images/Group 1000005756.png"
-          alt="Prediction Card"
-          className="max-w-full h-auto"
-        />
-      </div>
+    <div className="relative w-full h-full flex flex-col items-center justify-center gap-4 p-4">
+      {/* All previous content (leaderboard link and prediction card) has been removed */}
+      <p className="text-lg text-gray-500">Welcome to the homepage!</p>
+      <p className="text-sm text-gray-400">Content will be added here.</p>
     </div>
   );
 };
