@@ -1,52 +1,48 @@
 "use client";
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Info } from 'lucide-react';
-import SearchInput from './SearchInput'; // Assuming SearchInput is a component
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search, Bell, Settings, ChevronDown } from 'lucide-react';
 
 const MainHeader = () => {
-  const sportsCategories = [
-    { name: 'Football', path: '/football' },
-    { name: 'Basketball', path: '/basketball' },
-    { name: 'Tennis', 'path': '/tennis' },
-    { name: 'Esports', path: '/esports' },
-  ];
+  const sportsCategories = ['All Sports', 'Football', 'Basketball', 'Esports', 'Tennis', 'Baseball'];
+  const [activeCategory, setActiveCategory] = useState('All Sports');
 
   return (
-    <div className="w-full h-16 flex items-center justify-between pl-0 pr-8 border-b border-gray-700">
+    <div className="fixed top-0 left-0 w-full h-16 flex items-center justify-between pl-0 pr-8 border-b border-gray-700 bg-vanta-blue-dark z-50">
       {/* Left Section: Sports Categories */}
       <div className="flex items-center space-x-8">
         {sportsCategories.map((category) => (
-          <Link
-            key={category.name}
-            to={category.path}
-            className="text-vanta-text-light hover:text-vanta-neon-blue transition-colors font-outfit text-base"
+          <Button
+            key={category}
+            variant="ghost"
+            className={`text-vanta-text-light hover:text-vanta-accent-blue ${activeCategory === category ? 'text-vanta-accent-blue border-b-2 border-vanta-accent-blue rounded-none' : ''}`}
+            onClick={() => setActiveCategory(category)}
           >
-            {category.name}
-          </Link>
+            {category}
+          </Button>
         ))}
       </div>
 
-      {/* Right Section: How to Play, Search, Login, and Register */}
+      {/* Right Section: Search, Notifications, Settings, Profile */}
       <div className="flex items-center space-x-4">
-        <Link to="/how-to-play" className="flex items-center gap-1 text-vanta-neon-blue hover:text-vanta-text-light transition-colors font-outfit text-base">
-          <Info size={18} />
-          How to Play
-        </Link>
-        <SearchInput />
-        <Link
-          to="/login"
-          className="px-4 py-2 rounded-[14px] border border-[#00eeee] text-white hover:bg-[#00eeee] hover:text-[#081028] transition-colors font-outfit text-base"
-        >
-          Login
-        </Link>
-        <Link
-          to="/register"
-          className="px-4 py-2 rounded-[14px] bg-[#00eeee] text-[#081028] hover:opacity-90 transition-opacity font-outfit text-base"
-        >
-          Sign Up
-        </Link>
+        <Button variant="ghost" size="icon" className="text-vanta-text-light hover:text-vanta-accent-blue">
+          <Search className="h-5 w-5" />
+        </Button>
+        <Button variant="ghost" size="icon" className="text-vanta-text-light hover:text-vanta-accent-blue">
+          <Bell className="h-5 w-5" />
+        </Button>
+        <Button variant="ghost" size="icon" className="text-vanta-text-light hover:text-vanta-accent-blue">
+          <Settings className="h-5 w-5" />
+        </Button>
+        <div className="flex items-center space-x-2 cursor-pointer">
+          <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-sm font-semibold text-white">
+            JD
+          </div>
+          <span className="text-vanta-text-light">John Doe</span>
+          <ChevronDown className="h-4 w-4 text-vanta-text-light" />
+        </div>
       </div>
     </div>
   );
