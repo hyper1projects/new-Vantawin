@@ -1,13 +1,15 @@
 "use client";
 
 import React from 'react';
-import LeaderboardCard from '../components/LeaderboardCard'; // Import the new component
+import LeaderboardCard from '../components/LeaderboardCard';
+import PredictionSlipCard from '../components/PredictionSlipCard'; // Import the new component
 
 const Index = () => {
   return (
-    <div className="relative w-full h-full min-h-[calc(100vh-10rem)]"> {/* Ensure enough height for positioning */}
-      <div className="absolute top-4 right-4"> {/* Position the card */}
+    <div className="relative w-full h-full min-h-[calc(100vh-10rem)]">
+      <div className="absolute top-4 right-4 flex flex-col gap-4"> {/* Container for right-aligned cards */}
         <LeaderboardCard />
+        <PredictionSlipCard /> {/* New component positioned here */}
       </div>
       {/* The rest of your homepage content will go here, below the header and to the left of the card */}
       <div className="flex flex-col items-center justify-center gap-4 pt-28"> {/* Placeholder for other content */}
