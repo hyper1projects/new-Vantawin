@@ -1,14 +1,14 @@
 "use client";
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom'; // Import useLocation
+import { Link, useLocation } from 'react-router-dom';
 import { Search, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const MainHeader = () => {
   const sportsCategories = ['Football', 'Basketball', 'Tennis', 'A.Football', 'Golf'];
-  const location = useLocation(); // Get current location
+  const location = useLocation();
   const currentPath = location.pathname;
 
   // Function to determine if a category is active
@@ -33,8 +33,8 @@ const MainHeader = () => {
         ))}
         {/* How It Works link */}
         <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
-          <AlertCircle size={18} className="text-vanta-accent-blue" />
-          <Button variant="ghost" className="text-vanta-accent-blue font-bold text-base hover:bg-transparent p-0 h-auto">
+          <AlertCircle size={18} className="text-[#00EEEE]" /> {/* Icon color changed */}
+          <Button variant="ghost" className="text-[#B4B2C0] font-medium text-sm hover:bg-transparent p-0 h-auto"> {/* Text color, font weight, and size changed */}
             How it works
           </Button>
         </Link>
