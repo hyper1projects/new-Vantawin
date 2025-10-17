@@ -17,7 +17,7 @@ const MainHeader = () => {
           <Link key={category} to={`/sports/${category.toLowerCase().replace('.', '')}`}>
             <Button
               variant="ghost"
-              className={`font-medium text-base ${category === 'Football' ? 'text-vanta-accent-blue' : 'text-vanta-off-white'} hover:bg-transparent p-0 h-auto`} {/* Changed font-bold to font-medium and text-white to text-vanta-off-white */}
+              className={`font-medium text-base ${category === 'Football' ? 'text-vanta-accent-blue' : 'text-vanta-off-white'} hover:bg-transparent p-0 h-auto`}
             >
               {category}
             </Button>
@@ -26,7 +26,7 @@ const MainHeader = () => {
         {/* How It Works link */}
         <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
           <AlertCircle size={18} className="text-vanta-accent-blue" />
-          <Button variant="ghost" className="text-vanta-accent-blue font-medium text-base hover:bg-transparent p-0 h-auto"> {/* Changed font-bold to font-medium */}
+          <Button variant="ghost" className="text-vanta-accent-blue font-medium text-base hover:bg-transparent p-0 h-auto">
             How it works
           </Button>
         </Link>
@@ -45,12 +45,12 @@ const MainHeader = () => {
       {/* Right Section: Login, Register */}
       <div className="flex items-center space-x-4">
         <Link to="/login">
-          <Button className="bg-black text-vanta-off-white border border-vanta-accent-blue rounded-full px-6 py-2 font-medium text-sm hover:bg-vanta-blue-medium"> {/* Changed text-white to text-vanta-off-white and font-bold to font-medium */}
+          <Button className="bg-black text-vanta-off-white border border-vanta-accent-blue rounded-full px-6 py-2 font-medium text-sm hover:bg-vanta-blue-medium">
             Login
           </Button>
         </Link>
         <Link to="/register">
-          <Button className="bg-vanta-accent-blue text-black rounded-full px-6 py-2 font-medium text-sm hover:bg-vanta-accent-blue/80"> {/* Changed font-bold to font-medium */}
+          <Button className="bg-vanta-accent-blue text-black rounded-full px-6 py-2 font-medium text-sm hover:bg-vanta-accent-blue/80">
             Register
           </Button>
         </Link>
