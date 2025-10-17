@@ -32,21 +32,21 @@ const MainHeader = () => {
           </Link>
         ))}
         {/* How to play link */}
-        <Link to="/how-to-play" className="flex items-center space-x-1 ml-4"> {/* Updated 'to' prop */}
+        <Link to="/how-to-play" className="flex items-center space-x-1 ml-4">
           <AlertCircle size={18} className="text-[#00EEEE]" />
-          <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto"> {/* Updated text and color */}
+          <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
             How to play
           </Button>
         </Link>
       </div>
 
       {/* Middle Section: Search Bar */}
-      <div className="flex-grow max-w-lg mx-8 relative bg-vanta-accent-blue rounded-full h-10 flex items-center">
-        <Search className="absolute left-3 text-black" size={18} />
+      <div className="flex-grow max-w-lg mx-8 relative bg-[#053256] rounded-full h-10 flex items-center"> {/* Updated background color */}
+        <Search className="absolute left-3 text-white" size={18} /> {/* Changed icon color to white for contrast */}
         <Input
           type="text"
-          placeholder="Search for matches, teams, or players..."
-          className="w-full pl-10 pr-4 py-2 rounded-full bg-transparent border-none text-black placeholder-black/70 focus:ring-0"
+          placeholder="Search..." {/* Updated placeholder text */}
+          className="w-full pl-10 pr-4 py-2 rounded-full bg-transparent border-none text-white placeholder-white/70 focus:ring-0" {/* Updated text and placeholder color */}
         />
       </div>
 
