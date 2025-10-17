@@ -17,7 +17,7 @@ const MainHeader = () => {
           <Link key={category} to={`/sports/${category.toLowerCase().replace('.', '')}`}>
             <Button
               variant="ghost"
-              className={`font-bold text-base ${category === 'Football' ? 'text-vanta-accent-blue' : 'text-white'} hover:bg-transparent p-0 h-auto`}
+              className={`font-medium text-sm ${category === 'Football' ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
             >
               {category}
             </Button>
