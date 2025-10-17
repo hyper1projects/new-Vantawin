@@ -1,13 +1,21 @@
 "use client";
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom'; // Import useLocation
 import { Search, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const MainHeader = () => {
   const sportsCategories = ['Football', 'Basketball', 'Tennis', 'A.Football', 'Golf'];
+  const location = useLocation(); // Get current location
+  const currentPath = location.pathname;
+
+  // Function to determine if a category is active
+  const isActive = (category: string) => {
+    const categorySlug = category.toLowerCase().replace('.', '');
+    return currentPath.startsWith(`/sports/${categorySlug}`);
+  };
 
   return (
     <div className="fixed top-0 left-60 right-0 h-16 flex items-center justify-between px-8 pr-20 border-b border-gray-700 z-50 font-outfit">
@@ -17,7 +25,7 @@ const MainHeader = () => {
           <Link key={category} to={`/sports/${category.toLowerCase().replace('.', '')}`}>
             <Button
               variant="ghost"
-              className={`font-medium text-sm ${category === 'Football' ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
+              className={`font-medium text-sm ${isActive(category) ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
             >
               {category}
             </Button>
