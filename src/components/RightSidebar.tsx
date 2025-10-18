@@ -48,19 +48,19 @@ const RightSidebar = () => {
         {/* Outcome Selection Buttons */}
         <div className="mb-6 flex gap-2">
           <Button
-            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'CRY' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'CRY' ? 'bg-[rgba(0,238,238,0.7)]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
             onClick={() => setSelectedOutcome('CRY')}
           >
             CRY
           </Button>
           <Button
-            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'DRAW' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'DRAW' ? 'bg-[rgba(0,238,238,0.7)]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
             onClick={() => setSelectedOutcome('DRAW')}
           >
             DRAW
           </Button>
           <Button
-            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'ASV' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'ASV' ? 'bg-[rgba(0,238,238,0.7)]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
             onClick={() => setSelectedOutcome('ASV')}
           >
             ASV
