@@ -68,7 +68,7 @@ const RightSidebar = () => {
   };
 
   // Calculate potential win
-  const potentialWinXP = predictionAmount > 0 ? (predictionAmount * selectedMultiplier) + 100 : 0;
+  const potentialWinXP = predictionAmount > 0 ? (predictionAmount * selectedMultiplier) : 0;
 
   return (
     <div className="fixed right-4 top-20 bottom-4 w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-[27px] font-outfit p-6">
