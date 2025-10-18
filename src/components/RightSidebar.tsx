@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -10,6 +10,27 @@ import LeicesterCityLogo from '@/assets/images/leicester-city-logo.png'; // Impo
 const RightSidebar = () => {
   const [predictionAmount, setPredictionAmount] = useState(10);
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
+  const [selectedMultiplier, setSelectedMultiplier] = useState(1); // New state for multiplier
+
+  // Dynamically determine available multiplier options based on predictionAmount
+  const multiplierOptions = useMemo(() => {
+    let options = [1, 2, 3, 5, 10];
+    if (predictionAmount >= 1000) {
+      options.push(20);
+    }
+    if (predictionAmount >= 5000) {
+      options.push(50);
+    }
+    // Ensure unique and sorted options
+    return Array.from(new Set(options)).sort((a, b) => a - b);
+  }, [predictionAmount]);
+
+  // Adjust selectedMultiplier if it's no longer available in the options
+  React.useEffect(() => {
+    if (!multiplierOptions.includes(selectedMultiplier)) {
+      setSelectedMultiplier(1); // Reset to 1x if current multiplier is no longer valid
+    }
+  }, [multiplierOptions, selectedMultiplier]);
 
   const handlePredict = () => {
     if (!selectedOutcome) {
@@ -20,11 +41,22 @@ const RightSidebar = () => {
       toast.error("Prediction amount must be greater than 0.");
       return;
     }
-    toast.success(`Predicted ${predictionAmount} on ${selectedOutcome}`);
+    toast.success(`Predicted ${predictionAmount} on ${selectedOutcome} with ${selectedMultiplier}x multiplier`);
     // Here you would typically send the prediction to a backend
   };
 
   const quickAddAmountButtons = [100, 200, 500, 1000];
+
+  // Find the index of the current selectedMultiplier in the dynamic options for the slider
+  const currentMultiplierIndex = multiplierOptions.indexOf(selectedMultiplier);
+  const sliderValue = currentMultiplierIndex !== -1 ? currentMultiplierIndex : 0; // Default to 1x (index 0) if not found
+
+  const handleMultiplierChange = (value: number[]) => {
+    const newIndex = value[0];
+    if (newIndex >= 0 && newIndex < multiplierOptions.length) {
+      setSelectedMultiplier(multiplierOptions[newIndex]);
+    }
+  };
 
   return (
     <div className="fixed right-4 top-20 bottom-4 w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-[27px] font-outfit p-6">
@@ -81,7 +113,7 @@ const RightSidebar = () => {
               />
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 justify-end"> {/* Changed justify-start to justify-end */}
+          <div className="flex flex-wrap gap-2 justify-end">
             {quickAddAmountButtons.map((amount) => (
               <Button
                 key={amount}
@@ -91,6 +123,29 @@ const RightSidebar = () => {
               >
                 +{amount}
               </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Multiplier Selection */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-lg font-semibold">Multiplier</h4>
+            <span className="text-gray-400 text-2xl font-bold">{selectedMultiplier}x</span>
+          </div>
+          <Slider
+            min={0}
+            max={multiplierOptions.length - 1}
+            step={1}
+            value={[sliderValue]}
+            onValueChange={handleMultiplierChange}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-2">
+            {multiplierOptions.map((option, index) => (
+              <span key={option} className={index === sliderValue ? "font-bold text-vanta-text-light" : ""}>
+                {option}x
+              </span>
             ))}
           </div>
         </div>
