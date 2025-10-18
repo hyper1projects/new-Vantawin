@@ -25,7 +25,7 @@ const ImageCarousel: React.FC = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto">
+    <div className="relative w-full max-w-2xl mx-auto"> {/* Changed max-w-4xl to max-w-2xl */}
       <div className="overflow-hidden rounded-xl" ref={emblaRef}>
         <div className="flex touch-pan-y">
           {images.map((src, index) => (
