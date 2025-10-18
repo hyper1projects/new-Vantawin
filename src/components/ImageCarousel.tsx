@@ -4,9 +4,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const images = [
-  "/images/Group 1000005763.png",
-  "/images/Group 1000005763.png", // Duplicating the image to show carousel functionality
-  "/images/Group 1000005763.png",
+  "/images/8.png",
+  "/images/8.png", // Duplicating the image to show carousel functionality
+  "/images/8.png",
 ];
 
 const ImageCarousel = () => {
