@@ -45,6 +45,28 @@ const RightSidebar = () => {
       </div>
 
       <div className="flex flex-col flex-grow">
+        {/* Outcome Selection Buttons */}
+        <div className="mb-6 space-y-2">
+          <Button
+            className={`w-full py-3 text-base font-semibold ${selectedOutcome === 'CRY' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            onClick={() => setSelectedOutcome('CRY')}
+          >
+            CRY
+          </Button>
+          <Button
+            className={`w-full py-3 text-base font-semibold ${selectedOutcome === 'DRAW' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            onClick={() => setSelectedOutcome('DRAW')}
+          >
+            DRAW
+          </Button>
+          <Button
+            className={`w-full py-3 text-base font-semibold ${selectedOutcome === 'ASV' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            onClick={() => setSelectedOutcome('ASV')}
+          >
+            ASV
+          </Button>
+        </div>
+
         {/* Amount Selection */}
         <div className="mb-6">
           <h4 className="text-lg font-semibold mb-2">Amount</h4>
