@@ -29,13 +29,18 @@ const RightSidebar = () => {
   return (
     <div className="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-l-2xl font-outfit p-6">
       {/* Logo and Match Code */}
-      <div className="flex items-start mb-6 mt-4"> {/* Changed items-center to items-start */}
+      <div className="flex items-start mb-6 mt-4">
         <img
           src={LeicesterCityLogo}
           alt="Leicester City Logo"
           className="w-16 h-16 rounded-full object-cover mr-4"
         />
-        <span className="text-lg font-bold text-vanta-text-light">CRY vs ASV</span> {/* Changed text-xl to text-lg */}
+        <div className="flex flex-col"> {/* New div to stack CRY vs ASV and ASV rectangle */}
+          <span className="text-lg font-bold text-vanta-text-light">CRY vs ASV</span>
+          <div className="bg-[#00EEEE] bg-opacity-30 px-2 py-1 rounded mt-1"> {/* Rectangle for ASV */}
+            <span className="text-[#00EEEE] opacity-60 font-semibold text-sm">ASV</span>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col flex-grow">
