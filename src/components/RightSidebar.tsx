@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Keep Input for styling, but use it differently
+import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import LeicesterCityLogo from '@/assets/images/leicester-city-logo.png'; // Import the image
@@ -71,13 +71,15 @@ const RightSidebar = () => {
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <h4 className="text-lg font-semibold">Amount</h4>
-            <Input
-              type="number"
-              value={predictionAmount}
-              onChange={(e) => setPredictionAmount(Number(e.target.value))}
-              className="w-24 text-right bg-transparent border-none text-gray-400 text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              prefix="₦" // This is a custom prop, might need adjustment if Input doesn't support it directly
-            />
+            <div className="flex items-center bg-vanta-blue-dark rounded-md px-3 py-2">
+              <span className="text-gray-400 text-2xl font-bold mr-1">₦</span>
+              <Input
+                type="number"
+                value={predictionAmount}
+                onChange={(e) => setPredictionAmount(Number(e.target.value))}
+                className="w-24 text-right bg-transparent border-none text-gray-400 text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+            </div>
           </div>
           <div className="flex flex-wrap gap-2 justify-start">
             {quickAmountButtons.map((amount) => (
