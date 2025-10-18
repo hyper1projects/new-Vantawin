@@ -31,9 +31,7 @@ const RightSidebar = () => {
         {/* Match Details */}
         <div className="mb-6">
           <div className="flex items-center justify-center mb-2">
-            <div className="w-2 h-2 rounded-full bg-vanta-accent-blue mr-2"></div>
             <h3 className="text-xl font-bold">Aston Villa Vs Crystal Palace</h3>
-            <div className="w-2 h-2 rounded-full bg-vanta-accent-blue ml-2"></div>
           </div>
           <p className="text-sm text-vanta-text-dark text-center">Team A vs Team B</p>
           <p className="text-xs text-vanta-text-dark text-center">Starts in: 01:23:45</p>
