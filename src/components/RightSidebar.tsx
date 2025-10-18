@@ -8,9 +8,9 @@ import { toast } from 'sonner';
 import LeicesterCityLogo from '@/assets/images/leicester-city-logo.png'; // Import the image
 
 const RightSidebar = () => {
-  const [predictionAmount, setPredictionAmount] = useState(0); // Changed initial amount to 0
+  const [predictionAmount, setPredictionAmount] = useState(0);
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
-  const [selectedMultiplier, setSelectedMultiplier] = useState(1); // New state for multiplier
+  const [selectedMultiplier, setSelectedMultiplier] = useState(1);
 
   // Dynamically determine available multiplier options based on predictionAmount
   const multiplierOptions = useMemo(() => {
@@ -120,7 +120,10 @@ const RightSidebar = () => {
               <Input
                 type="number"
                 value={predictionAmount}
-                onChange={(e) => setPredictionAmount(Number(e.target.value))}
+                onChange={(e) => {
+                  const newValue = Number(e.target.value);
+                  setPredictionAmount(newValue < 0 ? 0 : newValue); // Ensure amount doesn't go below 0
+                }}
                 className="w-24 text-right bg-transparent border-none text-gray-400 text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
