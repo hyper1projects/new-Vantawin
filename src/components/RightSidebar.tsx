@@ -169,9 +169,7 @@ const RightSidebar = () => {
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <h4 className="text-lg font-semibold">Potential Win</h4>
-            <div className="flex items-center bg-vanta-blue-dark rounded-md px-3 py-2">
-              <span className="text-vanta-accent-blue text-2xl font-bold">{potentialWinXP} XP</span>
-            </div>
+            <span className="text-yellow-400 text-2xl font-bold">{potentialWinXP} XP</span>
           </div>
         </div>
 
