@@ -37,8 +37,10 @@ const RightSidebar = () => {
         />
         <div className="flex flex-col">
           <span className="text-lg font-bold text-vanta-text-light">CRY vs ASV</span>
-          {/* Removed the div surrounding the ASV span */}
-          <span className="text-[#00EEEE] opacity-60 font-semibold text-sm mt-1">ASV</span>
+          <div className="flex items-center mt-1"> {/* Added a flex container for ASV and prediction type */}
+            <span className="text-[#00EEEE] opacity-60 font-semibold text-sm">ASV</span>
+            <span className="text-vanta-text-dark text-sm ml-2">Up to 3 Goals</span> {/* Added the new text */}
+          </div>
         </div>
       </div>
 
