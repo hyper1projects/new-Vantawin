@@ -29,19 +29,18 @@ const RightSidebar = () => {
   return (
     <div className="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-l-2xl font-outfit p-6">
       {/* Logo and Match Code */}
-      <div className="flex items-center mb-6 mt-4"> {/* Added mt-4 for top spacing */}
+      <div className="flex items-start mb-6 mt-4"> {/* Changed items-center to items-start */}
         <img
           src={LeicesterCityLogo}
           alt="Leicester City Logo"
           className="w-16 h-16 rounded-full object-cover mr-4"
         />
-        <span className="text-xl font-bold text-vanta-text-light">CRY vs ASV</span>
+        <span className="text-lg font-bold text-vanta-text-light">CRY vs ASV</span> {/* Changed text-xl to text-lg */}
       </div>
 
       <div className="flex flex-col flex-grow">
         {/* Match Details */}
-        <div className="mb-6"> {/* Removed mt-10 as content is now in flow */}
-          {/* Removed "Aston Villa Vs Crystal Palace" */}
+        <div className="mb-6">
           <p className="text-sm text-vanta-text-dark text-center">Team A vs Team B</p>
           <p className="text-xs text-vanta-text-dark text-center">Starts in: 01:23:45</p>
         </div>
