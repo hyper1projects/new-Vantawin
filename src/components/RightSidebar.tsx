@@ -67,6 +67,9 @@ const RightSidebar = () => {
     }
   };
 
+  // Calculate potential win
+  const potentialWinXP = predictionAmount > 0 ? (predictionAmount * selectedMultiplier) + 100 : 0;
+
   return (
     <div className="fixed right-4 top-20 bottom-4 w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-[27px] font-outfit p-6">
       {/* Logo and Match Code */}
@@ -156,6 +159,23 @@ const RightSidebar = () => {
                 {option}x
               </span>
             ))}
+          </div>
+        </div>
+
+        {/* Potential Win Section */}
+        <div className="mb-6 p-4 bg-vanta-blue-dark rounded-lg">
+          <h4 className="text-lg font-semibold mb-2">Potential Win</h4>
+          <div className="flex justify-between items-center text-base">
+            <span>Amount:</span>
+            <span className="font-bold">₦{predictionAmount}</span>
+          </div>
+          <div className="flex justify-between items-center text-base">
+            <span>Multiplier:</span>
+            <span className="font-bold">{selectedMultiplier}x</span>
+          </div>
+          <div className="flex justify-between items-center text-xl font-bold mt-2 pt-2 border-t border-vanta-blue-medium">
+            <span>Total XP:</span>
+            <span className="text-vanta-accent-blue">{potentialWinXP} XP</span>
           </div>
         </div>
 
