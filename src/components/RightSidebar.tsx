@@ -37,8 +37,10 @@ const RightSidebar = () => {
         />
         <div className="flex flex-col">
           <span className="text-lg font-bold text-vanta-text-light">CRY vs ASV</span>
-          {/* Removed the div surrounding the ASV span */}
-          <span className="text-[#00EEEE] opacity-60 font-semibold text-sm mt-1">ASV</span>
+          {/* Re-added the div with specified background color and opacity */}
+          <div className="bg-[#00EEEE] bg-opacity-50 px-2 py-1 rounded mt-1 inline-block">
+            <span className="text-[#00EEEE] opacity-60 font-semibold text-sm">ASV</span>
+          </div>
         </div>
       </div>
 
