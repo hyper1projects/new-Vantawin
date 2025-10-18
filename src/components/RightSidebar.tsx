@@ -24,8 +24,8 @@ const RightSidebar = () => {
     // Here you would typically send the prediction to a backend
   };
 
-  // Changed to additive amounts
-  const quickAddAmountButtons = [100, 500, 1000];
+  // Updated to include 200
+  const quickAddAmountButtons = [100, 200, 500, 1000];
 
   return (
     <div className="fixed right-4 top-20 bottom-4 w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-[27px] font-outfit p-6">
