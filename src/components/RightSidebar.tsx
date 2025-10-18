@@ -30,7 +30,7 @@ const RightSidebar = () => {
     <div className="fixed right-0 top-20 h-[calc(100vh-5rem)] w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-l-2xl font-outfit p-6 relative"> {/* Added relative for absolute positioning of image */}
       {/* Image at top-left */}
       <img
-        src={LeicesterCityLogo.src} // Use .src for Next.js image imports
+        src={LeicesterCityLogo} // Corrected: removed .src
         alt="Leicester City Logo"
         className="absolute top-4 left-4 w-12 h-12 rounded-full object-cover"
       />
