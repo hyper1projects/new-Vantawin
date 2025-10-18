@@ -25,7 +25,7 @@ const ImageCarousel: React.FC = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto"> {/* Changed max-w-4xl to max-w-2xl */}
+    <div className="relative w-full max-w-2xl mx-auto">
       <div className="overflow-hidden rounded-xl" ref={emblaRef}>
         <div className="flex touch-pan-y">
           {images.map((src, index) => (
@@ -34,7 +34,7 @@ const ImageCarousel: React.FC = () => {
                 src={src}
                 alt={`Carousel image ${index + 1}`}
                 className="block w-full h-auto object-cover rounded-xl"
-                style={{ aspectRatio: '16/9' }} // Maintain aspect ratio
+                style={{ aspectRatio: '21/9' }} {/* Changed aspect ratio from 16/9 to 21/9 */}
               />
             </div>
           ))}
