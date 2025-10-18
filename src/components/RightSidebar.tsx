@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -14,21 +14,30 @@ const RightSidebar = () => {
 
   // Dynamically determine available multiplier options based on predictionAmount
   const multiplierOptions = useMemo(() => {
-    let options = [1, 2, 3, 5, 10];
+    let options = [1, 2, 3]; // Base options
+    if (predictionAmount >= 500) {
+      options.push(5);
+    }
     if (predictionAmount >= 1000) {
-      options.push(20);
+      options.push(10);
     }
-    if (predictionAmount >= 5000) {
-      options.push(50);
-    }
-    // Ensure unique and sorted options
+    // Ensure unique and sorted options, and cap at 10x
     return Array.from(new Set(options)).sort((a, b) => a - b);
   }, [predictionAmount]);
 
   // Adjust selectedMultiplier if it's no longer available in the options
-  React.useEffect(() => {
+  useEffect(() => {
     if (!multiplierOptions.includes(selectedMultiplier)) {
-      setSelectedMultiplier(1); // Reset to 1x if current multiplier is no longer valid
+      // If the current selected multiplier is no longer valid,
+      // reset to the highest available multiplier that is less than or equal to the previous selection,
+      // or to 1x if no such multiplier exists.
+      const newValidMultiplier = multiplierOptions.reduce((prev, curr) => {
+        if (curr <= selectedMultiplier) {
+          return curr;
+        }
+        return prev;
+      }, 1); // Default to 1 if no valid option found
+      setSelectedMultiplier(newValidMultiplier);
     }
   }, [multiplierOptions, selectedMultiplier]);
 
