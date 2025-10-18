@@ -4,14 +4,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const images = [
-  "/images/Group 1000005755.png",
-  "/images/Group 1000005762.png",
-  "/public/placeholder.svg",
-  "https://via.placeholder.com/800x400/007BFF/FFFFFF?text=Image+4",
-  "https://via.placeholder.com/800x400/011B47/E0E0E0?text=Image+5",
+  "/images/Group 1000005763.png",
+  "/images/Group 1000005763.png", // Duplicating the image to show carousel functionality
+  "/images/Group 1000005763.png",
 ];
 
-const ImageCarousel = () => { // Removed React.FC type annotation
+const ImageCarousel = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
   const scrollPrev = useCallback(() => {
@@ -32,22 +30,22 @@ const ImageCarousel = () => { // Removed React.FC type annotation
                 src={src}
                 alt={`Carousel image ${index + 1}`}
                 className="block w-full h-auto object-cover rounded-xl"
-                style={{ aspectRatio: '21/9' }}
               />
             </div>
           ))}
         </div>
       </div>
 
+      {/* Navigation Buttons */}
       <Button
-        className="absolute top-1/2 left-4 -translate-y-1/2 bg-vanta-blue-dark text-vanta-neon-blue hover:bg-vanta-accent-dark-blue p-2 rounded-full shadow-md"
+        className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/10 text-vanta-neon-blue hover:bg-white/20 p-2 rounded-full shadow-md backdrop-blur-sm"
         onClick={scrollPrev}
         disabled={!emblaApi?.canScrollPrev()}
       >
         <ChevronLeft size={24} />
       </Button>
       <Button
-        className="absolute top-1/2 right-4 -translate-y-1/2 bg-vanta-blue-dark text-vanta-neon-blue hover:bg-vanta-accent-dark-blue p-2 rounded-full shadow-md"
+        className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/10 text-vanta-neon-blue hover:bg-white/20 p-2 rounded-full shadow-md backdrop-blur-sm"
         onClick={scrollNext}
         disabled={!emblaApi?.canScrollNext()}
       >
