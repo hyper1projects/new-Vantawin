@@ -59,7 +59,7 @@ const MainHeader: React.FC = () => {
         </Link>
         <Link to="/register">
           <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80">
-            Register
+            Sign up
           </Button>
         </Link>
       </div>
