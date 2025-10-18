@@ -38,8 +38,8 @@ const RightSidebar = () => {
         <div className="flex flex-col">
           <span className="text-lg font-bold text-vanta-text-light">CRY vs ASV</span>
           <div className="flex items-center mt-1">
-            <span className="bg-vanta-blue-dark text-[#00EEEE] opacity-60 font-semibold text-xs px-2 py-1 rounded-md">ASV</span> {/* Added styling for rectangle */}
-            <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md ml-2">Full-Time</span> {/* Added styling for rectangle */}
+            <span className="bg-vanta-blue-dark text-[#00EEEE] opacity-60 font-semibold text-xs px-2 py-1 rounded-md">ASV</span>
+            <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md ml-2">Full-Time</span>
           </div>
         </div>
       </div>
@@ -49,28 +49,6 @@ const RightSidebar = () => {
         <div className="mb-6">
           <p className="text-sm text-vanta-text-dark text-center">Team A vs Team B</p>
           <p className="text-xs text-vanta-text-dark text-center">Starts in: 01:23:45</p>
-        </div>
-
-        {/* Prediction Buttons */}
-        <div className="mb-6 space-y-2">
-          <Button
-            className={`w-full py-3 text-base font-semibold ${selectedOutcome === 'Team A Win' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
-            onClick={() => setSelectedOutcome('Team A Win')}
-          >
-            Team A Win (1.8x)
-          </Button>
-          <Button
-            className={`w-full py-3 text-base font-semibold ${selectedOutcome === 'Draw' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
-            onClick={() => setSelectedOutcome('Draw')}
-          >
-            Draw (3.5x)
-          </Button>
-          <Button
-            className={`w-full py-3 text-base font-semibold ${selectedOutcome === 'Team B Win' ? 'bg-vanta-accent-blue' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
-            onClick={() => setSelectedOutcome('Team B Win')}
-          >
-            Team B Win (2.2x)
-          </Button>
         </div>
 
         {/* Amount Selection */}
