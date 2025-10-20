@@ -6,7 +6,7 @@ import MatchCard from './MatchCard';
 const PointsMultiplierSection = () => {
   return (
     <div className="w-full py-8 px-4">
-      <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-8 text-left tracking-tight">Points Multiplier</h2>
+      <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-left tracking-tight">Points Multiplier</h2>
       <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6">
         <MatchCard
           date="Today"
