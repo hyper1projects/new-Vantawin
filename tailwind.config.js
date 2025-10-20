@@ -51,6 +51,12 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Custom VantaWin colors
+        'vanta-neon-blue': '#00C2FF',
+        'vanta-purple': '#7B00FF',
+        'vanta-dark-blue': '#011B47',
+        'vanta-dark-blue-light': '#012A6A',
+        'vanta-text-light': '#E0E0E0',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -72,7 +78,7 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
+        sans: ['Outfit', 'sans-serif'], // Adding Outfit as the default sans-serif font
       },
     },
   },
