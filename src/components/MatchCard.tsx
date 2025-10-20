@@ -23,8 +23,8 @@ const MatchCard: React.FC<MatchCardProps> = ({
   option3,
 }) => {
   return (
-    <div className="relative p-[2px] rounded-[27px] bg-gradient-to-br from-vanta-neon-blue to-vanta-purple w-[230px] h-[230px] flex-shrink-0">
-      <div className="bg-[#011B47] rounded-[27px] h-full w-full p-3 flex flex-col items-center justify-center text-white">
+    <div className="relative p-[2px] rounded-[27px] bg-gradient-to-br from-blue-500 to-purple-500 w-[230px] h-[230px] flex-shrink-0">
+      <div className="bg-gray-900 rounded-[27px] h-full w-full p-3 flex flex-col items-center justify-center text-white">
         <p className="text-base font-semibold mb-3">{date}</p>
         <div className="flex items-center justify-around w-full mb-5">
           <div className="flex flex-col items-center">
@@ -37,13 +37,13 @@ const MatchCard: React.FC<MatchCardProps> = ({
           </div>
         </div>
         <div className="flex justify-center space-x-2 w-full">
-          <Button className="bg-vanta-dark-blue-light hover:bg-vanta-purple text-white font-semibold py-1.5 px-3 rounded-md transition-colors duration-300 text-xs">
+          <Button className="bg-blue-700 hover:bg-purple-600 text-white font-semibold py-1.5 px-3 rounded-md transition-colors duration-300 text-xs">
             {option1}
           </Button>
-          <Button className="bg-vanta-dark-blue-light hover:bg-vanta-purple text-white font-semibold py-1.5 px-3 rounded-md transition-colors duration-300 text-xs">
+          <Button className="bg-blue-700 hover:bg-purple-600 text-white font-semibold py-1.5 px-3 rounded-md transition-colors duration-300 text-xs">
             {option2}
           </Button>
-          <Button className="bg-vanta-dark-blue-light hover:bg-vanta-purple text-white font-semibold py-1.5 px-3 rounded-md transition-colors duration-300 text-xs">
+          <Button className="bg-blue-700 hover:bg-purple-600 text-white font-semibold py-1.5 px-3 rounded-md transition-colors duration-300 text-xs">
             {option3}
           </Button>
         </div>
