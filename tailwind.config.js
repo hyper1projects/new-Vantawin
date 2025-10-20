@@ -57,6 +57,7 @@ module.exports = {
         'vanta-dark-blue': '#011B47',
         'vanta-dark-blue-light': '#012A6A',
         'vanta-text-light': '#E0E0E0',
+        'vanta-background-primary': '#06002E', // New app background color
       },
       borderRadius: {
         lg: "var(--radius)",
