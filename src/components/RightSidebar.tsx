@@ -36,6 +36,17 @@ const RightSidebar = ({ selectedMultiplier = 2.5 }) => {
 
       <Separator className="bg-gray-700 my-6" />
 
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="text-lg font-semibold">Multiplier</h4>
+          <span className="text-gray-400 text-2xl font-bold">{selectedMultiplier}x</span>
+        </div>
+        <Progress value={selectedMultiplier * 20} className="w-full bg-gray-700 h-2" indicatorClassName="bg-blue-500" />
+        <p className="text-sm text-gray-400 mt-2">Boost your points in upcoming matches!</p>
+      </div>
+
+      <Separator className="bg-gray-700 my-6" />
+
       <div className="mb-8">
         <h3 className="text-xl font-bold mb-4">Daily Streak</h3>
         <div className="flex items-center mb-4">
