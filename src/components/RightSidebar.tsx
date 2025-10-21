@@ -1,73 +1,183 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
-import { Trophy, Star, Zap, Shield, Users, Settings } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { toast } from 'sonner';
+import LeicesterCityLogo from '@/assets/images/leicester-city-logo.png'; // Import the image
 
-const RightSidebar = ({ selectedMultiplier = 2.5 }) => {
+const RightSidebar = () => {
+  const [predictionAmount, setPredictionAmount] = useState(0);
+  const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
+  const [selectedMultiplier, setSelectedMultiplier] = useState(1);
+
+  // Dynamically determine available multiplier options based on predictionAmount
+  const multiplierOptions = useMemo(() => {
+    let options = [1, 2, 3]; // Base options
+    if (predictionAmount >= 500) {
+      options.push(5);
+    }
+    if (predictionAmount >= 1000) {
+      options.push(10);
+    }
+    // Ensure unique and sorted options, and cap at 10x
+    return Array.from(new Set(options)).sort((a, b) => a - b);
+  }, [predictionAmount]);
+
+  // Adjust selectedMultiplier if it's no longer available in the options
+  useEffect(() => {
+    if (!multiplierOptions.includes(selectedMultiplier)) {
+      // If the current selected multiplier is no longer valid,
+      // reset to the highest available multiplier that is less than or equal to the previous selection,
+      // or to 1x if no such multiplier exists.
+      const newValidMultiplier = multiplierOptions.reduce((prev, curr) => {
+        if (curr <= selectedMultiplier) {
+          return curr;
+        }
+        return prev;
+      }, 1); // Default to 1 if no valid option found
+      setSelectedMultiplier(newValidMultiplier);
+    }
+  }, [multiplierOptions, selectedMultiplier]);
+
+  const handlePredict = () => {
+    if (!selectedOutcome) {
+      toast.error("Please select an outcome to predict.");
+      return;
+    }
+    if (predictionAmount <= 0) {
+      toast.error("Prediction amount must be greater than 0.");
+      return;
+    }
+    toast.success(`Predicted ${predictionAmount} on ${selectedOutcome} with ${selectedMultiplier}x multiplier`);
+    // Here you would typically send the prediction to a backend
+  };
+
+  const quickAddAmountButtons = [100, 200, 500, 1000];
+
+  // Find the index of the current selectedMultiplier in the dynamic options for the slider
+  const currentMultiplierIndex = multiplierOptions.indexOf(selectedMultiplier);
+  const sliderValue = currentMultiplierIndex !== -1 ? currentMultiplierIndex : 0; // Default to 1x (index 0) if not found
+
+  const handleMultiplierChange = (value: number[]) => {
+    const newIndex = value[0];
+    if (newIndex >= 0 && newIndex < multiplierOptions.length) {
+      setSelectedMultiplier(multiplierOptions[newIndex]);
+    }
+  };
+
+  // Calculate potential win
+  const potentialWinXP = predictionAmount > 0 ? (predictionAmount * selectedMultiplier) : 0;
+
   return (
-    <div className="w-full md:w-1/4 bg-gray-900 text-white p-6 flex flex-col">
-      <div className="mb-8">
-        <h3 className="text-xl font-bold mb-4">Your Stats</h3>
-        <Card className="bg-gray-800 border-none text-white mb-4">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Points</CardTitle>
-            <Star className="h-4 w-4 text-yellow-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12,345</div>
-            <p className="text-xs text-gray-400">+20.1% from last month</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gray-800 border-none text-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Rank</CardTitle>
-            <Trophy className="h-4 w-4 text-blue-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">#123</div>
-            <p className="text-xs text-gray-400">Top 1% globally</p>
-          </CardContent>
-        </Card>
+    <div className="fixed right-4 top-20 bottom-4 w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-[27px] font-outfit p-6">
+      {/* Logo and Match Code */}
+      <div className="flex items-start mb-6 mt-4">
+        <img
+          src={LeicesterCityLogo}
+          alt="Leicester City Logo"
+          className="w-16 h-16 rounded-full object-cover mr-4"
+        />
+        <div className="flex flex-col">
+          <span className="text-lg font-bold text-vanta-text-light">CRY vs ASV</span>
+          <div className="flex items-center mt-1">
+            <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-xs px-2 py-1 rounded-md">ASV</span>
+            <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md ml-2">Full-Time</span>
+          </div>
+        </div>
       </div>
 
-      <Separator className="bg-gray-700 my-6" />
-
-      <div className="mb-8">
-        <h3 className="text-xl font-bold mb-4">Daily Streak</h3>
-        <div className="flex items-center mb-4">
-          <Zap className="h-6 w-6 text-orange-400 mr-2" />
-          <span className="text-2xl font-bold">7 Days</span>
+      <div className="flex flex-col flex-grow">
+        {/* Outcome Selection Buttons */}
+        <div className="mb-6 flex gap-2">
+          <Button
+            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'CRY' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            onClick={() => setSelectedOutcome('CRY')}
+          >
+            CRY
+          </Button>
+          <Button
+            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'DRAW' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            onClick={() => setSelectedOutcome('DRAW')}
+          >
+            DRAW
+          </Button>
+          <Button
+            className={`flex-1 py-3 text-base font-semibold ${selectedOutcome === 'ASV' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
+            onClick={() => setSelectedOutcome('ASV')}
+          >
+            ASV
+          </Button>
         </div>
-        <Progress value={70} className="w-full bg-gray-700 h-2" indicatorClassName="bg-orange-500" />
-        <p className="text-sm text-gray-400 mt-2">Keep it up for bonus points!</p>
-      </div>
 
-      <Separator className="bg-gray-700 my-6" />
-
-      <div className="mb-8">
-        <h3 className="text-xl font-bold mb-4">Upcoming Challenges</h3>
-        <div className="flex items-center mb-2">
-          <Shield className="h-5 w-5 text-green-400 mr-2" />
-          <p className="text-sm">Win 3 matches (2/3)</p>
+        {/* Amount Selection */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-lg font-semibold">Amount</h4>
+            <div className="flex items-center bg-vanta-blue-dark rounded-md px-3 py-2">
+              <span className="text-gray-400 text-2xl font-bold mr-1">₦</span>
+              <Input
+                type="number"
+                value={predictionAmount}
+                onChange={(e) => {
+                  const newValue = Number(e.target.value);
+                  setPredictionAmount(newValue < 0 ? 0 : newValue); // Ensure amount doesn't go below 0
+                }}
+                className="w-24 text-right bg-transparent border-none text-gray-400 text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 justify-end">
+            {quickAddAmountButtons.map((amount) => (
+              <Button
+                key={amount}
+                variant="outline"
+                className="bg-vanta-blue-dark border-vanta-accent-dark-blue text-vanta-text-light text-xs px-3 py-1 h-auto"
+                onClick={() => setPredictionAmount(prevAmount => prevAmount + amount)}
+              >
+                +{amount}
+              </Button>
+            ))}
+          </div>
         </div>
-        <Progress value={66} className="w-full bg-gray-700 h-1" indicatorClassName="bg-green-500" />
-        <div className="flex items-center mt-4 mb-2">
-          <Users className="h-5 w-5 text-purple-400 mr-2" />
-          <p className="text-sm">Invite a friend (0/1)</p>
-        </div>
-        <Progress value={0} className="w-full bg-gray-700 h-1" indicatorClassName="bg-purple-500" />
-      </div>
 
-      <div className="mt-auto">
-        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          View All Challenges
-        </Button>
-        <Button variant="ghost" className="w-full mt-2 text-gray-400 hover:text-white">
-          <Settings className="h-4 w-4 mr-2" /> Settings
+        {/* Multiplier Selection */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-lg font-semibold">Multiplier</h4>
+            <span className="text-gray-400 text-2xl font-bold">{selectedMultiplier}x</span>
+          </div>
+          <Slider
+            min={0}
+            max={multiplierOptions.length - 1}
+            step={1}
+            value={[sliderValue]}
+            onValueChange={handleMultiplierChange}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-2">
+            {multiplierOptions.map((option, index) => (
+              <span key={option} className={index === sliderValue ? "font-bold text-vanta-text-light" : ""}>
+                {option}x
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Potential Win Section */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-lg font-semibold">Potential Win</h4>
+            <span className="text-yellow-400 text-2xl font-bold">{potentialWinXP} XP</span>
+          </div>
+        </div>
+
+        <Button
+          className="w-full py-3 text-lg font-bold bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] rounded-[12px] mt-auto"
+          onClick={handlePredict}
+        >
+          Predict Now
         </Button>
       </div>
     </div>
