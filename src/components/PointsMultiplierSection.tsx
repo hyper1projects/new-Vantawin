@@ -4,27 +4,25 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
-// Placeholder images
-import MultiplierImage1 from '/public/images/multiplier_image_1.png';
-import MultiplierImage2 from '/public/images/multiplier_image_2.png';
-import MultiplierImage3 from '/public/images/multiplier_image_3.png';
+// Placeholder images - using an existing image from public/images to resolve the error
+const MultiplierImagePlaceholder = '/public/images/8.png'; 
 
 const PointsMultiplierSection: React.FC = () => {
   const multipliers = [
     {
-      image: MultiplierImage1,
+      image: MultiplierImagePlaceholder,
       title: '2X Points Multiplier',
       description: 'On all NBA games',
       buttonText: 'Bet Now',
     },
     {
-      image: MultiplierImage2,
+      image: MultiplierImagePlaceholder,
       title: '3X Points Multiplier',
       description: 'On all Premier League games',
       buttonText: 'Bet Now',
     },
     {
-      image: MultiplierImage3,
+      image: MultiplierImagePlaceholder,
       title: '2X Points Multiplier',
       description: 'On all Tennis games',
       buttonText: 'Bet Now',
