@@ -1,34 +1,52 @@
 "use client";
 
 import React from 'react';
-import MatchCard from './MatchCard';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
-const PointsMultiplierSection = () => {
+// Placeholder images
+import MultiplierImage1 from '/public/images/multiplier_image_1.png';
+import MultiplierImage2 from '/public/images/multiplier_image_2.png';
+import MultiplierImage3 from '/public/images/multiplier_image_3.png';
+
+const PointsMultiplierSection: React.FC = () => {
+  const multipliers = [
+    {
+      image: MultiplierImage1,
+      title: '2X Points Multiplier',
+      description: 'On all NBA games',
+      buttonText: 'Bet Now',
+    },
+    {
+      image: MultiplierImage2,
+      title: '3X Points Multiplier',
+      description: 'On all Premier League games',
+      buttonText: 'Bet Now',
+    },
+    {
+      image: MultiplierImage3,
+      title: '2X Points Multiplier',
+      description: 'On all Tennis games',
+      buttonText: 'Bet Now',
+    },
+  ];
+
   return (
-    <div className="w-full py-8 px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-left tracking-tight">Points Multiplier</h2>
-      <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6">
-        <MatchCard
-          date="Today"
-          team1={{ name: "Team A", logo: "/path/to/teamA-logo.png" }}
-          team2={{ name: "Team B", logo: "/path/to/teamB-logo.png" }}
-          time="7:00 PM"
-          multiplier="2.5x"
-        />
-        <MatchCard
-          date="Tomorrow"
-          team1={{ name: "Team C", logo: "/path/to/teamC-logo.png" }}
-          team2={{ name: "Team D", logo: "/path/to/teamD-logo.png" }}
-          time="8:30 PM"
-          multiplier="3.0x"
-        />
-        <MatchCard
-          date="Upcoming"
-          team1={{ name: "Team E", logo: "/path/to/teamE-logo.png" }}
-          team2={{ name: "Team F", logo: "/path/to/teamF-logo.png" }}
-          time="6:00 PM"
-          multiplier="2.0x"
-        />
+    <div className="w-full py-8 bg-[#011B47] rounded-[27px] mt-8">
+      <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 text-left tracking-tight px-4">Points Multiplier</h2>
+      <div className="flex flex-col md:flex-row justify-around items-center gap-6 px-4">
+        {multipliers.map((multiplier, index) => (
+          <div key={index} className="relative w-full md:w-1/3 bg-vanta-blue-medium rounded-xl overflow-hidden shadow-lg">
+            <img src={multiplier.image} alt={multiplier.title} className="w-full h-40 object-cover" />
+            <div className="p-4">
+              <h3 className="text-xl font-bold text-white mb-1">{multiplier.title}</h3>
+              <p className="text-vanta-text-light text-sm mb-4">{multiplier.description}</p>
+              <Button className="bg-vanta-neon-blue text-vanta-blue-dark hover:bg-opacity-90 px-6 py-2 rounded-[14px] text-sm font-semibold flex items-center">
+                {multiplier.buttonText} <ArrowRight size={16} className="ml-2" />
+              </Button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
