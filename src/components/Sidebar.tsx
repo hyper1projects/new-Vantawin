@@ -29,7 +29,7 @@ const Sidebar = () => {
           <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
         </div>
 
-        {/* Primary Navigation Items */}
+        {/* Primary Navigation Items (STILL HIGHLIGHTED) */}
         <div className="px-4 flex flex-col gap-y-3">
           {primaryNavItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -37,13 +37,11 @@ const Sidebar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                // Link is rounded-xl for the overall tab smoothing
                 className={`relative flex items-center gap-4 py-2 pr-3 rounded-xl text-vanta-text-light transition-colors overflow-hidden
                   ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
                 `}
               >
                 {isActive && (
-                  // ACCENT BAR FIX: Full height (top-0 bottom-0), more pronounced width (w-1), and matching rounding (rounded-xl)
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-vanta-neon-blue rounded-xl"></div>
                 )}
                 <item.icon size={18} />
@@ -53,23 +51,20 @@ const Sidebar = () => {
           })}
         </div>
 
-        {/* Secondary Navigation Items pushed to the bottom */}
+        {/* Secondary Navigation Items pushed to the bottom (HIGHLIGHTS REMOVED) */}
         <div className="mt-auto flex flex-col gap-y-3 px-4 pb-4">
           {secondaryNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            // Removed isActive check for secondary items
             return (
               <Link
                 key={item.name}
                 to={item.path}
-                // Link is rounded-xl for the overall tab smoothing
+                // Removed conditional styling for isActive. Uses hover state only.
                 className={`relative flex items-center justify-between py-2 pr-3 rounded-xl text-vanta-text-light transition-colors overflow-hidden
-                  ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
+                  hover:bg-vanta-accent-dark-blue pl-3
                 `}
               >
-                {isActive && (
-                  // ACCENT BAR FIX: Full height (top-0 bottom-0), more pronounced width (w-1), and matching rounding (rounded-xl)
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-vanta-neon-blue rounded-xl"></div>
-                )}
+                {/* Removed the isActive && (...) accent bar block */}
                 <div className="flex items-center gap-3"> {/* Group icon and text */}
                   <item.icon size={18} />
                   <span className="text-sm font-normal">{item.name}</span> {/* Smaller font */}
