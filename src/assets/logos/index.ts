@@ -1,16 +1,14 @@
 // src/assets/logos/index.ts
 
-// 1. Import the specific image files using relative paths from this file.
-//    NOTE: Adjust './' path if the logo files are in a different subfolder.
+// Import the specific image files using relative paths from this file.
 import manUnited from './England - Premier League/Manchester United.png';
-import leicesterCity from './England - Premier League/Leicester City.png'; // Assuming this is the correct path for Leicester
+import leicesterCity from './England - Premier League/Leicester City.png';
 import crystalPalace from './England - Premier League/Crystal Palace.png';
 import westHamUnited from './England - Premier League/West Ham United.png';
 import astonVilla from './England - Premier League/Aston Villa.png';
 
-// 2. Export them in a central map using short, standardized keys.
-export const TeamLogos = {
-    // Keys match the abbreviations used in the UI (CRY, WHU, ASV, etc.)
+// Export them in a central map using short, standardized keys.
+export const TeamLogos: { [key: string]: string } = {
     'MANU': manUnited,
     'LEIC': leicesterCity,
     'CRY': crystalPalace,

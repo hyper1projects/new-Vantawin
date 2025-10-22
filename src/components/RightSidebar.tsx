@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import LeicesterCityLogo from '@/assets/images/leicester_city_logo.png'; // Updated import path
+import { TeamLogos } from '@/assets/logos'; // Import the centralized TeamLogos map
 
 const RightSidebar = () => {
   const [predictionAmount, setPredictionAmount] = useState(0);
@@ -33,7 +33,7 @@ const RightSidebar = () => {
       {/* Logo and Match Code */}
       <div className="flex items-start mb-6 mt-4">
         <img
-          src={LeicesterCityLogo}
+          src={TeamLogos.LEIC} // Using Leicester City logo from TeamLogos for consistency
           alt="Leicester City Logo"
           className="w-16 h-16 rounded-full object-cover mr-4"
         />
