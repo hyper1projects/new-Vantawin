@@ -4,11 +4,10 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 // Placeholder images for sports icons
-// NOTE: These paths must be correct in your project for the images to load.
-import FootballIcon from '/public/images/icons/football.svg';
-import BasketballIcon from '/public/images/icons/basketball.svg';
-import TennisIcon from '/public/images/icons/tennis.svg';
-import AmericanFootballIcon from '/public/images/icons/american-football.svg';
+import FootballIcon from '@/assets/images/icons/football.svg';
+import BasketballIcon from '@/assets/images/icons/basketball.svg';
+import TennisIcon from '@/assets/images/icons/tennis.svg';
+import AmericanFootballIcon from '@/assets/images/icons/american-football.svg';
 
 // Team logos
 import ManUnitedLogo from '@/assets/images/man_united_logo.png';
@@ -46,7 +45,7 @@ const GameRowCard = ({ status, team1Logo, team1Name, team2Logo, team2Name, optio
             <div className="flex items-center gap-2 text-sm w-1/3 justify-end">
                 <span className="text-xs text-gray-400">Game View</span>
                 <img src={StarIcon} alt="Favorite" className="w-4 h-4 opacity-70 cursor-pointer" />
-                <span className="text-sm font-semibold text-gray-400"> > </span>
+                <span className="text-sm font-semibold text-gray-400"> &gt; </span>
             </div>
 
             {/* Prediction Buttons (Simplified for row layout) */}
