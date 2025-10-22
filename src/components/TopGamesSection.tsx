@@ -10,14 +10,11 @@ import BasketballIcon from '@/assets/images/icons/basketball.svg';
 import TennisIcon from '@/assets/images/icons/tennis.svg';
 import AmericanFootballIcon from '@/assets/images/icons/american-football.svg';
 
-// Team logos (these are now imported via TeamLogos map, so direct imports are removed)
-// import ManUnitedLogo from '@/assets/images/man_united_logo.png';
-// import LeicesterCityLogo from '@/assets/images/leicester_city_logo.png';
 import StarIcon from '@/assets/images/icons/star_icon.svg'; // Assuming a star icon for 'Favorite'
 
 // --- Game Row Card Component (Placeholder to match Top Games image) ---
 // This component simulates the row layout seen in Group 1000005759.jpg
-const GameRowCard = ({ status, team1Id, team1Name, team2Id, team2Name, option1, option2, option3 }) => {
+const GameRowCard = ({ status, team1Logo, team1Name, team2Logo, team2Name, option1, option2, option3 }) => {
     const isLive = status === 'Live';
     return (
         <div className="flex items-center justify-between p-4 bg-transparent border-b border-vanta-blue-medium last:border-b-0">
@@ -33,12 +30,12 @@ const GameRowCard = ({ status, team1Id, team1Name, team2Id, team2Name, option1, 
                 
                 {/* Team 1 */}
                 <div className="flex items-center gap-2 text-sm text-white font-medium">
-                    <img src={TeamLogos[team1Id]} alt={team1Name} className="w-4 h-4 object-contain" />
+                    <img src={team1Logo} alt={team1Name} className="w-4 h-4 object-contain" />
                     <span>{team1Name}</span>
                 </div>
                 {/* Team 2 */}
                 <div className="flex items-center gap-2 text-sm text-white font-medium">
-                    <img src={TeamLogos[team2Id]} alt={team2Name} className="w-4 h-4 object-contain" />
+                    <img src={team2Logo} alt={team2Name} className="w-4 h-4 object-contain" />
                     <span>{team2Name}</span>
                 </div>
             </div>
@@ -168,9 +165,9 @@ const TopGamesSection = () => {
                     <GameRowCard
                         key={index}
                         status={game.status}
-                        team1Id={game.team1Id}
+                        team1Logo={TeamLogos[game.team1Id]} 
                         team1Name={game.team1Name}
-                        team2Id={game.team2Id}
+                        team2Logo={TeamLogos[game.team2Id]} 
                         team2Name={game.team2Name}
                         option1={game.option1}
                         option2={game.option2}
