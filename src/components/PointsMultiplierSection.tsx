@@ -10,7 +10,10 @@ import LeicesterCityLogo from '/public/images/leicester_city_logo.png';
 const PointsMultiplierSection: React.FC = () => {
   return (
     <div className="w-full py-8 px-4">
-      <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 text-left tracking-tight">Points Multiplier</h2>
+      {/* MODIFICATION APPLIED: 
+        Changed text-2xl to text-xl and md:text-3xl to md:text-2xl 
+      */}
+      <h2 className="text-xl md:text-2xl font-bold text-white mb-8 text-left tracking-tight">Points Multiplier</h2>
       <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6">
         <MatchCard
           date="Today"
