@@ -1,43 +1,51 @@
 "use client";
 
 import React from 'react';
-import MatchCard from './MatchCard'; // Assuming MatchCard is in the same directory or correctly imported
-import { TeamLogos } from '@/assets/logos'; // Import the centralized TeamLogos map
+import MatchCard from './MatchCard';
+import { TeamLogos } from '@/assets/logos';
 
-const PointsMultiplierSection: React.FC = () => {
+const PointsMultiplierSection = () => {
+  const handlePredict = (matchId: string) => {
+    console.log(`Predicting for match ${matchId}`);
+    // In a real app, this would open the RightSidebar or navigate to a prediction page
+  };
+
   return (
-    <div className="w-full py-8 px-4">
+    <section className="py-12 px-4 md:px-8 bg-vanta-blue-dark text-vanta-text-light font-outfit">
       <h2 className="text-xl md:text-2xl font-bold text-white mb-8 text-left tracking-tight">Points Multiplier</h2>
       <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6">
         <MatchCard
           date="Today"
           time="09:00 PM"
-          team1Logo={TeamLogos.MANU}
-          team1Name="Man. United"
-          team2Logo={TeamLogos.LEIC}
-          team2Name="Leicester City"
-          multiplier="2.5x"
+          homeTeamName="Manchester United"
+          awayTeamName="Leicester City"
+          homeTeamLogo={TeamLogos.MANU}
+          awayTeamLogo={TeamLogos.LEIC}
+          multiplier={2.5}
+          onPredict={() => handlePredict('match1')}
         />
         <MatchCard
           date="Tomorrow"
-          time="09:00 PM"
-          team1Logo={TeamLogos.MANU}
-          team1Name="Man. United"
-          team2Logo={TeamLogos.LEIC}
-          team2Name="Leicester City"
-          multiplier="2.5x"
+          time="03:00 PM"
+          homeTeamName="Crystal Palace"
+          awayTeamName="West Ham United"
+          homeTeamLogo={TeamLogos.CRY}
+          awayTeamLogo={TeamLogos.WHU}
+          multiplier={1.8}
+          onPredict={() => handlePredict('match2')}
         />
         <MatchCard
-          date="Tomorrow"
-          time="09:00 PM"
-          team1Logo={TeamLogos.MANU}
-          team1Name="Man. United"
-          team2Logo={TeamLogos.LEIC}
-          team2Name="Leicester City"
-          multiplier="2.5x"
+          date="Sunday"
+          time="06:00 PM"
+          homeTeamName="Aston Villa"
+          awayTeamName="Manchester United"
+          homeTeamLogo={TeamLogos.ASTON}
+          awayTeamLogo={TeamLogos.MANU}
+          multiplier={2.0}
+          onPredict={() => handlePredict('match3')}
         />
       </div>
-    </div>
+    </section>
   );
 };
 
