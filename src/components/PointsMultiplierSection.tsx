@@ -4,8 +4,8 @@ import React from 'react';
 import MatchCard from './MatchCard'; // Assuming MatchCard is in the same directory or correctly imported
 
 // Placeholder images for team logos
-import ManUnitedLogo from '/public/images/man_united_logo.png';
-import LeicesterCityLogo from '/public/images/leicester_city_logo.png';
+import ManUnitedLogo from '@/assets/images/man_united_logo.png';
+import LeicesterCityLogo from '@/assets/images/leicester_city_logo.png';
 
 const PointsMultiplierSection: React.FC = () => {
   return (

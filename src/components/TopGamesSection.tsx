@@ -11,9 +11,9 @@ import TennisIcon from '/public/images/icons/tennis.svg';
 import AmericanFootballIcon from '/public/images/icons/american-football.svg';
 
 // Team logos
-import ManUnitedLogo from '/public/images/man_united_logo.png';
-import LeicesterCityLogo from '/public/images/leicester_city_logo.png';
-import StarIcon from '/public/images/icons/star_icon.svg'; // Assuming a star icon for 'Favorite'
+import ManUnitedLogo from '@/assets/images/man_united_logo.png';
+import LeicesterCityLogo from '@/assets/images/leicester_city_logo.png';
+import StarIcon from '@/assets/images/icons/star_icon.svg'; // Assuming a star icon for 'Favorite'
 
 // --- Game Row Card Component (Placeholder to match Top Games image) ---
 // This component simulates the row layout seen in Group 1000005759.jpg
