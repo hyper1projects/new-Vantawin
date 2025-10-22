@@ -42,8 +42,8 @@ const Sidebar = () => {
                 `}
               >
                 {isActive && (
-                  // ACCENT BAR MODIFIED HERE: rounded-full changed to rounded-lg
-                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-lg"></div>
+                  // FIX APPLIED: Made bar 2px wide (w-[2px]) and used explicit 8px rounding
+                  <div className="absolute left-0 top-1 bottom-1 w-[2px] bg-vanta-neon-blue rounded-[8px]"></div>
                 )}
                 <item.icon size={18} />
                 <span className="text-base font-medium">{item.name}</span>
@@ -65,8 +65,8 @@ const Sidebar = () => {
                 `}
               >
                 {isActive && (
-                  // ACCENT BAR MODIFIED HERE: rounded-full changed to rounded-lg
-                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-lg"></div>
+                  // FIX APPLIED: Made bar 2px wide (w-[2px]) and used explicit 8px rounding
+                  <div className="absolute left-0 top-1 bottom-1 w-[2px] bg-vanta-neon-blue rounded-[8px]"></div>
                 )}
                 <div className="flex items-center gap-3"> {/* Group icon and text */}
                   <item.icon size={18} />
