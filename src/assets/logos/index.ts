@@ -15,3 +15,5 @@ export const TeamLogos = {
     'WHU': leicesterCity, // Using LC logo as placeholder for now, since you haven't supplied the WHU logo
     'ASTON': manUnited, // Using MU logo as placeholder for now, since you haven't supplied the Aston Martin logo
 };
+
+// Ensure the 'man_united_logo.png' file exists in 'src/assets/images/'
