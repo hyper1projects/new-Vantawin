@@ -55,6 +55,7 @@ export default {
         'vanta-blue-medium': '#011B47',
         'vanta-accent-dark-blue': '#014568', // New color for active tab background
         'vanta-neon-blue': '#00eeee',       // New color for vertical accent bar
+        'vanta-purple': '#9A3FFE', // Added this based on MatchCard gradient
       },
       borderRadius: {
         lg: "var(--radius)",
