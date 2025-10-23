@@ -1,77 +1,77 @@
 "use client";
 
 import React from 'react';
-import Oddscard from '../components/Oddscard';
-import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import Oddscard from '@/components/Oddscard';
+import { getLogoSrc } from '@/utils/logoMap'; // Import getLogoSrc
 
 const Index: React.FC = () => {
-  // Dummy data for demonstration
-  const oddsData = [
+  // Dummy data for games
+  const games = [
     {
-      time: '19:00',
+      id: 'game1',
+      time: '7:00 PM',
       date: '2024-07-20',
-      teams: [
-        { name: 'Team A', logo: getLogoSrc('teamA') },
-        { name: 'Team B', logo: getLogoSrc('teamB') },
-      ],
+      teamA: 'Team A',
+      teamB: 'Team B',
+      teamALogo: 'teamA', // Standardized key
+      teamBLogo: 'teamB', // Standardized key
+      oddsA: -110,
+      oddsB: +100,
       gameView: 'Live',
-      odds: {
-        teamAWin: 1.5,
-        draw: 3.2,
-        teamBWin: 2.8,
-      },
     },
     {
-      time: '20:30',
+      id: 'game2',
+      time: '8:30 PM',
       date: '2024-07-20',
-      teams: [
-        { name: 'Warriors', logo: getLogoSrc('teamA') }, // Using teamA logo for Warriors
-        { name: 'Lakers', logo: getLogoSrc('teamB') },   // Using teamB logo for Lakers
-      ],
+      teamA: 'Team C',
+      teamB: 'Team D',
+      teamALogo: 'teamA', // Using 'teamA' as a placeholder for Team C
+      teamBLogo: 'teamB', // Using 'teamB' as a placeholder for Team D
+      oddsA: +150,
+      oddsB: -120,
       gameView: 'Upcoming',
-      odds: {
-        teamAWin: 2.1,
-        draw: 3.0,
-        teamBWin: 1.9,
-      },
     },
     {
-      time: '22:00',
-      date: '2024-07-21',
-      teams: [
-        { name: 'Knicks', logo: getLogoSrc('teamB') },
-        { name: 'Bulls', logo: getLogoSrc('teamA') },
-      ],
+      id: 'game3',
+      time: '6:00 PM',
+      date: '2024-07-19',
+      teamA: 'Team E',
+      teamB: 'Team F',
+      teamALogo: 'teamA', // Using 'teamA' as a placeholder for Team E
+      teamBLogo: 'teamB', // Using 'teamB' as a placeholder for Team F
+      oddsA: -200,
+      oddsB: +180,
       gameView: 'Finished',
-      odds: {
-        teamAWin: 1.8,
-        draw: 3.5,
-        teamBWin: 2.5,
-      },
-    },
-    {
-      time: '18:00',
-      date: '2024-07-21',
-      teams: [
-        { name: 'Rockets', logo: getLogoSrc('teamA') },
-        { name: 'Celtics', logo: getLogoSrc('teamB') },
-      ],
-      gameView: 'Live',
-      odds: {
-        teamAWin: 2.3,
-        draw: 3.1,
-        teamBWin: 1.7,
-      },
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold text-center mb-8">Sports Odds Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {oddsData.map((data, index) => (
-          <Oddscard key={index} {...data} />
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold text-center mb-8">Welcome to the Sports Betting App</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {games.map((game) => (
+          <Oddscard
+            key={game.id}
+            time={game.time}
+            date={game.date}
+            teamA={game.teamA}
+            teamB={game.teamB}
+            teamALogo={getLogoSrc(game.teamALogo)} // Use getLogoSrc
+            teamBLogo={getLogoSrc(game.teamBLogo)} // Use getLogoSrc
+            oddsA={game.oddsA}
+            oddsB={game.oddsB}
+            gameView={game.gameView}
+          />
         ))}
+      </div>
+
+      <div className="mt-10 text-center">
+        <Link to="/about">
+          <Button variant="outline">Learn More About Us</Button>
+        </Link>
       </div>
     </div>
   );
