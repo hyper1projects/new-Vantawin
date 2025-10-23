@@ -18,7 +18,7 @@ const MainHeader: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-0 left-60 right-0 h-16 flex items-center justify-between px-8 pr-20 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
+    <div className="fixed top-0 left-60 right-0 h-16 flex items-center justify-between px-8 pr-20 border-b border-gray-700 z-50 font-outfit">
       {/* Left Section: Sports Categories and How to play */}
       <div className="flex items-center space-x-6">
         {sportsCategories.map((category) => (

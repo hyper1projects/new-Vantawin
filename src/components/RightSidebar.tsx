@@ -1,14 +1,45 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
-import { TeamLogos } from '@/assets/logos'; // Import the centralized TeamLogos map
+import LeicesterCityLogo from '@/assets/images/leicester-city-logo.png'; // Import the image
 
 const RightSidebar = () => {
   const [predictionAmount, setPredictionAmount] = useState(0);
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
+  const [selectedMultiplier, setSelectedMultiplier] = useState(1);
+
+  // Dynamically determine available multiplier options based on predictionAmount
+  const multiplierOptions = useMemo(() => {
+    let options = [1, 2, 3]; // Base options
+    if (predictionAmount >= 500) {
+      options.push(5);
+    }
+    if (predictionAmount >= 1000) {
+      options.push(10);
+    }
+    // Ensure unique and sorted options, and cap at 10x
+    return Array.from(new Set(options)).sort((a, b) => a - b);
+  }, [predictionAmount]);
+
+  // Adjust selectedMultiplier if it's no longer available in the options
+  useEffect(() => {
+    if (!multiplierOptions.includes(selectedMultiplier)) {
+      // If the current selected multiplier is no longer valid,
+      // reset to the highest available multiplier that is less than or equal to the previous selection,
+      // or to 1x if no such multiplier exists.
+      const newValidMultiplier = multiplierOptions.reduce((prev, curr) => {
+        if (curr <= selectedMultiplier) {
+          return curr;
+        }
+        return prev;
+      }, 1); // Default to 1 if no valid option found
+      setSelectedMultiplier(newValidMultiplier);
+    }
+  }, [multiplierOptions, selectedMultiplier]);
 
   const handlePredict = () => {
     if (!selectedOutcome) {
@@ -19,21 +50,32 @@ const RightSidebar = () => {
       toast.error("Prediction amount must be greater than 0.");
       return;
     }
-    toast.success(`Predicted ${predictionAmount} on ${selectedOutcome}`);
+    toast.success(`Predicted ${predictionAmount} on ${selectedOutcome} with ${selectedMultiplier}x multiplier`);
     // Here you would typically send the prediction to a backend
   };
 
   const quickAddAmountButtons = [100, 200, 500, 1000];
 
+  // Find the index of the current selectedMultiplier in the dynamic options for the slider
+  const currentMultiplierIndex = multiplierOptions.indexOf(selectedMultiplier);
+  const sliderValue = currentMultiplierIndex !== -1 ? currentMultiplierIndex : 0; // Default to 1x (index 0) if not found
+
+  const handleMultiplierChange = (value: number[]) => {
+    const newIndex = value[0];
+    if (newIndex >= 0 && newIndex < multiplierOptions.length) {
+      setSelectedMultiplier(multiplierOptions[newIndex]);
+    }
+  };
+
   // Calculate potential win
-  const potentialWinXP = predictionAmount > 0 ? predictionAmount : 0;
+  const potentialWinXP = predictionAmount > 0 ? (predictionAmount * selectedMultiplier) : 0;
 
   return (
     <div className="fixed right-4 top-20 bottom-4 w-80 bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 rounded-[27px] font-outfit p-6">
       {/* Logo and Match Code */}
       <div className="flex items-start mb-6 mt-4">
         <img
-          src={TeamLogos.LEIC} // Using Leicester City logo from TeamLogos for consistency
+          src={LeicesterCityLogo}
           alt="Leicester City Logo"
           className="w-16 h-16 rounded-full object-cover mr-4"
         />
@@ -96,6 +138,29 @@ const RightSidebar = () => {
               >
                 +{amount}
               </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Multiplier Selection */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-lg font-semibold">Multiplier</h4>
+            <span className="text-gray-400 text-2xl font-bold">{selectedMultiplier}x</span>
+          </div>
+          <Slider
+            min={0}
+            max={multiplierOptions.length - 1}
+            step={1}
+            value={[sliderValue]}
+            onValueChange={handleMultiplierChange}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-2">
+            {multiplierOptions.map((option, index) => (
+              <span key={option} className={index === sliderValue ? "font-bold text-vanta-text-light" : ""}>
+                {option}x
+              </span>
             ))}
           </div>
         </div>

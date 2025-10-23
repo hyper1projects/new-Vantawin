@@ -11,6 +11,10 @@ const PointsMultiplierCard = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Points Multiplier</h2>
         <p className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-vanta-neon-blue to-vanta-purple mb-4 leading-none">
           x2
+        </p>
+        <p className="text-vanta-text-light text-sm md:text-base mb-6">
+          Double your rewards and accelerate your progress with our exclusive points multiplier!
+        </p>
         <Button className="bg-vanta-neon-blue hover:bg-vanta-purple text-white font-semibold py-2 px-6 rounded-full transition-colors duration-300">
           Learn More
         </Button>

@@ -29,7 +29,7 @@ const Sidebar = () => {
           <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
         </div>
 
-        {/* Primary Navigation Items (STILL HIGHLIGHTED) */}
+        {/* Primary Navigation Items */}
         <div className="px-4 flex flex-col gap-y-3">
           {primaryNavItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -37,12 +37,12 @@ const Sidebar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`relative flex items-center gap-4 py-2 pr-3 rounded-xl text-vanta-text-light transition-colors overflow-hidden
+                className={`relative flex items-center gap-4 py-2 pr-3 rounded-md text-vanta-text-light transition-colors overflow-hidden
                   ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
                 `}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-vanta-neon-blue rounded-xl"></div>
+                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-full"></div>
                 )}
                 <item.icon size={18} />
                 <span className="text-base font-medium">{item.name}</span>
@@ -51,20 +51,21 @@ const Sidebar = () => {
           })}
         </div>
 
-        {/* Secondary Navigation Items pushed to the bottom (HIGHLIGHTS REMOVED) */}
+        {/* Secondary Navigation Items pushed to the bottom */}
         <div className="mt-auto flex flex-col gap-y-3 px-4 pb-4">
           {secondaryNavItems.map((item) => {
-            // Removed isActive check for secondary items
+            const isActive = location.pathname === item.path;
             return (
               <Link
                 key={item.name}
                 to={item.path}
-                // Removed conditional styling for isActive. Uses hover state only.
-                className={`relative flex items-center justify-between py-2 pr-3 rounded-xl text-vanta-text-light transition-colors overflow-hidden
-                  hover:bg-vanta-accent-dark-blue pl-3
+                className={`relative flex items-center justify-between py-2 pr-3 rounded-md text-vanta-text-light transition-colors overflow-hidden
+                  ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
                 `}
               >
-                {/* Removed the isActive && (...) accent bar block */}
+                {isActive && (
+                  <div className="absolute left-0 top-1 bottom-1 w-1 bg-vanta-neon-blue rounded-full"></div>
+                )}
                 <div className="flex items-center gap-3"> {/* Group icon and text */}
                   <item.icon size={18} />
                   <span className="text-sm font-normal">{item.name}</span> {/* Smaller font */}
