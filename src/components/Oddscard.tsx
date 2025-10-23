@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from './ui/button';
+import { Star } from 'lucide-react'; // Import Star icon
 
 interface OddscardProps {
   team1: { name: string; logo: string };
@@ -15,16 +16,28 @@ interface OddscardProps {
 const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league }) => {
   return (
     <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full max-w-sm">
-      {/* Top section: Time, Date, League */}
+      {/* Top section: Favorite, Live, Time, Date, League */}
       <div className="flex justify-between items-center text-gray-400 text-xs mb-4">
-        <span>{time}</span>
-        <span>{date}</span>
-        <span>{league}</span>
+        <div className="flex items-center space-x-2"> {/* Left side: Favorite & Live */}
+          <Star className="w-4 h-4 text-gray-500 cursor-pointer hover:text-yellow-400" /> {/* Favorite icon */}
+          <span className="flex items-center text-red-500 font-bold">
+            <span className="relative flex h-2 w-2 mr-1">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+            LIVE
+          </span>
+        </div>
+        <div className="flex items-center space-x-2"> {/* Right side: Time, Date, League */}
+          <span>{time}</span>
+          <span>{date}</span>
+          <span>{league}</span>
+        </div>
       </div>
 
       {/* Middle section: Teams and Odds */}
       <div className="flex justify-between items-center mb-4">
-        {/* Teams display - MODIFIED HERE */}
+        {/* Teams display */}
         <div className="flex flex-col"> {/* Changed to flex-col for vertical stacking */}
           <div className="flex items-center"> {/* Team 1 */}
             <img src={team1.logo} alt={team1.name} className="w-6 h-6 mr-2" />
