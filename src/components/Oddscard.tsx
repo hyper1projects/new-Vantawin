@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +35,12 @@ const Oddscard: React.FC<OddscardProps> = ({
   option3Label,
   option3Value,
 }) => {
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  const handleFavoriteToggle = () => {
+    setIsFavorited(!isFavorited);
+  };
+
   const OddButton: React.FC<{ label: string; value: string }> = ({ label, value }) => (
     <button className="bg-[#0D2C60] hover:bg-[#1a4280] text-white font-semibold py-2 px-4 rounded-md w-[80px] h-[40px] flex flex-col items-center justify-center text-sm">
       <span className="text-xs text-gray-300">{label}</span>
@@ -79,9 +85,20 @@ const Oddscard: React.FC<OddscardProps> = ({
         {/* Game View */}
         <div className="flex items-center space-x-2">
           <a href="#" className="text-gray-300 text-sm hover:underline">Game View &gt;</a>
-          <div className="relative w-6 h-6 flex items-center justify-center rounded-full bg-gray-700">
-            <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
-          </div>
+          <button
+            onClick={handleFavoriteToggle}
+            className={cn(
+              "relative w-6 h-6 flex items-center justify-center rounded-full transition-colors duration-200",
+              isFavorited ? "bg-gray-700" : "border border-yellow-400" // Corrected container styling
+            )}
+          >
+            <Star
+              className="w-4 h-4 text-yellow-400"
+              fill={isFavorited ? "currentColor" : "none"} // Corrected fill logic
+              stroke={isFavorited ? "none" : "currentColor"} // Corrected stroke logic
+              strokeWidth={isFavorited ? 0 : 2} // Corrected strokeWidth logic
+            />
+          </button>
         </div>
         {/* Odds Buttons */}
         <div className="flex space-x-4">
