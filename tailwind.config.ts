@@ -14,6 +14,14 @@ export default {
         "2xl": "1400px",
       },
     },
+    // --- START: MODIFIED BLOCK ---
+    fontFamily: {
+        // By defining the 'sans' key here, you override Tailwind's default sans-serif font.
+        // The entire app will now use 'Outfit' by default unless another font-* class is applied.
+        sans: ['Outfit', ...fontFamily.sans], 
+        outfit: ['Outfit', ...fontFamily.sans], // Keep 'font-outfit' utility for consistency
+    },
+    // --- END: MODIFIED BLOCK ---
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -53,9 +61,9 @@ export default {
         'vanta-accent-blue': '#007BFF',
         'vanta-text-light': '#E0E0E0',
         'vanta-blue-medium': '#011B47',
-        'vanta-accent-dark-blue': '#014568', // New color for active tab background
-        'vanta-neon-blue': '#00eeee',       // New color for vertical accent bar
-        'vanta-purple': '#9A3FFE', // Added this based on MatchCard gradient
+        'vanta-accent-dark-blue': '#014568',
+        'vanta-neon-blue': '#00eeee',
+        'vanta-purple': '#9A3FFE',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -76,10 +84,8 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-      fontFamily: {
-        outfit: ['Outfit', ...fontFamily.sans],
-      },
+      // Note: Removed the redundant `fontFamily` definition from here
+      // as it is now in the main `theme` block.
     },
   },
   plugins: [],
-}
