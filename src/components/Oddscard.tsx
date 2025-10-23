@@ -43,7 +43,7 @@ const Oddscard: React.FC<OddscardProps> = ({
   );
 
   return (
-    <div className="w-[723px] h-[126px] bg-[#0B295B] rounded-xl p-4 flex justify-between text-white shadow-lg font-outfit">
+    <div className="w-[723px] h-[126px] bg-[#0B295B] rounded-xl p-4 flex justify-between text-white shadow-lg">
       {/* Left Content: Live/Time & Teams */}
       <div className="flex flex-col justify-between h-full">
         {/* Live/Time */}

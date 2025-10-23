@@ -1,82 +1,81 @@
+"use client";
+
 import React from 'react';
-import { Home, Search, Bell, Mail, User, Bookmark, List, MoreHorizontal } from 'lucide-react';
-import { Button } from './ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail, ChevronRight } from 'lucide-react'; // Import ChevronRight
 
 const Sidebar = () => {
+  const location = useLocation();
+
+  const primaryNavItems = [
+    { name: "Home", icon: Home, path: "/" },
+    { name: "Games", icon: Gamepad2, path: "/games" },
+    { name: "Pools", icon: Trophy, path: "/pools" },
+    { name: "Leaderboard", icon: Users, path: "/leaderboard" },
+    { name: "Wallet", icon: Wallet, path: "/wallet" },
+  ];
+
+  const secondaryNavItems = [
+    { name: "Terms of Use", icon: BookText, path: "/terms" },
+    { name: "Help and Information", icon: HelpCircle, path: "/help" },
+    { name: "Contact Us", icon: Mail, path: "/contact" },
+  ];
+
   return (
-    <aside className="w-64 p-4 border-r border-gray-700 bg-sidebar-bg flex flex-col"> {/* Apply custom sidebar background color */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Dyad</h1>
-      </div>
-      <nav className="flex-1">
-        <ul>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <Home className="mr-2 h-5 w-5" />
-              Home
-            </Button>
-          </li>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <Search className="mr-2 h-5 w-5" />
-              Explore
-            </Button>
-          </li>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <Bell className="mr-2 h-5 w-5" />
-              Notifications
-            </Button>
-          </li>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <Mail className="mr-2 h-5 w-5" />
-              Messages
-            </Button>
-          </li>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <Bookmark className="mr-2 h-5 w-5" />
-              Bookmarks
-            </Button>
-          </li>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <List className="mr-2 h-5 w-5" />
-              Lists
-            </Button>
-          </li>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <User className="mr-2 h-5 w-5" />
-              Profile
-            </Button>
-          </li>
-          <li className="mb-4">
-            <Button variant="ghost" className="w-full justify-start text-white hover:bg-gray-800">
-              <MoreHorizontal className="mr-2 h-5 w-5" />
-              More
-            </Button>
-          </li>
-        </ul>
-      </nav>
-      <div className="mt-auto">
-        <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
-          Post
-        </Button>
-        <div className="flex items-center mt-4 p-2 rounded-full hover:bg-gray-800 cursor-pointer">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div className="ml-3">
-            <p className="text-white font-semibold">Shadcn</p>
-            <p className="text-gray-500 text-sm">@shadcn</p>
-          </div>
+    <div className="fixed left-0 top-0 h-screen w-60 bg-vanta-blue-dark text-vanta-text-light flex flex-col z-50 rounded-r-2xl font-outfit">
+      <div className="bg-vanta-blue-medium rounded-r-2xl flex flex-col gap-2 flex-grow">
+        <div className="flex items-center justify-center p-4 mb-4">
+          <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
+          <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
+        </div>
+
+        {/* Primary Navigation Items (STILL HIGHLIGHTED) */}
+        <div className="px-4 flex flex-col gap-y-3">
+          {primaryNavItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`relative flex items-center gap-4 py-2 pr-3 rounded-xl text-vanta-text-light transition-colors overflow-hidden
+                  ${isActive ? 'bg-vanta-accent-dark-blue pl-4' : 'hover:bg-vanta-accent-dark-blue pl-3'}
+                `}
+              >
+                {isActive && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-vanta-neon-blue rounded-xl"></div>
+                )}
+                <item.icon size={18} />
+                <span className="text-base font-medium">{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Secondary Navigation Items pushed to the bottom (HIGHLIGHTS REMOVED) */}
+        <div className="mt-auto flex flex-col gap-y-3 px-4 pb-4">
+          {secondaryNavItems.map((item) => {
+            // Removed isActive check for secondary items
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                // Removed conditional styling for isActive. Uses hover state only.
+                className={`relative flex items-center justify-between py-2 pr-3 rounded-xl text-vanta-text-light transition-colors overflow-hidden
+                  hover:bg-vanta-accent-dark-blue pl-3
+                `}
+              >
+                {/* Removed the isActive && (...) accent bar block */}
+                <div className="flex items-center gap-3"> {/* Group icon and text */}
+                  <item.icon size={18} />
+                  <span className="text-sm font-normal">{item.name}</span> {/* Smaller font */}
+                </div>
+                <ChevronRight size={16} className="text-vanta-text-light" /> {/* Forward arrow */}
+              </Link>
+            );
+          })}
         </div>
       </div>
-    </aside>
+    </div>
   );
 };
 
