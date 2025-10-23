@@ -6,16 +6,17 @@ import { Star } from 'lucide-react';
 import { getLogoSrc } from '../utils/logoMap'; // Import the logo utility
 
 interface OddscardProps {
-  team1: { name: string; logo: string }; // 'logo' is now an identifier string (e.g., "teamA")
-  team2: { name: string; logo: string }; // 'logo' is now an identifier string (e.g., "teamB")
+  team1: { name: string; logoIdentifier: string }; // Changed 'logo' to 'logoIdentifier'
+  team2: { name: string; logoIdentifier: string }; // Changed 'logo' to 'logoIdentifier'
   odds: { team1: number; draw: number; team2: number };
   time: string;
   date: string;
   league: string;
   isLive: boolean;
+  gameView: string; // Added gameView prop
 }
 
-const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive }) => {
+const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView }) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
   const handleFavoriteClick = () => {
@@ -50,11 +51,11 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
         {/* Teams display */}
         <div className="flex flex-col">
           <div className="flex items-center">
-            <img src={getLogoSrc(team1.logo)} alt={team1.name} className="w-6 h-6 mr-2 rounded-full" /> {/* Using local logo */}
+            <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-6 h-6 mr-2 rounded-full" /> {/* Using logoIdentifier */}
             <span className="text-white font-semibold">{team1.name}</span>
           </div>
           <div className="flex items-center mt-2">
-            <img src={getLogoSrc(team2.logo)} alt={team2.name} className="w-6 h-6 mr-2 rounded-full" /> {/* Using local logo */}
+            <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-6 h-6 mr-2 rounded-full" /> {/* Using logoIdentifier */}
             <span className="text-white font-semibold">{team2.name}</span>
           </div>
         </div>
@@ -74,7 +75,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             className={`w-4 h-4 ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'} cursor-pointer hover:text-yellow-400`}
           />
         </button>
-        <a href="#" className="text-gray-300 text-sm hover:underline">Game View &gt;</a>
+        <a href="#" className="text-gray-300 text-sm hover:underline">{gameView} &gt;</a>
       </div>
     </div>
   );
