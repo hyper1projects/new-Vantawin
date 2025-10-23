@@ -1,21 +1,41 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import SectionHeader from './SectionHeader';
 import Oddscard from './Oddscard';
 import { Button } from './ui/button';
 
 const TopGamesSection = () => {
+  const [activeFilter, setActiveFilter] = useState('All'); // State to manage the active filter
+
+  const filterButtons = [
+    { label: 'All', value: 'All' },
+    { label: 'Live', value: 'Live' },
+    { label: 'Upcoming', value: 'Upcoming' },
+  ];
+
   return (
     <div className="w-full py-8 px-4">
       <SectionHeader title="Top Games" bgColor="#0D2C60" />
       
       <div className="flex flex-col gap-6 bg-[#011B47] p-6 rounded-b-xl">
-        {/* Filter buttons with a bottom border for the horizontal line */}
         <div className="flex justify-start space-x-4 w-full ml-[-8px] border-b border-gray-700 pb-4">
-          <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-[#0B295B] rounded-2xl h-8 px-3 text-sm">All</Button> {/* Updated background color and rounded corners */}
-          <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Live</Button>
-          <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Upcoming</Button>
+          {filterButtons.map((filter) => (
+            <Button
+              key={filter.value}
+              variant="outline"
+              className={`
+                border-gray-600 h-8 px-3 text-sm rounded-2xl
+                ${activeFilter === filter.value
+                  ? 'bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE]' // Active state styling
+                  : 'bg-[#0B295B] text-white hover:bg-gray-700' // Inactive state styling
+                }
+              `}
+              onClick={() => setActiveFilter(filter.value)}
+            >
+              {filter.label}
+            </Button>
+          ))}
         </div>
 
         {/* Oddscards, wrapped in a div to maintain flex-wrap behavior */}
