@@ -11,9 +11,9 @@ const TopGamesSection = () => {
       <SectionHeader title="Top Games" bgColor="#0D2C60" />
       
       {/* This div now contains both the filter buttons and the Oddscards */}
-      <div className="flex flex-col items-center gap-6 bg-[#011B47] p-6 rounded-b-xl">
-        {/* Filter buttons moved here */}
-        <div className="flex justify-center space-x-4 mb-4 w-full"> {/* Added mb-4 for spacing, w-full for centering */}
+      <div className="flex flex-col gap-6 bg-[#011B47] p-6 rounded-b-xl">
+        {/* Filter buttons moved here, now aligned to the start and adjusted for padding */}
+        <div className="flex justify-start space-x-4 mb-4 w-full ml-[-8px]"> {/* Added ml-[-8px] to align with SectionHeader title */}
           <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">All</Button>
           <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Live</Button>
           <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Upcoming</Button>
