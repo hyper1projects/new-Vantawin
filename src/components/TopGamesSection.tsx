@@ -10,10 +10,9 @@ const TopGamesSection = () => {
     <div className="w-full py-8 px-4">
       <SectionHeader title="Top Games" bgColor="#0D2C60" />
       
-      {/* This div now contains both the filter buttons and the Oddscards */}
       <div className="flex flex-col gap-6 bg-[#011B47] p-6 rounded-b-xl">
-        {/* Filter buttons moved here, now aligned to the start and adjusted for padding */}
-        <div className="flex justify-start space-x-4 mb-4 w-full ml-[-8px]"> {/* Added ml-[-8px] to align with SectionHeader title */}
+        {/* Filter buttons with a bottom border for the horizontal line */}
+        <div className="flex justify-start space-x-4 w-full ml-[-8px] border-b border-gray-700 pb-4"> {/* Added border-b, border-gray-700, pb-4, and removed mb-4 */}
           <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">All</Button>
           <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Live</Button>
           <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Upcoming</Button>
