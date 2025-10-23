@@ -1,82 +1,94 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Star } from 'lucide-react';
-import { getLogoSrc } from '../utils/logoMap'; // Import the logo utility
+import React from 'react';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 interface OddscardProps {
-  team1: { name: string; logo: string }; // 'logo' is now an identifier string (e.g., "teamA")
-  team2: { name: string; logo: string }; // 'logo' is now an identifier string (e.g., "teamB")
-  odds: { team1: number; draw: number; team2: number };
   time: string;
   date: string;
-  league: string;
-  isLive: boolean;
+  teamA: string;
+  teamB: string;
+  teamALogo: string; // Expecting a string path directly
+  teamBLogo: string; // Expecting a string path directly
+  oddsA: number;
+  oddsB: number;
+  gameView: 'Live' | 'Upcoming' | 'Finished';
 }
 
-const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive }) => {
-  const [isFavorited, setIsFavorited] = useState(false);
+const Oddscard: React.FC<OddscardProps> = ({
+  time,
+  date,
+  teamA,
+  teamB,
+  teamALogo,
+  teamBLogo,
+  oddsA,
+  oddsB,
+  gameView,
+}) => {
+  const getOddsDisplay = (odds: number) => {
+    if (odds > 0) {
+      return `+${odds}`;
+    }
+    return odds.toString();
+  };
 
-  const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
-    console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
+  const getGameViewColor = (view: 'Live' | 'Upcoming' | 'Finished') => {
+    switch (view) {
+      case 'Live':
+        return 'text-red-500';
+      case 'Upcoming':
+        return 'text-blue-500';
+      case 'Finished':
+        return 'text-gray-500';
+      default:
+        return 'text-gray-700';
+    }
   };
 
   return (
-    <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full max-w-sm">
-      {/* Top section: Time/Live & Date (left), League (right) */}
-      <div className="flex justify-between items-center text-gray-400 text-xs mb-4">
-        <div className="flex items-center space-x-2"> {/* Left side: Time/Live, Date & Live indicator */}
-          <span>{isLive ? 'LIVE' : time}</span> {/* Display 'LIVE' or actual time */}
-          <span>{date}</span> {/* Moved date here */}
-          {isLive && ( // Conditionally render LIVE indicator
-            <span className="flex items-center text-red-500 font-bold">
-              <span className="relative flex h-2 w-2 mr-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-              </span>
-              LIVE
-            </span>
-          )}
+    <Card className="w-full max-w-sm mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-center text-sm text-gray-500">
+          <span>{date}</span>
+          <span>{time}</span>
         </div>
-        <div className="flex items-center space-x-2"> {/* Right side: League */}
-          <span>{league}</span>
-        </div>
-      </div>
-
-      {/* Middle section: Teams and Odds */}
-      <div className="flex justify-between items-center mb-4">
-        {/* Teams display */}
-        <div className="flex flex-col">
-          <div className="flex items-center">
-            <img src={getLogoSrc(team1.logo)} alt={team1.name} className="w-6 h-6 mr-2 rounded-full" /> {/* Using local logo */}
-            <span className="text-white font-semibold">{team1.name}</span>
+        <CardTitle className="text-center text-xl font-semibold mt-2">
+          <span className={getGameViewColor(gameView)}>{gameView}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col items-center space-y-4">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex flex-col items-center flex-1">
+            <img src={teamALogo} alt={`${teamA} logo`} className="w-12 h-12 object-contain mb-2" />
+            <span className="font-medium text-lg text-center">{teamA}</span>
           </div>
-          <div className="flex items-center mt-2">
-            <img src={getLogoSrc(team2.logo)} alt={team2.name} className="w-6 h-6 mr-2 rounded-full" /> {/* Using local logo */}
-            <span className="text-white font-semibold">{team2.name}</span>
+          <span className="text-2xl font-bold mx-4">vs</span>
+          <div className="flex flex-col items-center flex-1">
+            <img src={teamBLogo} alt={`${teamB} logo`} className="w-12 h-12 object-contain mb-2" />
+            <span className="font-medium text-lg text-center">{teamB}</span>
           </div>
         </div>
 
-        {/* Odds buttons */}
-        <div className="flex space-x-2">
-          <Button variant="outline" className="bg-[#0B295B] text-white border-gray-600 hover:bg-gray-700 h-8 px-3 text-sm">{odds.team1}</Button>
-          <Button variant="outline" className="bg-[#0B295B] text-white border-gray-600 hover:bg-gray-700 h-8 px-3 text-sm">{odds.draw}</Button>
-          <Button variant="outline" className="bg-[#0B295B] text-white border-gray-600 hover:bg-gray-700 h-8 px-3 text-sm">{odds.team2}</Button>
+        <div className="flex justify-around w-full mt-4">
+          <div className="flex flex-col items-center">
+            <span className="text-gray-600 text-sm">Odds</span>
+            <span className="text-xl font-bold text-green-600">{getOddsDisplay(oddsA)}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-gray-600 text-sm">Odds</span>
+            <span className="text-xl font-bold text-green-600">{getOddsDisplay(oddsB)}</span>
+          </div>
         </div>
-      </div>
-
-      {/* Bottom section: Favorite icon and Game View link */}
-      <div className="flex justify-between items-center">
-        <button onClick={handleFavoriteClick} className="p-0.5 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400">
-          <Star
-            className={`w-4 h-4 ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'} cursor-pointer hover:text-yellow-400`}
-          />
-        </button>
-        <a href="#" className="text-gray-300 text-sm hover:underline">Game View &gt;</a>
-      </div>
-    </div>
+      </CardContent>
+      <CardFooter className="flex justify-center pt-4">
+        <Button className="w-full">
+          Place Bet <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
