@@ -23,8 +23,8 @@ const Index: React.FC = () => {
         <Oddscard
           time="8:30 PM"
           data="Tomorrow"
-          teamA={{ name: 'Team C', logoIdentifier: 'teamB' }} {/* Using teamB logo for example */}
-          teamB={{ name: 'Team D', logoIdentifier: 'teamA' }} {/* Using teamA logo for example */}
+          teamA={{ name: 'Team C', logoIdentifier: 'teamB' }}
+          teamB={{ name: 'Team D', logoIdentifier: 'teamA' }}
           gameView="View Matchup"
         />
       </div>
