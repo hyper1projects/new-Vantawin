@@ -19,7 +19,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
-        outfit: ['Outfit', 'sans-serif'], // Add Outfit font
+        outfit: ['Outfit', 'sans-serif'], // Keep Outfit font
       },
       colors: {
         border: "hsl(var(--border))",
