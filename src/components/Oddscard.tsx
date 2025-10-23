@@ -43,31 +43,23 @@ const Oddscard: React.FC<OddscardProps> = ({
   );
 
   return (
-    <div className="w-[723px] h-[126px] bg-[#0B295B] rounded-xl p-4 flex items-center justify-between text-white shadow-lg">
-      {/* Left Section: Live/Time & Teams */}
-      <div className="flex flex-col justify-between h-full w-1/2">
-        {/* Top Row: Live/Time & Game View */}
-        <div className="flex items-center justify-between mb-2">
-          {isLive ? (
-            <div className="flex items-center text-red-500 font-semibold text-sm">
-              <span className="relative flex h-2 w-2 mr-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-              </span>
-              Live
-            </div>
-          ) : (
-            <div className="text-gray-300 text-xs">
-              {matchDate} {matchTime}
-            </div>
-          )}
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-300 text-sm">Game View &gt;</span>
-            <div className="relative w-6 h-6 flex items-center justify-center rounded-full bg-gray-700">
-              <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
-            </div>
+    <div className="w-[723px] h-[126px] bg-[#0B295B] rounded-xl p-4 flex justify-between text-white shadow-lg">
+      {/* Left Content: Live/Time & Teams */}
+      <div className="flex flex-col justify-between h-full">
+        {/* Live/Time */}
+        {isLive ? (
+          <div className="flex items-center text-red-500 font-semibold text-sm">
+            <span className="relative flex h-2 w-2 mr-1">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+            Live
           </div>
-        </div>
+        ) : (
+          <div className="text-gray-300 text-xs">
+            {matchDate} {matchTime}
+          </div>
+        )}
 
         {/* Team Information */}
         <div className="flex flex-col space-y-2">
@@ -82,11 +74,21 @@ const Oddscard: React.FC<OddscardProps> = ({
         </div>
       </div>
 
-      {/* Right Section: Odds Buttons */}
-      <div className="flex space-x-4">
-        <OddButton label={option1Label} value={option1Value} />
-        <OddButton label={option2Label} value={option2Value} />
-        <OddButton label={option3Label} value={option3Value} />
+      {/* Right Content: Game View & Odds Buttons */}
+      <div className="flex flex-col justify-between h-full items-end">
+        {/* Game View */}
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-300 text-sm">Game View &gt;</span>
+          <div className="relative w-6 h-6 flex items-center justify-center rounded-full bg-gray-700">
+            <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+          </div>
+        </div>
+        {/* Odds Buttons */}
+        <div className="flex space-x-4">
+          <OddButton label={option1Label} value={option1Value} />
+          <OddButton label={option2Label} value={option2Value} />
+          <OddButton label={option3Label} value={option3Value} />
+        </div>
       </div>
     </div>
   );
