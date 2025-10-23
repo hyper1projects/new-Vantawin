@@ -3,15 +3,14 @@
 import React from 'react';
 import SectionHeader from './SectionHeader';
 import Oddscard from './Oddscard';
-import { Button } from './ui/button'; // Re-import the Button component
+import { Button } from './ui/button';
 
 const TopGamesSection = () => {
   return (
     <div className="w-full py-8 px-4">
-      <SectionHeader title="Top Games" bgColor="#0D2C60" className="mb-6" />
+      <SectionHeader title="Top Games" bgColor="#0D2C60" /> {/* Removed className="mb-6" */}
       
-      {/* Re-adding the buttons here, below the SectionHeader */}
-      <div className="flex justify-center space-x-4 mb-6">
+      <div className="flex justify-center space-x-4 mb-6 bg-[#0D2C60] p-4 rounded-b-xl -mt-6"> {/* Added bg and padding, negative margin to overlap */}
         <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">All</Button>
         <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Live</Button>
         <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700 bg-transparent h-8 px-3 text-sm">Upcoming</Button>
