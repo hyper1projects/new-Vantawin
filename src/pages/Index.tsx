@@ -1,20 +1,30 @@
-"use client";
-
 import React from 'react';
-import ImageCarousel from '../components/ImageCarousel';
-import PointsMultiplierSection from '../components/PointsMultiplierSection';
-import TopGamesSection from '../components/TopGamesSection'; // Import the new component
+import Oddscard from '../components/Oddscard';
 
-const Index = () => {
+const Index: React.FC = () => {
+  // Define team information including name and logo identifier
+  const teamAInfo = { name: 'Team A', logoIdentifier: 'teamA' };
+  const teamBInfo = { name: 'Team B', logoIdentifier: 'teamB' };
+
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold text-vanta-text-light mb-4 text-left pl-4">Welcome to VantaWin!</h1>
-      <ImageCarousel />
-      <PointsMultiplierSection />
-      {/* Add the new TopGamesSection component here */}
-      <TopGamesSection />
-      <div className="mt-8 text-center text-vanta-text-light">
-        <p>Explore the features of your new VantaWin application!</p>
+    <div className="p-4 flex flex-col items-center">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Upcoming Games</h1>
+      <Oddscard
+        time="7:00 PM"
+        data="Today"
+        teamA={teamAInfo}
+        teamB={teamBInfo}
+        gameView="View Game Details"
+      />
+      {/* You can add more Oddscard components here with different team data */}
+      <div className="mt-8">
+        <Oddscard
+          time="8:30 PM"
+          data="Tomorrow"
+          teamA={{ name: 'Team C', logoIdentifier: 'teamB' }} {/* Using teamB logo for example */}
+          teamB={{ name: 'Team D', logoIdentifier: 'teamA' }} {/* Using teamA logo for example */}
+          gameView="View Matchup"
+        />
       </div>
     </div>
   );
