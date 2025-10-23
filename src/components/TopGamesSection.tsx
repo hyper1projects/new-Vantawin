@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import Oddscard from './Oddscard';
+import Oddscard from './Oddscard'; // Importing the new Oddscard component
 import SectionHeader from './SectionHeader';
 import { TeamLogos } from '@/assets/logos';
 
@@ -28,7 +28,7 @@ const TopGamesSection: React.FC = () => {
         <Oddscard
           matchDate="Tomorrow"
           matchTime="20:30"
-          isLive={true}
+          isLive={true} {/* Example of a live match */}
           team1Logo={TeamLogos.MANU}
           team1Name="Man. United"
           team2Logo={TeamLogos.LEIC}
