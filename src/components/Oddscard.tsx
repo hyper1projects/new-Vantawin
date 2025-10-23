@@ -11,7 +11,7 @@ interface OddscardProps {
   time: string;
   date: string;
   league: string;
-  isLive: boolean; // New prop to indicate if the match is live
+  isLive: boolean;
 }
 
 const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive }) => {
@@ -24,14 +24,10 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
 
   return (
     <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full max-w-sm">
-      {/* Top section: Favorite, Live, Time, Date, League */}
+      {/* Top section: Time/Live, Date, League */}
       <div className="flex justify-between items-center text-gray-400 text-xs mb-4">
-        <div className="flex items-center space-x-2"> {/* Left side: Favorite & Live */}
-          <button onClick={handleFavoriteClick} className="p-0.5 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400">
-            <Star
-              className={`w-4 h-4 ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'} cursor-pointer hover:text-yellow-400`}
-            />
-          </button>
+        <div className="flex items-center space-x-2"> {/* Left side: Time/Live & Live indicator */}
+          <span>{isLive ? 'LIVE' : time}</span> {/* Display 'LIVE' or actual time */}
           {isLive && ( // Conditionally render LIVE indicator
             <span className="flex items-center text-red-500 font-bold">
               <span className="relative flex h-2 w-2 mr-1">
@@ -42,8 +38,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             </span>
           )}
         </div>
-        <div className="flex items-center space-x-2"> {/* Right side: Time, Date, League */}
-          <span>{isLive ? 'LIVE' : time}</span> {/* Display 'LIVE' or actual time */}
+        <div className="flex items-center space-x-2"> {/* Right side: Date, League */}
           <span>{date}</span>
           <span>{league}</span>
         </div>
@@ -71,8 +66,13 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
         </div>
       </div>
 
-      {/* Bottom section: Game View link */}
-      <div className="flex justify-end">
+      {/* Bottom section: Favorite icon and Game View link */}
+      <div className="flex justify-between items-center"> {/* Changed to justify-between */}
+        <button onClick={handleFavoriteClick} className="p-0.5 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          <Star
+            className={`w-4 h-4 ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'} cursor-pointer hover:text-yellow-400`}
+          />
+        </button>
         <a href="#" className="text-gray-300 text-sm hover:underline">Game View &gt;</a>
       </div>
     </div>
