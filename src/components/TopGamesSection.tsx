@@ -4,7 +4,7 @@ import React from 'react';
 import Oddscard from './Oddscard';
 import { Game } from '../types/game';
 import SectionHeader from './SectionHeader';
-import { Button } from '@/components/ui/button'; // Assuming shadcn/ui Button
+import { Button } from '@/components/ui/button';
 
 const TopGamesSection: React.FC = () => {
   // Define an array of game data, using the logo identifiers from logoMap.ts
@@ -48,11 +48,26 @@ const TopGamesSection: React.FC = () => {
     <div className="p-4 flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-lg shadow-sm">
       <SectionHeader title="Top Games" bgColor="vanta-blue-medium" className="w-full" /> 
       
-      {/* Buttons moved here, below the SectionHeader */}
-      <div className="flex space-x-2 w-full justify-center -mt-4 mb-2"> {/* Added negative margin-top to bring it closer */}
-        <Button variant="ghost" size="sm" className="text-white hover:bg-vanta-blue-light">All</Button>
-        <Button variant="ghost" size="sm" className="text-white hover:bg-vanta-blue-light">Live</Button>
-        <Button variant="ghost" size="sm" className="text-white hover:bg-vanta-blue-light">Upcoming</Button>
+      {/* Buttons moved here, below the SectionHeader, aligned to the left with new styling */}
+      <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-2"> {/* Added px-4 for padding */}
+        <Button 
+          size="sm" 
+          className="bg-[#0B295B] text-[#081028] hover:text-[#00EEEE] hover:bg-[#0B295B] rounded-md"
+        >
+          All
+        </Button>
+        <Button 
+          size="sm" 
+          className="bg-[#0B295B] text-[#081028] hover:text-[#00EEEE] hover:bg-[#0B295B] rounded-md"
+        >
+          Live
+        </Button>
+        <Button 
+          size="sm" 
+          className="bg-[#0B295B] text-[#081028] hover:text-[#00EEEE] hover:bg-[#0B295B] rounded-md"
+        >
+          Upcoming
+        </Button>
       </div>
 
       {games.map((game) => (
