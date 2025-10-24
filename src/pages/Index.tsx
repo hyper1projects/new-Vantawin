@@ -11,8 +11,8 @@ const Index: React.FC = () => {
       id: 'game-1',
       time: '7:00 PM',
       date: 'Today',
-      team1: { name: 'Chelsea FC', logoIdentifier: 'chelsea' },
-      team2: { name: 'Liverpool', logoIdentifier: 'liverpool' },
+      team1: { name: 'Chelsea FC', logoIdentifier: 'chelsea' }, // Updated team name and logoIdentifier
+      team2: { name: 'Liverpool', logoIdentifier: 'liverpool' }, // Updated team name and logoIdentifier
       odds: { team1: 1.5, draw: 3.0, team2: 2.5 },
       league: 'Premier League',
       isLive: false,
@@ -22,8 +22,8 @@ const Index: React.FC = () => {
       id: 'game-2',
       time: '8:30 PM',
       date: 'Tomorrow',
-      team1: { name: 'Liverpool', logoIdentifier: 'liverpool' },
-      team2: { name: 'Chelsea FC', logoIdentifier: 'chelsea' },
+      team1: { name: 'Liverpool', logoIdentifier: 'liverpool' }, // Updated team name and logoIdentifier
+      team2: { name: 'Chelsea FC', logoIdentifier: 'chelsea' }, // Updated team name and logoIdentifier
       odds: { team1: 2.1, draw: 3.2, team2: 1.9 },
       league: 'La Liga',
       isLive: true,
@@ -33,8 +33,8 @@ const Index: React.FC = () => {
       id: 'game-3',
       time: '9:00 PM',
       date: 'Yesterday',
-      team1: { name: 'Manchester United', logoIdentifier: 'MANU' }, // Updated to MANU
-      team2: { name: 'Aston Villa', logoIdentifier: 'ASTON' }, // Updated to ASTON
+      team1: { name: 'Team E', logoIdentifier: 'teamA' },
+      team2: { name: 'Team F', logoIdentifier: 'teamB' },
       odds: { team1: 1.8, draw: 3.5, team2: 2.2 },
       league: 'NBA',
       isLive: false,

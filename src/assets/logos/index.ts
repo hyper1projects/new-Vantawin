@@ -1,17 +1,17 @@
 // src/assets/logos/index.ts
 
-import manUnited from './man_united_logo.png';
-import leicesterCity from './leicester_city_logo.png';
-import chelseaLogo from './chelsea.png';
-import liverpoolLogo from './liverpool.png';
-import astonVillaLogo from './aston_villa_logo.png'; // Assuming this file exists
+// Import the specific image files using relative paths from this file.
+import manUnited from './England - Premier League/Manchester United.png';
+import leicesterCity from './England - Premier League/Leicester City.png'; // Corrected path after moving
+import crystalPalace from './England - Premier League/Crystal Palace.png';
+import westHamUnited from './England - Premier League/West Ham United.png';
+import astonVilla from './England - Premier League/Aston Villa.png';
 
+// Export them in a central map using short, standardized keys.
 export const TeamLogos: { [key: string]: string } = {
     'MANU': manUnited,
     'LEIC': leicesterCity,
-    'CRY': manUnited, // Placeholder for Crystal Palace
-    'WHU': leicesterCity, // Placeholder for West Ham United
-    'ASTON': astonVillaLogo, // Using Aston Villa logo
-    'chelsea': chelseaLogo,
-    'liverpool': liverpoolLogo,
+    'CRY': crystalPalace,
+    'WHU': westHamUnited,
+    'ASTON': astonVilla,
 };
