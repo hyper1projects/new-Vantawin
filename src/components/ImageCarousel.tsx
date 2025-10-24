@@ -1,42 +1,56 @@
-"use client";
+import React, { useCallback } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-import React from 'react';
-import { Card, CardContent } from './ui/card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from './ui/carousel';
-
-// Placeholder images - in a real app, these would likely come from an API or be more dynamic
-const carouselImages = [
-  'https://via.placeholder.com/800x300/FF5733/FFFFFF?text=Exciting+Matchups',
-  'https://via.placeholder.com/800x300/33FF57/FFFFFF?text=Big+Wins+Ahead',
-  'https://via.placeholder.com/800x300/3357FF/FFFFFF?text=Daily+Specials',
+const images = [
+  "/images/8.png",
+  "/images/8.png", // Duplicating the image to show carousel functionality
+  "/images/8.png",
 ];
 
-const ImageCarousel: React.FC = () => {
+const ImageCarousel = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
   return (
-    <div className="mb-6">
-      <Carousel className="w-full max-w-4xl mx-auto">
-        <CarouselContent>
-          {carouselImages.map((src, index) => (
-            <CarouselItem key={index}>
-              <div className="p-1">
-                <Card>
-                  <CardContent className="flex aspect-video items-center justify-center p-0">
-                    <img src={src} alt={`Carousel Image ${index + 1}`} className="w-full h-full object-cover rounded-lg" />
-                  </CardContent>
-                </Card>
-              </div>
-            </CarouselItem>
+    <div className="relative w-full max-w-2xl mx-auto">
+      <div className="overflow-hidden rounded-xl" ref={emblaRef}>
+        <div className="flex touch-pan-y">
+          {images.map((src, index) => (
+            <div className="flex-none min-w-0 w-full" key={index}>
+              <img
+                src={src}
+                alt={`Carousel image ${index + 1}`}
+                className="block w-full h-auto object-cover rounded-xl"
+              />
+            </div>
           ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      <Button
+        className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/10 text-vanta-neon-blue hover:bg-white/20 p-2 rounded-full shadow-md backdrop-blur-sm"
+        onClick={scrollPrev}
+        disabled={!emblaApi?.canScrollPrev()}
+      >
+        <ChevronLeft size={24} />
+      </Button>
+      <Button
+        className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/10 text-vanta-neon-blue hover:bg-white/20 p-2 rounded-full shadow-md backdrop-blur-sm"
+        onClick={scrollNext}
+        disabled={!emblaApi?.canScrollNext()}
+      >
+        <ChevronRight size={24} />
+      </Button>
     </div>
   );
 };

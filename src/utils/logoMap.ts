@@ -1,38 +1,16 @@
-// This file centralizes the mapping between team identifiers (keys) and their corresponding image sources (base64 data).
-// In a production app with a bundler like Vite, these strings would often be replaced by actual public image URLs.
+import { teamALogoPath, teamBLogoPath } from '../components/assets/logos'; // Import from the centralized index
 
-// --- Base64 SVG/PNG placeholders for required teams ---
-// Placeholder data is used to ensure the component compiles and renders without requiring external image files.
-
-const CRYSTAL_PALACE_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9IiMwMDM0N2EiLz4KPHBhdGggZD0iTTEyIDMuNUMxMiAzLjUgOS41IDYuNSA5LjUgMTEuNUM5LjUgMTYuNSA5LjUgMjAgMTIgMjBTMjAgMTYuNSAyMCAxMS41QzIwIDYuNSAxNyAzLjUgMTIgMy41WiIgZmlsbD0id2hpdGUiIHN0cm9rZT0iIzU5NDhFMyIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPHBhdGggZD0iTTEwLjUgMTMuNUgxMy41VjE2LjVIMTQuNVYxMy41WiIgZmlsbD0iI0QxMjIxOSIvPgo8L3N2Zz4=';
-const WEST_HAM_UNITED_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9IiM2NjAwRkYiLz4KPHBhdGggZD0iTTEyIDMuNUMxMiAzLjUgOS41IDUuNSA5LjUgMTIuNUM5LjUgMTkuNSA5LjUgMjAgMTIgMjBTMjAuNSAxOC41IDIwLjUgMTAuNUMyMC41IDkuNSAxNyAzLjUgMTIgMy41WiIgZmlsbD0iI0Y1QzY2OSIgc3Ryb2tlPSIjMTQwMjU2IiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8cGF0aCBkPSJNMTQuNSAxNC41SDEzLjVWMTcuNUgxMC41VjE0LjVaIiBmaWxsPSIjNzA2MDMwIi8+Cjwvc3ZnPg==';
-const MANCHESTER_UNITED_LOGO = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzVEODhFMyI+PHBhdGggZD0iTTEyIDJDMTAuNiAyIDkgMy40IDkgNXY0aDJWMmgydi0zSDl2LTNjMC0xLjEgMS4zLTIgMi0yaDJjMS40IDAgMi42IDEuNCAyLjYgM3YzaDJWMzFoLTJWMTdoLTRWMTVjMC0xLjYgMS40LTMgMy0zYzEuNiAwIDMgMS40IDMgM3Y0aDRWMjloLTJ2LTNoLTJWOWMtLjQtLjktMS0xLjUtMi0yLTFzLTIuMi0uNS0zLjUtLjVjLS44IDAtMi40LjEtMy41LjUtMS43LjctMyA0LjEtMyA2LjV2NGgtMlYxMWMwLTQuNiA0LjQtOSA1LTkuMi40LS4xLjgtLjEgMS4yLS4xLjQgMCAuOCAwIDEuMi4xLjcuMSAxLjMuNCAxLjcuOVYyNEMyMiA0LjMgMTggNCAxMiA0em0wIDE1Yy0xLjIgMC0yLS44LTItMnMuOC0yIDItMiAyIC44IDIgMi0uOCAyLTItMnoiLz48L3N2Zz4=';
-const LEICESTER_CITY_LOGO = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwN0JGRiI+PHBhdGggZD0iTTExLjggNS40YzAgLjIgMCAuMyAwIC41VjExLjhsLTUuMyAxLjJjLS4zIDAtLjYgMC0uOSAwVjUuMWMwLS4xLS4xLS40LS40LS40cy0uNC40LS40LjR2My40Yy0uMiAwLS4zLjItLjMuMyAwIC4zLjEgLjUgLjQuNWgxYy4yIDAgLjMuMi4zLjNsLjEgLjRjMCAuMiAwIC4zIDAgLjUgIDAtLjEgMCAuMiAwIC4zVjE5LjljLS41IDAtLjktLjItMS4zLS41LS43LS42LS42LTEuNy0uNi0yLjNsLjEtMS44bDMuNy0yLjlsLTIuMy0uNi0yLjUtLjctLjQt1LjUgNC40LS41di0xLjFjLS40LS4xLS45LS4zLTEuMy0uNWgtMS44di0xLjFjMS4xLS40IDIuMi0uMyAzLjEtLjMuNCAwIDEgMCAxLjYtLjNWMi4xYzAtLjQuNC0uOC44LS44LjQuNC44LjYgLjguNi0uMyAwLS42LjEtLjkgLjVIMTUuMWMtLjUgMC0uNy40LS43LjR2LjhhLTEuMy4yLjkxLS4zLTIgMTZjLTEuMSAxLjQtMS4yIDIuOS0uNyA0LjVsMSAuMmMuMiAwIC42IDAgLjgtLjFsLS4xLS4zLjMtLjhjMC0uMi4zLS4zLjMtLjMgLjcgMC0uNy0uNiAwLS41aDRjLjIgMCAuNC0uMS40LS4zVjEzLjJjMC0uMi0uMi0uNC0uNS0uNFoiLz48L3N2Zz4=';
-const ASTON_VILLA_LOGO = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzZBMzFGNiI+PHBhdGggZD0iTTEyIDJDMTAuNiAyIDkgMy40IDkgNnYxNC41YzAgLjYgLjQgMS4xIDEgMS41LjkgLjUgMiAuMyAzLjEtLjQtLjUgMC0xIC4xLTEuNiAwLTQuNy0uMS04LjQtNC4xLTguNC04LjhWMi41YzAtLjMuMy0uNS42LS42LjQtLjEuOC0uMSAxLjItLjFjLjQgMCAuOCAwIDEuMi4xLjYuMiAxLjEuNSAxLjcuOSAxLjQuNyAyLjQgMi45IDIuOSA0LjVzLTEuMyA1LjYtMi44IDYuNmwtLjMuMWMtLjQuMi0uNy4zLTEuMS4zcy0uNy0uMS0xLjEtLjN2My41YzAgLjQtLjMuOC0uNi43LS43LS4xLTEuMy0uNC0xLjctLjktLjUtLjctLjctMS43LS42LTIuNnZ0LTQuNWMtLjUgMC0xIDAtMS40LS4xcy0uOC0uMi0xLjItLjJjLS45IDAtMS42LjMtMi4xLjhsLS4xLjFjLS4xLjEtLjMuMi0uMy4zdjUtLjZsLTQuNy41Yy0uMyAwLS42LS4xLS45LS4xLS40IDAtLjctLjItMS4xLS40VjIuNWMwLS4zLjMtLjUuNi0uNnMuNy0uMSAxLjEtLjEuOCAwIDEuNi4xIi8+PC9zdmc+';
-
-
-// The centralized map using the user's keys
-export const TeamLogos: { [key: string]: string } = {
-    'MANU': MANCHESTER_UNITED_LOGO,
-    'LEIC': LEICESTER_CITY_LOGO,
-    'CRY': CRYSTAL_PALACE_LOGO,
-    'WHU': WEST_HAM_UNITED_LOGO,
-    'ASTON': ASTON_VILLA_LOGO,
+// This map should be updated with your actual logo files.
+// For example, if you have 'src/components/assets/logos/myTeam.png',
+// you would add: import myTeamLogoPath from '../components/assets/logos/myTeam.png';
+// and then: 'myTeam': myTeamLogoPath,
+export const logoMap: { [key: string]: string } = {
+  'teamA': teamALogoPath,
+  'teamB': teamBLogoPath,
+  // Add more mappings here for your actual team logos
 };
 
-/**
- * Retrieves the base64 source for a team logo based on its identifier key.
- * @param key The short identifier for the team (e.g., 'CRY', 'MANU').
- * @returns The base64 image string or a default placeholder if not found.
- */
-export function getLogoSrc(key: string | undefined | null): string { // Added undefined | null to type
-    if (!key) { // Check if key is undefined or null
-        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSIxMiIgZmlsbD0iIzIyMjIiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkZGIj5OPC90ZXh0Pjwvc3ZnPg==';
-    }
-    const logo = TeamLogos[key.toUpperCase()];
-    if (logo) {
-        return logo;
-    }
-    // Fallback: A generic placeholder if the key is not recognized
-    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSIxMiIgZmlsbD0iIzIyMjIiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkZGIj5OPC90ZXh0Pjwvc3ZnPg==';
-}
+export const getLogoSrc = (logoIdentifier: string): string => {
+  // Returns the mapped logo path or a generic placeholder if not found
+  return logoMap[logoIdentifier] || 'https://via.placeholder.com/24';
+};
