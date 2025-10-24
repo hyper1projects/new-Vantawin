@@ -101,8 +101,8 @@ const TopGamesSection: React.FC = () => {
         </Button>
       </div>
 
-      {/* Wrapper div for Oddscards - removed px-4 */}
-      <div className="w-full space-y-6"> {/* Removed px-4 */}
+      {/* Wrapper div for Oddscards - now a responsive grid */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
         {filteredGames.map((game) => (
           <Oddscard
             key={game.id}
