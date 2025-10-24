@@ -3,7 +3,8 @@
 import React from 'react';
 import Oddscard from './Oddscard';
 import { Game } from '../types/game';
-import SectionHeader from './SectionHeader'; // Import SectionHeader
+import SectionHeader from './SectionHeader';
+import { Button } from '@/components/ui/button'; // Assuming shadcn/ui Button
 
 const TopGamesSection: React.FC = () => {
   // Define an array of game data, using the logo identifiers from logoMap.ts
@@ -45,7 +46,15 @@ const TopGamesSection: React.FC = () => {
 
   return (
     <div className="p-4 flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-lg shadow-sm">
-      <SectionHeader title="Top Games" bgColor="vanta-blue-medium" className="w-full" /> {/* Use SectionHeader here */}
+      <SectionHeader title="Top Games" bgColor="vanta-blue-medium" className="w-full" /> 
+      
+      {/* Buttons moved here, below the SectionHeader */}
+      <div className="flex space-x-2 w-full justify-center -mt-4 mb-2"> {/* Added negative margin-top to bring it closer */}
+        <Button variant="ghost" size="sm" className="text-white hover:bg-vanta-blue-light">All</Button>
+        <Button variant="ghost" size="sm" className="text-white hover:bg-vanta-blue-light">Live</Button>
+        <Button variant="ghost" size="sm" className="text-white hover:bg-vanta-blue-light">Upcoming</Button>
+      </div>
+
       {games.map((game) => (
         <Oddscard
           key={game.id}
