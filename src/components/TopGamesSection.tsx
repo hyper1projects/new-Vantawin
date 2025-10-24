@@ -64,9 +64,9 @@ const TopGamesSection: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-lg shadow-sm pb-12">
+    <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
       {/* Header wrapper div now extends full width */}
-      <div className="w-full bg-[#0D2C60] rounded-t-lg">
+      <div className="w-full bg-[#0D2C60] rounded-t-[27px]">
         <SectionHeader title="Top Games" className="w-full" textColor="text-white" />
       </div>
       
