@@ -1,41 +1,40 @@
 "use client";
 
-import React from 'react';
-import MatchCard from './MatchCard'; // Assuming MatchCard is in the same directory or correctly imported
-import { TeamLogos } from '@/assets/logos'; // Import the centralized TeamLogos map
+import React, { useState } from 'react';
+import SectionHeader from './SectionHeader';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider'; // Import the Slider component
 
 const PointsMultiplierSection: React.FC = () => {
+  const [multiplier, setMultiplier] = useState<number>(1.5); // State for the slider value
+
+  const handleSliderChange = (value: number[]) => {
+    setMultiplier(value[0]);
+  };
+
   return (
-    <div className="w-full py-8 px-4">
-      <h2 className="text-xl md:text-2xl font-bold text-white mb-8 text-left tracking-tight">Points Multiplier</h2>
-      <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6">
-        <MatchCard
-          date="Today"
-          time="09:00 PM"
-          team1Logo={TeamLogos.MANU}
-          team1Name="Man. United"
-          team2Logo={TeamLogos.LEIC}
-          team2Name="Leicester City"
-          multiplier="2.5x"
+    <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
+      <div className="w-full bg-[#0D2C60] rounded-t-[27px]">
+        <SectionHeader title="Points Multiplier" className="w-full" textColor="text-white" />
+      </div>
+
+      <div className="w-full px-4 flex flex-col items-center space-y-4">
+        <div className="text-white text-4xl font-bold">
+          {multiplier.toFixed(1)}x {/* Display the current multiplier value */}
+        </div>
+        
+        <Slider
+          defaultValue={[multiplier]}
+          max={3}
+          min={1}
+          step={0.1}
+          onValueChange={handleSliderChange}
+          className="w-full max-w-xs" // Adjust width as needed
         />
-        <MatchCard
-          date="Tomorrow"
-          time="09:00 PM"
-          team1Logo={TeamLogos.MANU}
-          team1Name="Man. United"
-          team2Logo={TeamLogos.LEIC}
-          team2Name="Leicester City"
-          multiplier="2.5x"
-        />
-        <MatchCard
-          date="Tomorrow"
-          time="09:00 PM"
-          team1Logo={TeamLogos.MANU}
-          team1Name="Man. United"
-          team2Logo={TeamLogos.LEIC}
-          team2Name="Leicester City"
-          multiplier="2.5x"
-        />
+
+        <Button className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2">
+          Apply Multiplier
+        </Button>
       </div>
     </div>
   );
