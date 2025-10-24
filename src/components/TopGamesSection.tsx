@@ -1,12 +1,17 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react'; // Import useState
 import Oddscard from './Oddscard';
 import { Game } from '../types/game';
 import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils'; // Import cn for conditional class merging
+
+type GameFilter = 'All' | 'Live' | 'Upcoming';
 
 const TopGamesSection: React.FC = () => {
+  const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All'); // State to manage selected filter
+
   // Define an array of game data, using the logo identifiers from logoMap.ts
   const games: Game[] = [
     {
@@ -44,27 +49,36 @@ const TopGamesSection: React.FC = () => {
     },
   ];
 
+  const getButtonClasses = (filter: GameFilter) => {
+    const isSelected = selectedFilter === filter;
+    return cn(
+      "size-sm rounded-md",
+      isSelected
+        ? "bg-[#00EEEE] text-[#081028]" // Selected state
+        : "bg-[#0B295B] text-white hover:text-[#00EEEE] hover:bg-[#0B295B]" // Not selected state
+    );
+  };
+
   return (
     <div className="p-4 flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-lg shadow-sm">
       <SectionHeader title="Top Games" bgColor="vanta-blue-medium" className="w-full" /> 
       
-      {/* Buttons moved here, below the SectionHeader, aligned to the left with new styling */}
-      <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-2"> {/* Added px-4 for padding */}
+      <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-2">
         <Button 
-          size="sm" 
-          className="bg-[#0B295B] text-[#081028] hover:text-[#00EEEE] hover:bg-[#0B295B] rounded-md"
+          onClick={() => setSelectedFilter('All')}
+          className={getButtonClasses('All')}
         >
           All
         </Button>
         <Button 
-          size="sm" 
-          className="bg-[#0B295B] text-[#081028] hover:text-[#00EEEE] hover:bg-[#0B295B] rounded-md"
+          onClick={() => setSelectedFilter('Live')}
+          className={getButtonClasses('Live')}
         >
           Live
         </Button>
         <Button 
-          size="sm" 
-          className="bg-[#0B295B] text-[#081028] hover:text-[#00EEEE] hover:bg-[#0B295B] rounded-md"
+          onClick={() => setSelectedFilter('Upcoming')}
+          className={getButtonClasses('Upcoming')}
         >
           Upcoming
         </Button>
