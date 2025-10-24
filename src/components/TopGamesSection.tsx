@@ -74,13 +74,13 @@ const TopGamesSection: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-lg shadow-sm"> {/* Removed py-4 */}
+    <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-lg shadow-sm">
       {/* Header wrapper div now extends full width */}
       <div className="w-full bg-[#0D2C60] rounded-t-lg">
         <SectionHeader title="Top Games" className="w-full" textColor="text-white" />
       </div>
       
-      <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-2">
+      <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-4 border-b border-gray-700 pb-4"> {/* Added border-b, border-gray-700, pb-4, and changed mb-2 to mb-4 */}
         <Button 
           onClick={() => setSelectedFilter('All')}
           className={getButtonClasses('All')}
