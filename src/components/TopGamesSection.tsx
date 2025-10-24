@@ -107,6 +107,14 @@ const TopGamesSection: React.FC = () => {
           />
         ))}
       </div>
+
+      {/* Show More Button */}
+      <Button 
+        className="bg-[#0B295B] text-white hover:text-[#00EEEE] hover:bg-[#0B295B] rounded-[12px] px-6 py-2 mt-4"
+        onClick={() => console.log('Show More clicked')} // Placeholder for future functionality
+      >
+        Show More
+      </Button>
     </div>
   );
 };
