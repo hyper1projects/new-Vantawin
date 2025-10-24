@@ -49,10 +49,24 @@ const TopGamesSection: React.FC = () => {
     },
   ];
 
+  // Filter games based on the selectedFilter
+  const filteredGames = games.filter(game => {
+    if (selectedFilter === 'All') {
+      return true;
+    }
+    if (selectedFilter === 'Live') {
+      return game.isLive;
+    }
+    if (selectedFilter === 'Upcoming') {
+      return !game.isLive; // Assuming 'Upcoming' means not live
+    }
+    return false;
+  });
+
   const getButtonClasses = (filter: GameFilter) => {
     const isSelected = selectedFilter === filter;
     return cn(
-      "size-sm rounded-[12px]", // Changed from rounded-md to rounded-[12px]
+      "size-sm rounded-[12px]",
       isSelected
         ? "bg-[#00EEEE] text-[#081028]"
         : "bg-[#0B295B] text-white hover:text-[#00EEEE] hover:bg-[#0B295B]"
@@ -84,7 +98,7 @@ const TopGamesSection: React.FC = () => {
         </Button>
       </div>
 
-      {games.map((game) => (
+      {filteredGames.map((game) => ( // Render filteredGames instead of games
         <Oddscard
           key={game.id}
           time={game.time}
