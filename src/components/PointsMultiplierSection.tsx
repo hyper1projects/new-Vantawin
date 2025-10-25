@@ -4,15 +4,13 @@ import React from 'react';
 import MatchCard from './MatchCard';
 import SectionHeader from './SectionHeader';
 import { Game } from '../types/game';
-import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
+import { logoMap } from '../utils/logoMap';
 
 interface PointsMultiplierSectionProps {
   className?: string; // Add className prop
 }
 
 const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ className }) => { // Destructure className
-  const { setSelectedMatch } = useMatchSelection(); // Get setSelectedMatch from context
-
   // Define an array of game data, using the logo identifiers from logoMap.ts
   const allGames: Game[] = [
     {
@@ -107,8 +105,14 @@ const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ class
           {gamesWithBestOdds.map((game) => (
             <MatchCard
               key={game.id}
-              game={game} // Pass the entire game object
-              onSelectMatch={(selectedGame) => setSelectedMatch(selectedGame, null)} // Update context on selection
+              date={`${game.date} - ${game.time}`}
+              team1Logo={logoMap[game.team1.logoIdentifier] || '/path/to/default-logo.png'}
+              team1Name={game.team1.name}
+              team2Logo={logoMap[game.team2.logoIdentifier] || '/path/to/default-logo.png'}
+              team2Name={game.team2.name}
+              option1={game.odds.team1.toString()}
+              option2={game.odds.draw.toString()}
+              option3={game.odds.team2.toString()}
             />
           ))}
         </div>
