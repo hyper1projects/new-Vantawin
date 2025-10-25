@@ -1,109 +1,98 @@
 "use client";
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { Pool } from '../types/pool';
-import { Users, Clock, CalendarDays } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { cn } from '../lib/utils';
+import { format } from 'date-fns';
 
 interface PoolCardProps {
   pool: Pool;
 }
 
 const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
-  const getStatusClasses = (status: Pool['status']) => {
+  const progress = (pool.participants / pool.maxParticipants) * 100;
+
+  const getStatusClasses = (status: string) => {
     switch (status) {
       case 'ongoing':
-        return 'bg-green-600 text-white';
+        return 'bg-green-500 text-white';
       case 'upcoming':
-        return 'bg-blue-600 text-white';
+        return 'bg-blue-500 text-white';
       case 'ended':
-        return 'bg-gray-600 text-white';
-      default:
         return 'bg-gray-500 text-white';
+      default:
+        return 'bg-gray-300 text-gray-800';
     }
   };
 
-  const getTierBorderClasses = (tier: Pool['tier']) => {
+  const getTierClasses = (tier: string) => {
     switch (tier) {
       case 'Bronze':
-        return 'from-amber-700 to-amber-500'; // Bronze gradient
+        return 'bg-yellow-700 text-white';
       case 'Silver':
-        return 'from-gray-400 to-gray-200'; // Silver gradient
+        return 'bg-gray-400 text-gray-800';
       case 'Gold':
-        return 'from-yellow-500 to-yellow-300'; // Gold gradient
+        return 'bg-yellow-500 text-gray-800';
       default:
-        return 'from-vanta-purple to-vanta-neon-blue'; // Default gradient
+        return 'bg-gray-300 text-gray-800';
     }
-  };
-
-  const formatDateTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    });
   };
 
   return (
-    <div className={cn(
-      "relative p-[2px] rounded-[27px] w-full max-w-sm mx-auto shadow-lg flex-shrink-0",
-      `bg-gradient-to-t ${getTierBorderClasses(pool.tier)}`
-    )}>
-      <div className="bg-vanta-blue-dark rounded-[27px] h-full w-full p-6 flex flex-col justify-between text-white">
-        {pool.image && (
-          <img src={pool.image} alt={pool.name} className="w-full h-32 object-cover rounded-lg mb-4" />
-        )}
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-bold text-vanta-text-light">{pool.name}</h3>
-          <span className={cn("px-3 py-1 rounded-full text-xs font-semibold", getStatusClasses(pool.status))}>
-            {pool.status.charAt(0).toUpperCase() + pool.status.slice(1)}
+    <div className="relative bg-[#011B47] rounded-[27px] p-4 shadow-sm flex flex-col text-vanta-text-light w-full h-full">
+      <img
+        src={pool.image}
+        alt={pool.name}
+        className="w-full h-32 object-cover rounded-t-[20px] mb-4"
+      />
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-xl font-bold text-vanta-neon-blue">{pool.name}</h3>
+        <span className={cn("text-xs font-semibold px-2 py-1 rounded-md", getStatusClasses(pool.status))}>
+          {pool.status.toUpperCase()}
+        </span>
+      </div>
+
+      {/* Removed the description paragraph */}
+
+      <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-vanta-text-light mb-6">
+        <div className="flex items-center">
+          <span className="font-medium text-gray-400 mr-2">Prize Pool:</span>
+          <span className="font-semibold text-vanta-neon-blue">${pool.prizePool.toLocaleString()}</span>
+        </div>
+        <div className="flex items-center">
+          <span className="font-medium text-gray-400 mr-2">Entry Fee:</span>
+          <span className="font-semibold text-vanta-neon-blue">${pool.entryFee}</span>
+        </div>
+        <div className="flex items-center">
+          <span className="font-medium text-gray-400 mr-2">Participants:</span>
+          <span className="font-semibold">{pool.participants}/{pool.maxParticipants}</span>
+        </div>
+        <div className="flex items-center">
+          <span className="font-medium text-gray-400 mr-2">Tier:</span>
+          <span className={cn("text-xs font-semibold px-2 py-1 rounded-md", getTierClasses(pool.tier))}>
+            {pool.tier}
           </span>
         </div>
-
-        <p className="text-vanta-text-medium text-sm mb-4 flex-grow">{pool.description}</p>
-
-        <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-vanta-text-light mb-6">
-          <div className="flex items-center">
-            <Users size={16} className="mr-2 text-vanta-neon-blue" />
-            <span>Participants: {pool.participants}{pool.maxParticipants ? `/${pool.maxParticipants}` : ''}</span>
-          </div>
-          <div className="flex items-center">
-            <span className="font-bold text-vanta-neon-blue mr-2">₦</span>
-            <span>Entry Fee: {pool.entryFee.toLocaleString()}</span>
-          </div>
-          <div className="flex items-center col-span-2">
-            <CalendarDays size={16} className="mr-2 text-vanta-neon-blue" />
-            <span>Starts: {formatDateTime(pool.startTime)}</span>
-          </div>
-          <div className="flex items-center col-span-2">
-            <Clock size={16} className="mr-2 text-vanta-neon-blue" />
-            <span>Ends: {formatDateTime(pool.endTime)}</span>
-          </div>
+        <div className="flex items-center col-span-2">
+          <span className="font-medium text-gray-400 mr-2">Starts:</span>
+          <span className="font-semibold">{format(new Date(pool.startTime), 'MMM dd, yyyy HH:mm')}</span>
         </div>
-
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-bold text-vanta-neon-blue">
-            Prize Pool: ₦{pool.prizePool.toLocaleString()}
-          </span>
-          <Button
-            className={cn(
-              "px-6 py-2 rounded-[14px] font-bold text-sm",
-              pool.status === 'ongoing'
-                ? "bg-vanta-neon-blue text-vanta-blue-dark hover:bg-opacity-90"
-                : pool.status === 'upcoming'
-                ? "bg-blue-500 text-white hover:bg-blue-600"
-                : "bg-gray-500 text-white cursor-not-allowed"
-            )}
-            disabled={pool.status === 'ended'}
-          >
-            {pool.status === 'ongoing' ? 'Join Pool' : pool.status === 'upcoming' ? 'View Details' : 'Ended'}
-          </Button>
+        <div className="flex items-center col-span-2">
+          <span className="font-medium text-gray-400 mr-2">Ends:</span>
+          <span className="font-semibold">{format(new Date(pool.endTime), 'MMM dd, yyyy HH:mm')}</span>
         </div>
       </div>
+
+      <div className="mb-4">
+        <Progress value={progress} className="w-full h-2 bg-[#01112D]" indicatorClassName="bg-vanta-neon-blue" />
+        <p className="text-right text-xs text-gray-400 mt-1">{progress.toFixed(0)}% Full</p>
+      </div>
+
+      <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] py-2 text-sm font-semibold mt-auto">
+        {pool.status === 'ongoing' ? 'Join Pool' : pool.status === 'upcoming' ? 'View Details' : 'View Results'}
+      </Button>
     </div>
   );
 };
