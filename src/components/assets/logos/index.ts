@@ -1,17 +1,8 @@
-// src/assets/logos/index.ts
+// For demonstration, using placeholder image URLs.
+// In a real application, these would be actual imported image files:
+// import teamALogo from './teamA.png';
+// export const teamALogoPath = teamALogo;
 
-// Import the specific image files using relative paths from this file.
-import manUnited from './England - Premier League/Manchester United.png';
-import leicesterCity from './England - Premier League/Leicester City.png'; // Corrected path after moving
-import crystalPalace from './England - Premier League/Crystal Palace.png';
-import westHamUnited from './England - Premier League/West Ham United.png';
-import astonVilla from './England - Premier League/Aston Villa.png';
-
-// Export them in a central map using short, standardized keys.
-export const TeamLogos: { [key: string]: string } = {
-    'MANU': manUnited,
-    'LEIC': leicesterCity,
-    'CRY': crystalPalace,
-    'WHU': westHamUnited,
-    'ASTON': astonVilla,
-};
+export const teamALogoPath = 'https://via.placeholder.com/24/FF0000/FFFFFF?text=A'; // Example placeholder for Team A
+export const teamBLogoPath = 'https://via.placeholder.com/24/0000FF/FFFFFF?text=B'; // Example placeholder for Team B
+// Add more logo paths here as you add actual logo image files

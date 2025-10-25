@@ -4,15 +4,15 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Game } from '../types/game';
-import { logoMap } from '../utils/logoMap'; // Assuming logoMap is available
+import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 
 interface GameCardProps {
   game: Game;
 }
 
 const GameCard: React.FC<GameCardProps> = ({ game }) => {
-  const team1Logo = logoMap[game.team1.logoIdentifier] || '/images/default-logo.png';
-  const team2Logo = logoMap[game.team2.logoIdentifier] || '/images/default-logo.png';
+  const team1Logo = getLogoSrc(game.team1.logoIdentifier);
+  const team2Logo = getLogoSrc(game.team2.logoIdentifier);
 
   return (
     <Card className="bg-vanta-base text-vanta-text-light border-vanta-border flex flex-col h-full">
