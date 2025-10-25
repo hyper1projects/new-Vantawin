@@ -4,7 +4,7 @@ import React from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 import { Button } from './ui/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import GameCard from './GameCard';
+import Oddscard from './Oddscard'; // Import the new Oddscard component
 import { Game } from '../types/game';
 
 interface LiveGamesSectionProps {
@@ -65,7 +65,7 @@ const LiveGamesSection: React.FC<LiveGamesSectionProps> = ({ className }) => {
       <CollapsibleContent className="bg-vanta-base p-4 rounded-b-md border border-t-0 border-vanta-border">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {liveGames.map((game) => (
-            <GameCard key={game.id} game={game} />
+            <Oddscard key={game.id} {...game} /> {/* Pass game props directly to Oddscard */}
           ))}
         </div>
       </CollapsibleContent>

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
-import { getLogoSrc } from '../utils/logoMap.ts';
+import { getLogoSrc } from '../utils/logoMap'; // Ensure correct path
 
 // NOTE: Assuming these types are correctly defined in '../types/game'
 interface Team {
@@ -52,9 +52,6 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
     );
 
     return (
-        // *****************************************************************
-        // ** CHANGE: Removed 'max-w-sm' to allow the card to expand fully **
-        // *****************************************************************
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
             {/* Top section: Time/Live & Date (left), League (right) */}
