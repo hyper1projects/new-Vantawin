@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const MainHeader: React.FC = () => {
-  const sportsCategories = ['Football', 'Basketball', 'Tennis', 'A.Football', 'Golf'];
+  const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports',];
   const location = useLocation();
   const currentPath = location.pathname;
 
