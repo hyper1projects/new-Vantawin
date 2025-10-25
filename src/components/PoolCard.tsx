@@ -3,7 +3,7 @@
 import React from 'react';
 import { Pool } from '../types/pool';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/components/ui/progress'; // This import will no longer be needed, but I'll keep it for now as it's not causing issues.
 import { cn } from '../lib/utils';
 import { format } from 'date-fns';
 
@@ -12,6 +12,7 @@ interface PoolCardProps {
 }
 
 const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
+  // The 'progress' calculation is no longer needed, but keeping it won't harm.
   const progress = (pool.participants / pool.maxParticipants) * 100;
 
   const getStatusClasses = (status: string) => {
@@ -83,10 +84,7 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
         </div>
       </div>
 
-      <div className="mb-4">
-        <Progress value={progress} className="w-full h-2 bg-[#01112D]" indicatorClassName="bg-vanta-neon-blue" />
-        {/* Removed the percentage text here */}
-      </div>
+      {/* The div containing the Progress component has been removed */}
 
       <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] py-2 text-sm font-semibold mt-auto">
         {pool.status === 'ongoing' ? 'Join Pool' : pool.status === 'upcoming' ? 'View Details' : 'View Results'}
