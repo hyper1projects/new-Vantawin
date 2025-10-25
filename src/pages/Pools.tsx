@@ -96,38 +96,38 @@ const Pools = () => {
     <div className="p-4">
       <h1 className="text-3xl font-bold text-vanta-text-light mb-8 text-left">Pools</h1>
 
-      {/* Ongoing Pools Section */}
+      {/* Bronze Tier Section (formerly Ongoing Pools) */}
       <div className="mb-12">
-        <SectionHeader title="Ongoing Pools" className="mb-6" textColor="text-vanta-text-light" />
+        <SectionHeader title="Bronze Tier" className="mb-6" textColor="text-vanta-text-light" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {ongoingPools.length > 0 ? (
             ongoingPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
           ) : (
-            <p className="text-vanta-text-medium col-span-full text-center">No ongoing pools at the moment.</p>
+            <p className="text-vanta-text-medium col-span-full text-center">No Bronze Tier pools at the moment.</p>
           )}
         </div>
       </div>
 
-      {/* Upcoming Pools Section */}
+      {/* Silver Tier Section (formerly Upcoming Pools) */}
       <div className="mb-12">
-        <SectionHeader title="Upcoming Pools" className="mb-6" textColor="text-vanta-text-light" />
+        <SectionHeader title="Silver Tier" className="mb-6" textColor="text-vanta-text-light" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {upcomingPools.length > 0 ? (
             upcomingPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
           ) : (
-            <p className="text-vanta-text-medium col-span-full text-center">No upcoming pools planned yet.</p>
+            <p className="text-vanta-text-medium col-span-full text-center">No Silver Tier pools planned yet.</p>
           )}
         </div>
       </div>
 
-      {/* Ended Pools Section */}
+      {/* Gold Tier Section (formerly Ended Pools) */}
       <div className="mb-12">
-        <SectionHeader title="Ended Pools" className="mb-6" textColor="text-vanta-text-light" />
+        <SectionHeader title="Gold Tier" className="mb-6" textColor="text-vanta-text-light" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {endedPools.length > 0 ? (
             endedPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
           ) : (
-            <p className="text-vanta-text-medium col-span-full text-center">No pools have ended recently.</p>
+            <p className="text-vanta-text-medium col-span-full text-center">No Gold Tier pools have ended recently.</p>
           )}
         </div>
       </div>
