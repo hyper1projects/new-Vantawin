@@ -54,8 +54,6 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
         </span>
       </div>
 
-      {/* Removed the description paragraph */}
-
       <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-vanta-text-light mb-6">
         <div className="flex items-center">
           <span className="font-medium text-gray-400 mr-2">Prize Pool:</span>
@@ -87,7 +85,7 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
 
       <div className="mb-4">
         <Progress value={progress} className="w-full h-2 bg-[#01112D]" indicatorClassName="bg-vanta-neon-blue" />
-        <p className="text-right text-xs text-gray-400 mt-1">{progress.toFixed(0)}% Full</p>
+        {/* Removed the percentage text here */}
       </div>
 
       <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] py-2 text-sm font-semibold mt-auto">
