@@ -6,7 +6,7 @@ import { cn } from '../lib/utils';
 interface Player {
   rank: number;
   playerName: string;
-  score: number;
+  xp: number; 
   isCurrentUser?: boolean;
 }
 
@@ -34,7 +34,7 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({ topPlayers, class
         {player2 ? (
           <>
             <span className="text-lg font-bold text-vanta-neon-blue">{player2.playerName}</span>
-            <span className="text-sm text-gray-400">{player2.score.toLocaleString()}</span>
+            <span className="text-sm text-gray-400">{(player2.xp ?? 0).toLocaleString()}</span> {/* Added nullish coalescing for safety */}
           </>
         ) : (
           <span className="text-sm text-gray-500">#2</span>
@@ -46,7 +46,7 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({ topPlayers, class
         {player1 ? (
           <>
             <span className="text-xl font-extrabold text-vanta-neon-blue">{player1.playerName}</span>
-            <span className="text-base text-gray-400">{player1.score.toLocaleString()}</span>
+            <span className="text-base text-gray-400">{(player1.xp ?? 0).toLocaleString()}</span> {/* Added nullish coalescing for safety */}
           </>
         ) : (
           <span className="text-base text-gray-500">#1</span>
@@ -58,7 +58,7 @@ const LeaderboardPodium: React.FC<LeaderboardPodiumProps> = ({ topPlayers, class
         {player3 ? (
           <>
             <span className="text-lg font-bold text-vanta-neon-blue">{player3.playerName}</span>
-            <span className="text-sm text-gray-400">{player3.score.toLocaleString()}</span>
+            <span className="text-sm text-gray-400">{(player3.xp ?? 0).toLocaleString()}</span> {/* Added nullish coalescing for safety */}
           </>
         ) : (
           <span className="text-sm text-gray-500">#3</span>
