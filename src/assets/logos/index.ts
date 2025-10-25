@@ -14,6 +14,8 @@ import realMadrid from './Spain - LaLiga/Real Madrid.png';
 import barcelona from './Spain - LaLiga/FC Barcelona.png';
 import bayernMunich from './Germany - Bundesliga/Bayern Munich.png';
 import borussiaDortmund from './Germany - Bundesliga/Borussia Dortmund.png';
+import atleticoMadrid from './Spain - LaLiga/Atlético de Madrid.png'; // New La Liga logo
+import sevilla from './Spain - LaLiga/Sevilla FC.png'; // New La Liga logo
 
 
 // Export them in a central map using short, standardized keys.
@@ -31,4 +33,6 @@ export const TeamLogos: { [key: string]: string } = {
     'BAR': barcelona,
     'BAY': bayernMunich,
     'DOR': borussiaDortmund,
+    'ATM': atleticoMadrid, // New La Liga logo
+    'SEV': sevilla, // New La Liga logo
 };

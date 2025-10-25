@@ -6,6 +6,7 @@ import SectionHeader from '../components/SectionHeader';
 import SportCategoryButtons from '../components/SportCategoryButtons';
 import LiveGamesSection from '../components/LiveGamesSection';
 import PremierLeagueSection from '../components/PremierLeagueSection'; // Import the new component
+import LaLigaSection from '../components/LaLigaSection'; // Import the new LaLigaSection
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Games = () => {
@@ -48,9 +49,14 @@ const Games = () => {
             <LiveGamesSection />
           </div>
 
-          {/* New Premier League Section */}
+          {/* Premier League Section */}
           <div className="mt-8">
             <PremierLeagueSection />
+          </div>
+
+          {/* New La Liga Section */}
+          <div className="mt-8">
+            <LaLigaSection />
           </div>
         </>
       ) : (
