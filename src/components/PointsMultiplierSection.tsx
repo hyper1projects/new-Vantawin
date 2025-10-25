@@ -91,21 +91,30 @@ const PointsMultiplierSection: React.FC = () => {
       <div className="w-full"> 
         <SectionHeader title="Points Multiplier" className="w-full" textColor="text-white" />
       </div>
-      {/* Horizontal scroll container */}
-      <div className="w-full flex overflow-x-auto space-x-4 px-4 pb-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-500 scrollbar-track-blue-100">
-        {gamesWithBestOdds.map((game) => (
-          <MatchCard
-            key={game.id}
-            date={`${game.date} - ${game.time}`}
-            team1Logo={logoMap[game.team1.logoIdentifier] || '/path/to/default-logo.png'}
-            team1Name={game.team1.name}
-            team2Logo={logoMap[game.team2.logoIdentifier] || '/path/to/default-logo.png'}
-            team2Name={game.team2.name}
-            option1={game.odds.team1.toString()}
-            option2={game.odds.draw.toString()}
-            option3={game.odds.team2.toString()}
-          />
-        ))}
+      {/* Horizontal scroll container with blur edges */}
+      <div className="relative w-full">
+        {/* Left blur overlay */}
+        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-gray-100 to-transparent z-10 pointer-events-none"></div>
+        
+        {/* Scrollable content */}
+        <div className="w-full flex overflow-x-auto space-x-4 px-4 pb-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-500 scrollbar-track-blue-100">
+          {gamesWithBestOdds.map((game) => (
+            <MatchCard
+              key={game.id}
+              date={`${game.date} - ${game.time}`}
+              team1Logo={logoMap[game.team1.logoIdentifier] || '/path/to/default-logo.png'}
+              team1Name={game.team1.name}
+              team2Logo={logoMap[game.team2.logoIdentifier] || '/path/to/default-logo.png'}
+              team2Name={game.team2.name}
+              option1={game.odds.team1.toString()}
+              option2={game.odds.draw.toString()}
+              option3={game.odds.team2.toString()}
+            />
+          ))}
+        </div>
+
+        {/* Right blur overlay */}
+        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-gray-100 to-transparent z-10 pointer-events-none"></div>
       </div>
     </div>
   );
