@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useState } from 'react'; // Import useState
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import MatchCard from '../components/MatchCard';
 import LiveGamesSection from '../components/LiveGamesSection';
-import SectionHeader from '../components/SectionHeader';
 import SportCategoryButtons from '../components/SportCategoryButtons'; // Import the new component
 
 const Games = () => {
   const [selectedSport, setSelectedSport] = useState<string>('Football'); // State to manage selected sport
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  // Function to handle category selection and navigation
+  const handleSelectCategory = (category: string) => {
+    setSelectedSport(category);
+    // Navigate to a dynamic route based on the selected category
+    navigate(`/sports/${category.toLowerCase()}`);
+  };
 
   // Dummy data for demonstration. In a real app, this would come from an API.
   const premierLeagueGames = [
@@ -19,7 +27,7 @@ const Games = () => {
     <div className="p-4">
       {/* Sport Category Buttons Section */}
       <SportCategoryButtons 
-        onSelectCategory={setSelectedSport} 
+        onSelectCategory={handleSelectCategory} // Pass the new handler
         selectedCategory={selectedSport} 
       />
 
