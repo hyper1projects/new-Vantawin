@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Oddscard from './Oddscard';
-import { Game } from '../types/game';
+import { Game } from '../types/game'; // Ensure Game type is imported
 import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 // Removed `cn` import as it's no longer needed without filter buttons
@@ -73,6 +73,7 @@ const LiveGamesSection: React.FC = () => {
             league={game.league}
             isLive={game.isLive}
             gameView={game.gameView}
+            game={game} // Pass the full game object
           />
         ))}
       </div>

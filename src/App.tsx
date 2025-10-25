@@ -15,29 +15,30 @@ import Contact from './pages/Contact';
 import Users from './pages/Users';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
-// Removed SportCategoryPage import
+import { MatchSelectionProvider } from './context/MatchSelectionContext'; // Import the provider
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Index />} />
-          <Route path="games" element={<Games />} />
-          <Route path="pools" element={<Pools />} />
-          <Route path="leaderboard" element={<Leaderboard />} />
-          <Route path="wallet" element={<Wallet />} />
-          <Route path="users" element={<Users />} />
-          <Route path="terms-of-use" element={<Terms />} />
-          <Route path="privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="help" element={<Help />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="support" element={<Support />} />
-          {/* Removed the route for SportCategoryPage */}
-          <Route path="how-it-works" element={<div>How It Works Page</div>} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
+      <MatchSelectionProvider> {/* Wrap the entire app with the provider */}
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Index />} />
+            <Route path="games" element={<Games />} />
+            <Route path="pools" element={<Pools />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="wallet" element={<Wallet />} />
+            <Route path="users" element={<Users />} />
+            <Route path="terms-of-use" element={<Terms />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="help" element="Help" />
+            <Route path="contact" element={<Contact />} />
+            <Route path="support" element={<Support />} />
+            <Route path="how-it-works" element={<div>How It Works Page</div>} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </MatchSelectionProvider>
     </Router>
   );
 }

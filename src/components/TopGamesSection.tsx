@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Oddscard from './Oddscard';
-import { Game } from '../types/game';
+import { Game } from '../types/game'; // Ensure Game type is imported
 import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -114,6 +114,7 @@ const TopGamesSection: React.FC = () => {
             league={game.league}
             isLive={game.isLive}
             gameView={game.gameView}
+            game={game} // Pass the full game object
           />
         ))}
       </div>

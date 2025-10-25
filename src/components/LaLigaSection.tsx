@@ -100,6 +100,7 @@ const LaLigaSection: React.FC = () => {
             league={game.league}
             isLive={game.isLive}
             gameView={game.gameView}
+            game={game} // Pass the full game object
           />
         ))}
       </div>
