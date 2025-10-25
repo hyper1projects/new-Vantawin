@@ -13,7 +13,7 @@ const SportCategoryButtons: React.FC<SportCategoryButtonsProps> = ({ onSelectCat
   const categories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
   return (
-    <div className="flex justify-center space-x-4 p-4 bg-vanta-blue-medium rounded-[27px] mb-8">
+    <div className="flex justify-start space-x-4 p-4 mb-8"> {/* Changed justify-center to justify-start and removed background/border classes */}
       {categories.map((category) => (
         <Button
           key={category}
