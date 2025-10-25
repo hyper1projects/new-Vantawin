@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Oddscard from './Oddscard';
 import { Game } from '../types/game';
 import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+// Removed `cn` import as it's no longer needed without filter buttons
 
-type GameFilter = 'All' | 'Live' | 'Upcoming';
-
-const LiveGamesSection: React.FC = () => { // Changed component name
-  const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All');
-
+const LiveGamesSection: React.FC = () => {
   // Define an array of game data, using the logo identifiers from logoMap.ts
   const games: Game[] = [
     {
@@ -22,7 +18,7 @@ const LiveGamesSection: React.FC = () => { // Changed component name
       team2: { name: 'West Ham United', logoIdentifier: 'WHU' },
       odds: { team1: 1.5, draw: 3.0, team2: 2.5 },
       league: 'Premier League',
-      isLive: false,
+      isLive: false, // This game will not be shown
       gameView: 'View Game Details',
     },
     {
@@ -33,73 +29,36 @@ const LiveGamesSection: React.FC = () => { // Changed component name
       team2: { name: 'Leicester City', logoIdentifier: 'LEIC' },
       odds: { team1: 2.1, draw: 3.2, team2: 1.9 },
       league: 'La Liga',
-      isLive: true,
+      isLive: true, // This game will be shown
       gameView: 'View Matchup',
     },
     {
-      id: 'game-3', // Added a third game
+      id: 'game-3',
       time: '9:00 PM',
       date: 'Today',
       team1: { name: 'Arsenal', logoIdentifier: 'ARS' },
       team2: { name: 'Chelsea', logoIdentifier: 'CHE' },
       odds: { team1: 1.8, draw: 3.5, team2: 2.2 },
       league: 'Premier League',
-      isLive: false,
+      isLive: true, // This game will be shown
       gameView: 'Match Info',
     },
   ];
 
-  // Filter games based on the selectedFilter
-  const filteredGames = games.filter(game => {
-    if (selectedFilter === 'All') {
-      return true;
-    }
-    if (selectedFilter === 'Live') {
-      return game.isLive;
-    }
-    if (selectedFilter === 'Upcoming') {
-      return !game.isLive; // Assuming 'Upcoming' means not live
-    }
-    return false;
-  });
-
-  const getButtonClasses = (filter: GameFilter) => {
-    const isSelected = selectedFilter === filter;
-    return cn(
-      "size-sm rounded-[12px]",
-      isSelected
-        ? "bg-[#00EEEE] text-[#081028]"
-        : "bg-[#0B295B] text-white hover:text-[#00EEEE] hover:bg-[#0B295B]"
-    );
-  };
+  // Filter games to show only live games
+  const filteredGames = games.filter(game => game.isLive);
 
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
       {/* Header wrapper div now extends full width */}
       <div className="w-full bg-[#0D2C60] rounded-t-[27px]">
-        <SectionHeader title="Live Games" className="w-full" textColor="text-white" /> {/* Changed title */}
+        <SectionHeader title="Live Games" className="w-full" textColor="text-white" />
       </div>
       
-      <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-4 border-b border-gray-700 pb-4">
-        <Button 
-          onClick={() => setSelectedFilter('All')}
-          className={getButtonClasses('All')}
-        >
-          All
-        </Button>
-        <Button 
-          onClick={() => setSelectedFilter('Live')}
-          className={getButtonClasses('Live')}
-        >
-          Live
-        </Button>
-        <Button 
-          onClick={() => setSelectedFilter('Upcoming')}
-          className={getButtonClasses('Upcoming')}
-        >
-          Upcoming
-        </Button>
-      </div>
+      {/* Removed filter buttons section */}
+      {/* <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-4 border-b border-gray-700 pb-4">
+        ... filter buttons ...
+      </div> */}
 
       {/* Wrapper div for Oddscards - now stacking vertically */}
       <div className="w-full flex flex-col space-y-4 px-4">
