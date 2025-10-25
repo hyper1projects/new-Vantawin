@@ -3,7 +3,7 @@
 import React from 'react';
 import { Pool } from '../types/pool';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress'; // This import will no longer be needed, but I'll keep it for now as it's not causing issues.
+import { Progress } from '@/components/ui/progress';
 import { cn } from '../lib/utils';
 import { format } from 'date-fns';
 
@@ -12,7 +12,6 @@ interface PoolCardProps {
 }
 
 const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
-  // The 'progress' calculation is no longer needed, but keeping it won't harm.
   const progress = (pool.participants / pool.maxParticipants) * 100;
 
   const getStatusClasses = (status: string) => {
@@ -46,9 +45,9 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
       <img
         src={pool.image}
         alt={pool.name}
-        className="w-full h-32 object-cover rounded-t-[20px] mb-4"
+        className="w-full h-32 object-cover rounded-t-[27px] absolute top-0 left-0 right-0"
       />
-      <div className="flex justify-between items-center mb-2">
+      <div className="pt-36 flex justify-between items-center mb-2"> {/* Added pt-36 to push content below the image */}
         <h3 className="text-xl font-bold text-vanta-neon-blue">{pool.name}</h3>
         <span className={cn("text-xs font-semibold px-2 py-1 rounded-md", getStatusClasses(pool.status))}>
           {pool.status.toUpperCase()}
@@ -83,8 +82,6 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
           <span className="font-semibold">{format(new Date(pool.endTime), 'MMM dd, yyyy HH:mm')}</span>
         </div>
       </div>
-
-      {/* The div containing the Progress component has been removed */}
 
       <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] py-2 text-sm font-semibold mt-auto">
         {pool.status === 'ongoing' ? 'Join Pool' : pool.status === 'upcoming' ? 'View Details' : 'View Results'}
