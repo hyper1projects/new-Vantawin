@@ -45,9 +45,9 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, className 
               </span>
             </div>
             <span className="text-base">{entry.playerName}</span>
-            <span className="text-base text-right text-vanta-neon-blue">{entry.xp.toLocaleString()}</span>
+            <span className="text-base text-right text-vanta-neon-blue">{(entry.xp ?? 0).toLocaleString()}</span>
             <span className="text-base text-right">{entry.winRate.toFixed(1)}%</span>
-            <span className="text-base text-right text-green-400">₦{entry.prizeNaira.toLocaleString()}</span>
+            <span className="text-base text-right text-yellow-400">₦{entry.prizeNaira.toLocaleString()}</span>
           </div>
         ))}
       </div>
