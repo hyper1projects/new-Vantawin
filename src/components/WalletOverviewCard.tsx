@@ -48,7 +48,7 @@ const WalletOverviewCard: React.FC = () => {
         <Button className="flex-1 bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] py-3 text-lg font-bold">
           Deposit <ArrowDownToLine size={20} className="ml-2" />
         </Button>
-        <Button variant="outline" className="flex-1 border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 rounded-[14px] py-3 text-lg font-bold">
+        <Button variant="outline" className="flex-1 bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 rounded-[14px] py-3 text-lg font-bold">
           Withdraw <ArrowUpToLine size={20} className="ml-2" />
         </Button>
       </div>
