@@ -4,7 +4,7 @@ import React from 'react';
 import MatchCard from './MatchCard';
 import SectionHeader from './SectionHeader';
 import { Game } from '../types/game';
-import { logoMap } from '../utils/logoMap';
+// Removed logoMap import as it's now handled within MatchCard
 
 interface PointsMultiplierSectionProps {
   className?: string; // Add className prop
@@ -105,14 +105,7 @@ const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ class
           {gamesWithBestOdds.map((game) => (
             <MatchCard
               key={game.id}
-              date={`${game.date} - ${game.time}`}
-              team1Logo={logoMap[game.team1.logoIdentifier] || '/path/to/default-logo.png'}
-              team1Name={game.team1.name}
-              team2Logo={logoMap[game.team2.logoIdentifier] || '/path/to/default-logo.png'}
-              team2Name={game.team2.name}
-              option1={game.odds.team1.toString()}
-              option2={game.odds.draw.toString()}
-              option3={game.odds.team2.toString()}
+              game={game} // Pass the full game object
             />
           ))}
         </div>
