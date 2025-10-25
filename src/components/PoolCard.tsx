@@ -47,7 +47,7 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
         alt={pool.name}
         className="w-full h-32 object-cover rounded-t-[27px] absolute top-0 left-0 right-0"
       />
-      <div className="pt-36 flex justify-between items-center mb-2"> {/* Added pt-36 to push content below the image */}
+      <div className="pt-36 flex justify-between items-center mb-2">
         <h3 className="text-xl font-bold text-vanta-neon-blue">{pool.name}</h3>
         <span className={cn("text-xs font-semibold px-2 py-1 rounded-md", getStatusClasses(pool.status))}>
           {pool.status.toUpperCase()}
@@ -73,14 +73,7 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
             {pool.tier}
           </span>
         </div>
-        <div className="flex items-center col-span-2">
-          <span className="font-medium text-gray-400 mr-2">Starts:</span>
-          <span className="font-semibold">{format(new Date(pool.startTime), 'MMM dd, yyyy HH:mm')}</span>
-        </div>
-        <div className="flex items-center col-span-2">
-          <span className="font-medium text-gray-400 mr-2">Ends:</span>
-          <span className="font-semibold">{format(new Date(pool.endTime), 'MMM dd, yyyy HH:mm')}</span>
-        </div>
+        {/* Removed the "Starts" and "Ends" information */}
       </div>
 
       <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] py-2 text-sm font-semibold mt-auto">
