@@ -40,6 +40,14 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
     }
   };
 
+  // Function to format prize pool into K's
+  const formatPrizePool = (amount: number) => {
+    if (amount >= 1000000) {
+      return `${(amount / 1000000).toFixed(1)}M`;
+    }
+    return `${(amount / 1000).toFixed(0)}K`;
+  };
+
   return (
     <div className="relative bg-[#011B47] rounded-[27px] p-4 shadow-sm flex flex-col text-vanta-text-light w-full h-full">
       <img
@@ -57,7 +65,7 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
       <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-vanta-text-light mb-6">
         <div className="flex items-center">
           <span className="font-medium text-gray-400 mr-2">Prize Pool:</span>
-          <span className="font-semibold text-vanta-neon-blue">${pool.prizePool.toLocaleString()}</span>
+          <span className="font-semibold text-vanta-neon-blue">${formatPrizePool(pool.prizePool)}</span>
         </div>
         <div className="flex items-center">
           <span className="font-medium text-gray-400 mr-2">Entry Fee:</span>
@@ -73,7 +81,6 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
             {pool.tier}
           </span>
         </div>
-        {/* Removed the "Starts" and "Ends" information */}
       </div>
 
       <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] py-2 text-sm font-semibold mt-auto">
