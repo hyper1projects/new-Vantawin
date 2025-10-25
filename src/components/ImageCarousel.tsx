@@ -11,7 +11,11 @@ const images = [
   '/images/carousel/carousel-image-3.jpg',
 ];
 
-const ImageCarousel: React.FC = () => {
+interface ImageCarouselProps {
+  className?: string; // Add className prop
+}
+
+const ImageCarousel: React.FC<ImageCarouselProps> = ({ className }) => { // Destructure className
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = useCallback(() => {
@@ -35,7 +39,7 @@ const ImageCarousel: React.FC = () => {
   }, [goToNext]);
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-lg shadow-lg">
+    <div className={`relative w-full max-w-4xl mx-auto overflow-hidden rounded-lg shadow-lg ${className || ''}`}> {/* Apply className here */}
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}

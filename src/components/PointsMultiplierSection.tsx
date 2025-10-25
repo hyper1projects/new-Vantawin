@@ -6,7 +6,11 @@ import SectionHeader from './SectionHeader';
 import { Game } from '../types/game';
 import { logoMap } from '../utils/logoMap';
 
-const PointsMultiplierSection: React.FC = () => {
+interface PointsMultiplierSectionProps {
+  className?: string; // Add className prop
+}
+
+const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ className }) => { // Destructure className
   // Define an array of game data, using the logo identifiers from logoMap.ts
   const allGames: Game[] = [
     {
@@ -87,7 +91,7 @@ const PointsMultiplierSection: React.FC = () => {
     .sort((a, b) => getMaxOdd(b) - getMaxOdd(a));
 
   return (
-    <div className="flex flex-col items-center space-y-6"> 
+    <div className={`flex flex-col items-center space-y-6 ${className || ''}`}> {/* Apply className here */}
       <div className="w-full"> 
         <SectionHeader title="Points Multiplier" className="w-full" textColor="text-white" />
       </div>
