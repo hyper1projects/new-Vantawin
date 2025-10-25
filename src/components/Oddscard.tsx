@@ -2,20 +2,21 @@
 
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
-import { getLogoSrc } from '../utils/logoMap'; // This is the correct import
+import { getLogoSrc } from '../utils/logoMap'; // Ensure correct path
 
+// NOTE: Assuming these types are correctly defined in '../types/game'
 interface Team {
     name: string;
     logoIdentifier: string; // Used by getLogoSrc
 }
 interface Odds {
-    home: number;
-    away: number;
-    draw?: number; // Draw is optional
+    team1: number;
+    team2: number;
+    draw: number;
 }
 interface OddscardProps {
-    homeTeam: Team; // Changed from team1
-    awayTeam: Team; // Changed from team2
+    team1: Team;
+    team2: Team;
     odds: Odds;
     time: string;
     date: string;
@@ -31,7 +32,7 @@ const OddsButton: React.FC<{ value: number }> = ({ value }) => (
     </button>
 );
 
-const Oddscard: React.FC<OddscardProps> = ({ homeTeam, awayTeam, odds, time, date, league, isLive, gameView }) => {
+const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView }) => {
     const [isFavorited, setIsFavorited] = useState(false);
 
     const handleFavoriteClick = () => {
@@ -79,16 +80,16 @@ const Oddscard: React.FC<OddscardProps> = ({ homeTeam, awayTeam, odds, time, dat
             <div className="flex justify-between items-center mb-4">
                 {/* Teams display */}
                 <div className="flex flex-col space-y-3">
-                    {renderTeam(homeTeam)}
-                    {renderTeam(awayTeam)}
+                    {renderTeam(team1)}
+                    {renderTeam(team2)}
                 </div>
 
                 {/* Odds buttons */}
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
-                        <OddsButton value={odds.home} /> 
-                        {odds.draw !== undefined && <OddsButton value={odds.draw} />} {/* Conditionally render draw */}
-                        <OddsButton value={odds.away} />
+                        <OddsButton value={odds.team1} /> 
+                        <OddsButton value={odds.draw} />
+                        <OddsButton value={odds.team2} />
                     </div>
                     <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
                 </div>

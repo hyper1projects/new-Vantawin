@@ -4,67 +4,27 @@ import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import Oddscard from './OddsCard'; // Changed to Oddscard (lowercase 'c') to match file name
-
-interface Team {
-  name: string;
-  logoIdentifier: string;
-}
+import OddsCard from './OddsCard'; // Assuming OddsCard is in the same components directory
 
 interface Game {
   id: string;
+  title: string;
+  provider: string; // For sports, this can be the league name
+  thumbnail: string;
+  sport: string;
   league: string;
-  isLive?: boolean;
-  homeTeam: Team;
-  awayTeam: Team;
-  time: string;
-  date: string;
-  odds: {
-    home: number;
-    draw?: number;
-    away: number;
-  };
-  gameView: string;
+  isLive?: boolean; // To distinguish live games
 }
 
 // Dummy live game data for this component
 const dummyLiveGames: Game[] = [
-  {
-    id: 'fpl1', league: 'Premier League', isLive: true,
-    homeTeam: { name: 'Man Utd', logoIdentifier: 'man_utd' },
-    awayTeam: { name: 'Liverpool', logoIdentifier: 'liverpool' },
-    time: '20:00', date: 'Today', odds: { home: 2.50, draw: 3.20, away: 2.80 }, gameView: 'View Game'
-  },
-  {
-    id: 'fol1', league: 'La Liga', isLive: true,
-    homeTeam: { name: 'Real Madrid', logoIdentifier: 'real_madrid' },
-    awayTeam: { name: 'Barcelona', logoIdentifier: 'barcelona' },
-    time: '21:00', date: 'Today', odds: { home: 1.90, draw: 3.50, away: 4.00 }, gameView: 'View Game'
-  },
-  {
-    id: 'fol3', league: 'Ligue 1', isLive: true,
-    homeTeam: { name: 'PSG', logoIdentifier: 'psg' },
-    awayTeam: { name: 'Marseille', logoIdentifier: 'marseille' },
-    time: '19:30', date: 'Today', odds: { home: 1.40, draw: 4.50, away: 7.00 }, gameView: 'View Game'
-  },
-  {
-    id: 'bna1', league: 'NBA', isLive: true,
-    homeTeam: { name: 'Lakers', logoIdentifier: 'lakers' },
-    awayTeam: { name: 'Celtics', logoIdentifier: 'celtics' },
-    time: '03:00', date: 'Tomorrow', odds: { home: 1.80, away: 2.00 }, gameView: 'View Game'
-  },
-  {
-    id: 'tat1', league: 'ATP Tour', isLive: true,
-    homeTeam: { name: 'Djokovic', logoIdentifier: 'djokovic' },
-    awayTeam: { name: 'Nadal', logoIdentifier: 'nadal' },
-    time: '14:00', date: 'Today', odds: { home: 1.60, away: 2.20 }, gameView: 'View Game'
-  },
-  {
-    id: 'ell1', league: 'LEC', isLive: true,
-    homeTeam: { name: 'Fnatic', logoIdentifier: 'fnatic' },
-    awayTeam: { name: 'G2 Esports', logoIdentifier: 'g2' },
-    time: '18:00', date: 'Today', odds: { home: 1.75, away: 2.05 }, gameView: 'View Game'
-  },
+  { id: 'fpl1', title: 'Man Utd vs Liverpool', provider: 'Premier League', thumbnail: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=MU+vs+LIV', sport: 'Football', league: 'Premier League', isLive: true },
+  { id: 'fol1', title: 'Real Madrid vs Barca', provider: 'La Liga', thumbnail: 'https://via.placeholder.com/150/0000FF/FFFFFF?text=RM+vs+BAR', sport: 'Football', league: 'La Liga', isLive: true },
+  { id: 'fol3', title: 'PSG vs Marseille', provider: 'Ligue 1', thumbnail: 'https://via.placeholder.com/150/FF00FF/FFFFFF?text=PSG+vs+MAR', sport: 'Football', league: 'Ligue 1', isLive: true },
+  { id: 'bna1', title: 'Lakers vs Celtics', provider: 'NBA', thumbnail: 'https://via.placeholder.com/150/FF5733/FFFFFF?text=LAL+vs+BOS', sport: 'Basketball', league: 'NBA', isLive: true },
+  { id: 'bol1', title: 'EuroLeague Game 1', provider: 'EuroLeague', thumbnail: 'https://via.placeholder.com/150/3357FF/FFFFFF?text=EuroLeague', sport: 'Basketball', league: 'EuroLeague', isLive: true },
+  { id: 'tat1', title: 'Djokovic vs Nadal', provider: 'ATP Tour', thumbnail: 'https://via.placeholder.com/150/FFFF33/000000?text=Djokovic+vs+Nadal', sport: 'Tennis', league: 'ATP Tour', isLive: true },
+  { id: 'ell1', title: 'Fnatic vs G2 (LoL)', provider: 'LEC', thumbnail: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Fnatic+vs+G2', sport: 'Esports', league: 'LEC', isLive: true },
 ];
 
 interface LiveGamesSectionProps {
@@ -94,17 +54,7 @@ const LiveGamesSection: React.FC<LiveGamesSectionProps> = ({ className }) => {
       <CollapsibleContent className="bg-vanta-dark-card rounded-b-md p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {dummyLiveGames.map((game) => (
-            <Oddscard
-              key={game.id}
-              homeTeam={game.homeTeam}
-              awayTeam={game.awayTeam}
-              odds={game.odds}
-              time={game.time}
-              date={game.date}
-              league={game.league}
-              isLive={game.isLive || false}
-              gameView={game.gameView}
-            />
+            <OddsCard key={game.id} game={game} />
           ))}
         </div>
       </CollapsibleContent>

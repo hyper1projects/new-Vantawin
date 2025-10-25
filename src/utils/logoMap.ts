@@ -1,115 +1,16 @@
-"use client";
+import { teamALogoPath, teamBLogoPath } from '../components/assets/logos'; // Import from the centralized index
 
-// This map stores the paths to various team logos.
-const logoMap: { [key: string]: string } = {
-    'arsenal': '/logos/arsenal.png',
-    'aston_villa': '/logos/aston_villa.png',
-    'bournemouth': '/logos/bournemouth.png',
-    'brentford': '/logos/brentford.png',
-    'brighton': '/logos/brighton.png',
-    'chelsea': '/logos/chelsea.png',
-    'crystal_palace': '/logos/crystal_palace.png',
-    'everton': '/logos/everton.png',
-    'fulham': '/logos/fulham.png',
-    'liverpool': '/logos/liverpool.png',
-    'luton_town': '/logos/luton_town.png',
-    'man_city': '/logos/man_city.png',
-    'man_utd': '/logos/man_utd.png',
-    'newcastle': '/logos/newcastle.png',
-    'nottingham_forest': '/logos/nottingham_forest.png',
-    'sheffield_utd': '/logos/sheffield_utd.png',
-    'tottenham': '/logos/tottenham.png',
-    'west_ham': '/logos/west_ham.png',
-    'wolves': '/logos/wolves.png',
-    'burnley': '/logos/burnley.png',
-    'real_madrid': '/logos/real_madrid.png',
-    'barcelona': '/logos/barcelona.png',
-    'atletico_madrid': '/logos/atletico_madrid.png',
-    'bayern_munich': '/logos/bayern_munich.png',
-    'dortmund': '/logos/dortmund.png',
-    'psg': '/logos/psg.png',
-    'inter_milan': '/logos/inter_milan.png',
-    'ac_milan': '/logos/ac_milan.png',
-    'juventus': '/logos/juventus.png',
-    'napoli': '/logos/napoli.png',
-    'roma': '/logos/roma.png',
-    'lazio': '/logos/lazio.png',
-    'leipzig': '/logos/leipzig.png',
-    'leverkusen': '/logos/leverkusen.png',
-    'frankfurt': '/logos/frankfurt.png',
-    'monaco': '/logos/monaco.png',
-    'marseille': '/logos/marseille.png',
-    'lyon': '/logos/lyon.png',
-    'benfica': '/logos/benfica.png',
-    'porto': '/logos/porto.png',
-    'sporting_cp': '/logos/sporting_cp.png',
-    'ajax': '/logos/ajax.png',
-    'psv': '/logos/psv.png',
-    'feyenoord': '/logos/feyenoord.png',
-    'celtic': '/logos/celtic.png',
-    'rangers': '/logos/rangers.png',
-    'galatasaray': '/logos/galatasaray.png',
-    'fenerbahce': '/logos/fenerbahce.png',
-    'besiktas': '/logos/besiktas.png',
-    'river_plate': '/logos/river_plate.png',
-    'boca_juniors': '/logos/boca_juniors.png',
-    'flamengo': '/logos/flamengo.png',
-    'palmeiras': '/logos/palmeiras.png',
-    'santos': '/logos/santos.png',
-    'corinthians': '/logos/corinthians.png',
-    'la_galaxy': '/logos/la_galaxy.png',
-    'nycfc': '/logos/nycfc.png',
-    'seattle_sounders': '/logos/seattle_sounders.png',
-    'toronto_fc': '/logos/toronto_fc.png',
-    'atlanta_united': '/logos/atlanta_united.png',
-    'chicago_fire': '/logos/chicago_fire.png',
-    'houston_dynamo': '/logos/houston_dynamo.png',
-    'orlando_city': '/logos/orlando_city.png',
-    'portland_timbers': '/logos/portland_timbers.png',
-    'sporting_kc': '/logos/sporting_kc.png',
-    'vancouver_whitecaps': '/logos/vancouver_whitecaps.png',
-    'dc_united': '/logos/dc_united.png',
-    'colorado_rapids': '/logos/colorado_rapids.png',
-    'columbus_crew': '/logos/columbus_crew.png',
-    'fc_dallas': '/logos/fc_dallas.png',
-    'inter_miami': '/logos/inter_miami.png',
-    'minnesota_united': '/logos/minnesota_united.png',
-    'montreal_impact': '/logos/montreal_impact.png',
-    'nashville_sc': '/logos/nashville_sc.png',
-    'new_england_revolution': '/logos/new_england_revolution.png',
-    'philadelphia_union': '/logos/philadelphia_union.png',
-    'real_salt_lake': '/logos/real_salt_lake.png',
-    'san_jose_earthquakes': '/logos/san_jose_earthquakes.png',
-    'st_louis_city_sc': '/logos/st_louis_city_sc.png',
-    'austin_fc': '/logos/austin_fc.png',
-    'charlotte_fc': '/logos/charlotte_fc.png',
-    'cincinnati_fc': '/logos/cincinnati_fc.png',
-    'cf_montreal': '/logos/cf_montreal.png',
-    'fc_cincinnati': '/logos/fc_cincinnati.png',
-    'new_york_red_bulls': '/logos/new_york_red_bulls.png',
-    'ol_reign': '/logos/ol_reign.png',
-    'north_carolina_courage': '/logos/north_carolina_courage.png',
-    'portland_thorns': '/logos/portland_thorns.png',
-    'washington_spirit': '/logos/washington_spirit.png',
-    'chicago_red_stars': '/logos/chicago_red_stars.png',
-    'houston_dash': '/logos/houston_dash.png',
-    'kansas_city_current': '/logos/kansas_city_current.png',
-    'racing_louisville': '/logos/racing_louisville.png',
-    'angel_city_fc': '/logos/angel_city_fc.png',
-    'san_diego_wave': '/logos/san_diego_wave.png',
-    'gotham_fc': '/logos/gotham_fc.png',
-    'bay_fc': '/logos/bay_fc.png',
-    'utah_royals': '/logos/utah_royals.png',
-    'default': '/logos/default.png', // Default logo if identifier not found
+// This map should be updated with your actual logo files.
+// For example, if you have 'src/components/assets/logos/myTeam.png',
+// you would add: import myTeamLogoPath from '../components/assets/logos/myTeam.png';
+// and then: 'myTeam': myTeamLogoPath,
+export const logoMap: { [key: string]: string } = {
+  'teamA': teamALogoPath,
+  'teamB': teamBLogoPath,
+  // Add more mappings here for your actual team logos
 };
 
-/**
- * Returns the source path for a team logo based on its identifier.
- * If the identifier is not found, it returns a default logo path.
- * @param logoIdentifier A string identifier for the team logo.
- * @returns The URL path to the logo image.
- */
 export const getLogoSrc = (logoIdentifier: string): string => {
-    const normalizedIdentifier = logoIdentifier.toLowerCase().replace(/ /g, '_');
-    return logoMap[normalizedIdentifier] || logoMap['default'];
+  // Returns the mapped logo path or a generic placeholder if not found
+  return logoMap[logoIdentifier] || 'https://via.placeholder.com/24';
 };
