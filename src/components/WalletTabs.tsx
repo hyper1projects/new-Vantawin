@@ -12,7 +12,7 @@ const WalletTabs: React.FC = () => {
   const getTabButtonClasses = (tab: WalletTab) => {
     const isActive = activeTab === tab;
     return cn(
-      "flex-1 py-3 px-6 rounded-[27px] text-lg font-bold transition-colors duration-200",
+      "flex-1 py-2 px-4 rounded-[27px] text-sm font-semibold transition-colors duration-200", // Reduced text size and padding
       isActive
         ? "bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90"
         : "bg-transparent text-gray-400 hover:text-white"
@@ -20,7 +20,7 @@ const WalletTabs: React.FC = () => {
   };
 
   return (
-    <div className="bg-vanta-blue-dark p-2 rounded-[27px] flex space-x-2 w-full">
+    <div className="bg-vanta-blue-dark p-2 rounded-[27px] flex space-x-2 w-fit"> {/* Changed w-full to w-fit */}
       <Button
         className={getTabButtonClasses('transactions')}
         onClick={() => setActiveTab('transactions')}
