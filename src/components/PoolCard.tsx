@@ -49,7 +49,7 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
   };
 
   return (
-    <div className="relative bg-[#011B47] rounded-[27px] p-4 shadow-sm flex flex-col text-vanta-text-light w-full h-full">
+    <div className="relative bg-[#011B47] rounded-[27px] p-4 shadow-sm flex flex-col text-vanta-text-light w-[300px] h-full flex-shrink-0"> {/* Added w-[300px] and flex-shrink-0 */}
       <img
         src={pool.image}
         alt={pool.name}

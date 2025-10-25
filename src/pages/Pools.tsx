@@ -92,6 +92,34 @@ const Pools = () => {
       image: '/images/carousel/NG-1MCasinoTournament2610.jpeg',
       tier: 'Gold',
     },
+    {
+      id: 'pool-7',
+      name: 'Bronze Pool III',
+      status: 'ongoing',
+      prizePool: 60000,
+      entryFee: 60,
+      participants: 80,
+      maxParticipants: 150,
+      startTime: '2024-10-22T11:00:00Z',
+      endTime: '2024-11-25T23:59:59Z',
+      description: 'Another exciting bronze pool!',
+      image: '/images/carousel/carousel-image-1.jpg',
+      tier: 'Bronze',
+    },
+    {
+      id: 'pool-8',
+      name: 'Silver Pool III',
+      status: 'upcoming',
+      prizePool: 300000,
+      entryFee: 300,
+      participants: 0,
+      maxParticipants: 180,
+      startTime: '2024-12-05T14:00:00Z',
+      endTime: '2025-01-20T23:59:59Z',
+      description: 'Prepare for the next silver tier challenge.',
+      image: '/images/carousel/carousel-image-2.jpg',
+      tier: 'Silver',
+    },
   ];
 
   const ongoingPools = allPools.filter(pool => pool.status === 'ongoing');
@@ -100,41 +128,66 @@ const Pools = () => {
 
   return (
     <div className="p-4">
-      {/* Removed the h1 tag for "Pools" */}
-
       {/* Ongoing Pools Section */}
       <div className="mb-12">
         <SectionHeader title="Ongoing Pools" className="mb-6" textColor="text-vanta-text-light" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {ongoingPools.length > 0 ? (
-            ongoingPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
-          ) : (
-            <p className="text-vanta-text-medium col-span-full text-center">No ongoing pools at the moment.</p>
-          )}
+        <div className="relative w-full">
+          {/* Left blur overlay */}
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#06002E] to-transparent z-10 pointer-events-none"></div>
+          
+          {/* Scrollable content */}
+          <div className="flex overflow-x-auto space-x-4 px-4 pb-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-500 scrollbar-track-blue-100">
+            {ongoingPools.length > 0 ? (
+              ongoingPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
+            ) : (
+              <p className="text-vanta-text-medium text-center w-full">No ongoing pools at the moment.</p>
+            )}
+          </div>
+
+          {/* Right blur overlay */}
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#06002E] to-transparent z-10 pointer-events-none"></div>
         </div>
       </div>
 
       {/* Upcoming Pools Section */}
       <div className="mb-12">
         <SectionHeader title="Upcoming Pools" className="mb-6" textColor="text-vanta-text-light" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {upcomingPools.length > 0 ? (
-            upcomingPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
-          ) : (
-            <p className="text-vanta-text-medium col-span-full text-center">No upcoming pools planned yet.</p>
-          )}
+        <div className="relative w-full">
+          {/* Left blur overlay */}
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#06002E] to-transparent z-10 pointer-events-none"></div>
+          
+          {/* Scrollable content */}
+          <div className="flex overflow-x-auto space-x-4 px-4 pb-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-500 scrollbar-track-blue-100">
+            {upcomingPools.length > 0 ? (
+              upcomingPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
+            ) : (
+              <p className="text-vanta-text-medium text-center w-full">No upcoming pools planned yet.</p>
+            )}
+          </div>
+
+          {/* Right blur overlay */}
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#06002E] to-transparent z-10 pointer-events-none"></div>
         </div>
       </div>
 
       {/* Ended Pools Section */}
       <div className="mb-12">
         <SectionHeader title="Ended Pools" className="mb-6" textColor="text-vanta-text-light" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {endedPools.length > 0 ? (
-            endedPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
-          ) : (
-            <p className="text-vanta-text-medium col-span-full text-center">No pools have ended recently.</p>
-          )}
+        <div className="relative w-full">
+          {/* Left blur overlay */}
+          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#06002E] to-transparent z-10 pointer-events-none"></div>
+          
+          {/* Scrollable content */}
+          <div className="flex overflow-x-auto space-x-4 px-4 pb-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-500 scrollbar-track-blue-100">
+            {endedPools.length > 0 ? (
+              endedPools.map(pool => <PoolCard key={pool.id} pool={pool} />)
+            ) : (
+              <p className="text-vanta-text-medium text-center w-full">No pools have ended recently.</p>
+            )}
+          </div>
+
+          {/* Right blur overlay */}
+          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#06002E] to-transparent z-10 pointer-events-none"></div>
         </div>
       </div>
     </div>
