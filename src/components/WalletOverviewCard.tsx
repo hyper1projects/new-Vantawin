@@ -17,7 +17,7 @@ const WalletOverviewCard: React.FC = () => {
     : `₦ ****.**`;
 
   return (
-    <div className="bg-vanta-blue-dark rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full max-w-md mx-auto">
+    <div className="bg-vanta-blue-medium p-6 shadow-lg text-vanta-text-light w-full max-w-md mx-auto">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center space-x-2">
