@@ -88,7 +88,7 @@ const PointsMultiplierSection: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center"> 
-      <div className="w-full bg-[#0D2C60] rounded-lg p-4 space-y-4"> {/* New wrapper div for the rectangle */}
+      <div className="w-full bg-[#011B47] rounded-lg p-4 space-y-4"> {/* Updated background color to #011B47 */}
         <SectionHeader title="Points Multiplier" className="w-full" textColor="text-white" />
         {/* Horizontal scroll container */}
         <div className="w-full flex overflow-x-auto space-x-4 pb-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-500 scrollbar-track-blue-100">
