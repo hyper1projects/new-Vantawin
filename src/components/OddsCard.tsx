@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
-import { getLogoSrc } from '../utils/logoMap'; // This should be the correct import
+import { getLogoSrc } from '../utils/logoMap'; // This is the correct import
 
 interface Team {
     name: string;
