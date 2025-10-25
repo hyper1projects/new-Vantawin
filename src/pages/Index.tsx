@@ -11,13 +11,6 @@ const Index = () => {
       <h1 className="text-xl font-bold text-vanta-text-light mb-4 text-left pl-4">Welcome to VantaWin!</h1>
       <ImageCarousel />
       <PointsMultiplierSection />
-      // PointsMultiplierSection Placeholder (Minimal for import, logic is in the other file)
-const PointsMultiplierSection = () => (
-    // The margin is applied via the mb-16 class below
-    <div className="h-48 bg-gray-800 rounded-lg flex items-center justify-center mb-16">
-        <p className="text-white">Points Multiplier Section (Scrollable)</p>
-    </div>
-);
       {/* Add the new TopGamesSection component here */}
       <TopGamesSection />
       <div className="mt-8 text-center text-vanta-text-light">
