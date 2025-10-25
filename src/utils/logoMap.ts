@@ -13,4 +13,5 @@ export const logoMap: { [key: string]: string } = {
 export const getLogoSrc = (logoIdentifier: string): string => {
   // Returns the mapped logo path or a generic placeholder if not found
   return logoMap[logoIdentifier] || 'https://via.placeholder.com/24';
+};[logoIdentifier] || 'https://via.placeholder.com/24';
 };
