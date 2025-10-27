@@ -7,13 +7,13 @@ import TopGamesSection from '../components/TopGamesSection'; // Import the new c
 
 const Index = () => {
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold text-vanta-text-light mb-4 text-left pl-4">Welcome to VantaWin!</h1>
-      <ImageCarousel className="mb-8" />
-      <PointsMultiplierSection className="mb-8" />
+    <div className="w-full max-w-none px-4 py-2">
+      <h1 className="text-2xl font-bold text-vanta-text-light mb-4 text-left">Welcome to VantaWin!</h1>
+      <ImageCarousel className="mb-6" />
+      <PointsMultiplierSection className="mb-6" />
       {/* Add the new TopGamesSection component here */}
-      <TopGamesSection className="mb-8" />
-      <div className="mt-8 text-center text-vanta-text-light">
+      <TopGamesSection className="mb-6" />
+      <div className="mt-4 text-center text-vanta-text-light text-sm">
         <p>Explore the features of your new VantaWin application!</p>
       </div>
     </div>

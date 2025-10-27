@@ -86,32 +86,28 @@ const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ class
     return Math.max(game.odds.team1, game.odds.draw, game.odds.team2);
   };
 
-  // Sort games by the highest odd in descending order
+  // Sort games by the highest odd in descending order and take only the top 3
   const gamesWithBestOdds = [...allGames]
-    .sort((a, b) => getMaxOdd(b) - getMaxOdd(a));
+    .sort((a, b) => getMaxOdd(b) - getMaxOdd(a))
+    .slice(0, 3);
 
   return (
     <div className={`flex flex-col items-center space-y-6 ${className || ''}`}> {/* Apply className here */}
       <div className="w-full"> 
         <SectionHeader title="Points Multiplier" className="w-full" textColor="text-white" />
       </div>
-      {/* Horizontal scroll container with blur edges */}
-      <div className="relative w-full">
-        {/* Left blur overlay */}
-        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#06002E] to-transparent z-10 pointer-events-none"></div>
-        
-        {/* Scrollable content */}
-        <div className="w-full flex overflow-x-auto space-x-4 px-4 pb-4 scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-blue-500 scrollbar-track-blue-100">
+      {/* Container for cards that allows wrapping */}
+      <div className="w-full">
+        {/* Cards arranged with proper spacing */}
+        <div className="flex flex-wrap gap-6 justify-center items-start">
           {gamesWithBestOdds.map((game) => (
-            <MatchCard
-              key={game.id}
-              game={game} // Pass the full game object
-            />
+            <div key={game.id} className="flex-shrink-0">
+              <MatchCard
+                game={game} // Pass the full game object
+              />
+            </div>
           ))}
         </div>
-
-        {/* Right blur overlay */}
-        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#06002E] to-transparent z-10 pointer-events-none"></div>
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ function App() {
             <Route path="users" element={<Users />} />
             <Route path="terms-of-use" element={<Terms />} />
             <Route path="privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="help" element="Help" />
+            <Route path="help" element={<Help />} />
             <Route path="contact" element={<Contact />} />
             <Route path="support" element={<Support />} />
             <Route path="how-it-works" element={<div>How It Works Page</div>} />

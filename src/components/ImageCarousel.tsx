@@ -7,8 +7,6 @@ const images = [
   '/images/carousel/NG-1MCasinoTournament2610.jpeg',
   '/images/carousel/NG-VARPAYOUT.jpg',
   '/images/carousel/carousel-image-1.jpg',
-  '/images/carousel/carousel-image-2.jpg',
-  '/images/carousel/carousel-image-3.jpg',
 ];
 
 interface ImageCarouselProps {
@@ -39,39 +37,39 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ className }) => { // Dest
   }, [goToNext]);
 
   return (
-    <div className={`relative w-full max-w-4xl mx-auto overflow-hidden rounded-lg shadow-lg ${className || ''}`}> {/* Apply className here */}
+    <div className={`relative w-full max-w-2xl mx-auto overflow-hidden rounded-lg shadow-lg ${className || ''}`}> {/* Apply className here */}
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {images.map((image, index) => (
           <div key={index} className="w-full flex-shrink-0">
-            <img src={image} alt={`Carousel slide ${index + 1}`} className="w-full h-auto object-cover" />
+            <img src={image} alt={`Carousel slide ${index + 1}`} className="w-full h-64 object-cover" />
           </div>
         ))}
       </div>
 
       <button
         onClick={goToPrevious}
-        className="absolute top-1/2 left-4 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full focus:outline-none hover:bg-opacity-75 transition-opacity"
+        className="absolute top-1/2 left-2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full focus:outline-none hover:bg-opacity-75 transition-opacity"
         aria-label="Previous slide"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={16} />
       </button>
       <button
         onClick={goToNext}
-        className="absolute top-1/2 right-4 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full focus:outline-none hover:bg-opacity-75 transition-opacity"
+        className="absolute top-1/2 right-2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full focus:outline-none hover:bg-opacity-75 transition-opacity"
         aria-label="Next slide"
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={16} />
       </button>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
         {images.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`h-2 w-2 rounded-full ${currentIndex === index ? 'bg-white' : 'bg-gray-400'} focus:outline-none`}
+            className={`h-1.5 w-1.5 rounded-full ${currentIndex === index ? 'bg-white' : 'bg-gray-400'} focus:outline-none`}
             aria-label={`Go to slide ${index + 1}`}
           ></button>
         ))}
