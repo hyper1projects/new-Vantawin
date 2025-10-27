@@ -55,11 +55,11 @@ const Oddscard: React.FC<OddscardProps> = ({
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-1.5 w-5/12">
           <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-6 h-6 object-contain" />
-          <span className="text-sm font-semibold truncate max-w-[60px]">{team1.name}</span>
+          <span className="text-sm font-semibold  max-w-[60px]">{team1.name}</span>
         </div>
         <span className="text-base font-bold text-gray-400 w-2/12 text-center">VS</span>
         <div className="flex items-center justify-end space-x-1.5 w-5/12">
-          <span className="text-sm font-semibold text-right truncate max-w-[60px]">{team2.name}</span>
+          <span className="text-sm font-semibold text-right  max-w-[60px]">{team2.name}</span>
           <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-6 h-6 object-contain" />
         </div>
       </div>
