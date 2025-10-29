@@ -31,11 +31,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         </div>
     );
 
-    // Defensive checks for odds values
-    const team1Odd = game.odds?.team1 !== undefined ? game.odds.team1.toFixed(2) : '-';
-    const drawOdd = game.odds?.draw !== undefined ? game.odds.draw.toFixed(2) : '-';
-    const team2Odd = game.odds?.team2 !== undefined ? game.odds.team2.toFixed(2) : '-';
-
     return (
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
@@ -64,7 +59,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                             )}
                             onClick={() => handleSelectOutcome('team1')}
                         >
-                            {team1Odd}
+                            Yes
                         </Button>
                         <Button
                             className={cn(
@@ -75,7 +70,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                             )}
                             onClick={() => handleSelectOutcome('draw')}
                         >
-                            {drawOdd}
+                            No (Draw)
                         </Button>
                         <Button
                             className={cn(
@@ -86,7 +81,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                             )}
                             onClick={() => handleSelectOutcome('team2')}
                         >
-                            {team2Odd}
+                            No (Team 2)
                         </Button>
                     </div>
                     <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
