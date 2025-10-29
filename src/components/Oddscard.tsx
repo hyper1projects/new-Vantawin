@@ -1,81 +1,101 @@
 "use client";
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import React, { useState } from 'react';
+import { Star } from 'lucide-react';
+import { getLogoSrc } from '../utils/logoMap'; // Correct path
+import { Team, Odds, Game } from '../types/game'; // Import necessary types
+import OddsButton from './OddsButton'; // Import the new OddsButton component
 
 interface OddscardProps {
-  date: string;
-  time: string;
-  isLive: boolean;
-  league: string;
-  team1: string;
-  team2: string;
-  odds1: string;
-  oddsX: string;
-  odds2: string;
+    team1: Team;
+    team2: Team;
+    odds: Odds;
+    time: string;
+    date: string;
+    league: string;
+    isLive: boolean;
+    gameView: string;
+    game: Game; // Keep the full game object for context usage
 }
 
-const Oddscard: React.FC<OddscardProps> = ({
-  date,
-  time,
-  isLive,
-  league,
-  team1,
-  team2,
-  odds1,
-  oddsX,
-  odds2,
-}) => {
-  return (
-    <div className="relative p-[2px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-full">
-      <div className="bg-[#011B47] rounded-[27px] h-full w-full p-4 flex flex-col justify-between text-vanta-text-light">
-        {/* Question */}
-        <div className="text-lg font-bold text-white mb-4 text-center">
-          Will Aston Villa win this game?
-        </div>
+const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView, game }) => {
+    const [isFavorited, setIsFavorited] = useState(false);
 
-        {/* Header: Date, Time, Live/League */}
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-base font-semibold text-gray-400">{date} - {time}</span>
-          {isLive ? (
-            <span className="text-red-500 font-bold">LIVE</span>
-          ) : (
-            <span className="text-gray-400">{league}</span>
-          )}
-        </div>
+    const handleFavoriteClick = () => {
+        setIsFavorited(!isFavorited);
+        console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
+    };
 
-        {/* Teams and Odds */}
-        <div className="flex flex-col space-y-2 mb-4">
-          <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold">{team1}</span>
-            <Button className="bg-[#00EEEE] text-[#011B47] font-bold py-2 px-4 rounded-full hover:bg-[#00EEEE]/80">
-              {odds1}
-            </Button>
-          </div>
-          <Separator className="bg-gray-700" />
-          <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold">Draw</span>
-            <Button className="bg-[#00EEEE] text-[#011B47] font-bold py-2 px-4 rounded-full hover:bg-[#00EEEE]/80">
-              {oddsX}
-            </Button>
-          </div>
-          <Separator className="bg-gray-700" />
-          <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold">{team2}</span>
-            <Button className="bg-[#00EEEE] text-[#011B47] font-bold py-2 px-4 rounded-full hover:bg-[#00EEEE]/80">
-              {odds2}
-            </Button>
-          </div>
+    const renderTeam = (team: Team) => (
+        <div className="flex items-center">
+            <img 
+                src={getLogoSrc(team.logoIdentifier)} 
+                alt={team.name} 
+                className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0" 
+            /> 
+            <span className="text-white font-semibold truncate">{team.name}</span>
         </div>
+    );
 
-        {/* Footer: Bet Now Button */}
-        <Button className="w-full bg-gradient-to-r from-[#9A3FFE] to-[#00EEEE] text-white font-bold py-3 px-4 rounded-full text-lg hover:from-[#9A3FFE]/80 hover:to-[#00EEEE]/80">
-          Bet Now
-        </Button>
-      </div>
-    </div>
-  );
+    return (
+        <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
+            
+            {/* Top section: Time/Live & Date (left), League (right) */}
+            <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
+                <div className="flex items-center space-x-3 font-medium"> 
+                    {isLive ? ( // Conditionally render LIVE indicator
+                        <span className="flex items-center text-red-400 font-bold tracking-wider">
+                            <span className="relative flex h-2 w-2 mr-1">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </span>
+                            LIVE
+                        </span>
+                    ) : (
+                        <span>{time}</span> 
+                    )}
+                    <span className="text-gray-500 text-xs">|</span>
+                    <span>{date}</span>
+                </div>
+                <div className="text-gray-300 font-medium"> {/* Right side: League */}
+                    <span>{league}</span>
+                </div>
+            </div>
+
+            {/* Middle section: Teams and Odds */}
+            <div className="flex justify-between items-center mb-4">
+                {/* Teams display */}
+                <div className="flex flex-col space-y-3">
+                    {renderTeam(team1)}
+                    {renderTeam(team2)}
+                </div>
+
+                {/* Odds buttons */}
+                <div className="flex flex-col items-end space-y-2">
+                    <div className='flex space-x-2'>
+                        <OddsButton value={odds.team1} /> 
+                        <OddsButton value={odds.draw} />
+                        <OddsButton value={odds.team2} />
+                    </div>
+                    <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
+                </div>
+            </div>
+
+            {/* Bottom section: Favorite icon and Game View link */}
+            <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
+                <button 
+                    onClick={handleFavoriteClick} 
+                    className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
+                >
+                    <Star
+                        className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
+                        fill={isFavorited ? 'currentColor' : 'none'}
+                    />
+                </button>
+                <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{gameView} &gt;</a>
+            </div>
+        </div>
+    );
 };
 
 export default Oddscard;
