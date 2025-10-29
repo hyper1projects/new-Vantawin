@@ -46,7 +46,7 @@ const Sidebar = () => {
                     <SidebarMenuButton 
                       asChild 
                       isActive={isActive}
-                      className={isActive ? 'bg-vanta-accent-dark-blue text-white' : 'text-white'}
+                      className={isActive ? 'bg-vanta-accent-dark-blue text-white relative before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-vanta-neon-blue' : 'text-white'}
                     >
                       <Link to={item.path} className="flex items-center gap-2">
                         <item.icon size={24} />
