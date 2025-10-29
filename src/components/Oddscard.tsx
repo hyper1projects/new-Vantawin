@@ -34,9 +34,14 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     return (
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
-            {/* Top section: Question */}
-            <div className="flex justify-start items-center text-vanta-text-light text-base font-semibold mb-4 border-b border-gray-700/50 pb-2">
-                <span>Will {game.team1.name} win this game?</span>
+            {/* Top section: Question and Time/Date */}
+            <div className="flex flex-col justify-start mb-4 border-b border-gray-700/50 pb-2">
+                <span className="text-vanta-text-light text-base font-semibold mb-2">Will {game.team1.name} win this game?</span>
+                <div className="flex items-center space-x-3 text-gray-400 text-xs font-medium">
+                    <span>{game.time}</span>
+                    <span className="text-gray-500 text-xs">|</span>
+                    <span>{game.date}</span>
+                </div>
             </div>
 
             {/* Middle section: Teams and Odds */}
@@ -73,20 +78,10 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                             No
                         </Button>
                     </div>
-                    {/* Removed '+ More Markets' span */}
                 </div>
             </div>
 
-            {/* Bottom section: Time/Date (if not live) */}
-            <div className="flex justify-start items-center pt-2 border-t border-gray-700/50 text-gray-400 text-xs font-medium">
-                {!game.isLive && ( // Only show time/date if the game is not live
-                    <div className="flex items-center space-x-3">
-                        <span>{game.time}</span>
-                        <span className="text-gray-500 text-xs">|</span>
-                        <span>{game.date}</span>
-                    </div>
-                )}
-            </div>
+            {/* Removed bottom section for time/date */}
         </div>
     );
 };
