@@ -42,7 +42,7 @@ const Sidebar = () => {
               {primaryNavItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (
-                  <SidebarMenuItem key={item.name}>
+                  <SidebarMenuItem key={item.name} className="mb-2"> {/* Added mb-2 for spacing */}
                     <SidebarMenuButton 
                       asChild 
                       isActive={isActive}
