@@ -5,6 +5,7 @@ import { Star } from 'lucide-react';
 import { getLogoSrc } from '../utils/logoMap'; // Correct path
 import { Game } from '../types/game'; // Import necessary types
 import OddsButton from './OddsButton'; // Import the new OddsButton component
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 interface OddscardProps {
     game: Game; // Only accept the full game object
@@ -32,7 +33,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     return (
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
-            {/* Top section: Time/Live & Date (left), League (right) */}
+            {/* Top section: Time/Live & Date (left), Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
                 <div className="flex items-center space-x-3 font-medium"> 
                     {game.isLive ? ( // Conditionally render LIVE indicator
@@ -49,8 +50,10 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                     <span className="text-gray-500 text-xs">|</span>
                     <span>{game.date}</span>
                 </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: Game View */}
-                    <span>{game.gameView}</span> {/* Changed from game.league to game.gameView */}
+                <div className="text-gray-300 font-medium"> {/* Right side: Game View (now clickable) */}
+                    <Link to={`/games/${game.id}`} className="hover:underline">
+                        <span>{game.gameView}</span>
+                    </Link>
                 </div>
             </div>
 
@@ -73,8 +76,8 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 </div>
             </div>
 
-            {/* Bottom section: Favorite icon and Game View link */}
-            <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
+            {/* Bottom section: Favorite icon (Game View link removed) */}
+            <div className="flex justify-start items-center pt-2 border-t border-gray-700/50"> {/* Changed justify-between to justify-start */}
                 <button 
                     onClick={handleFavoriteClick} 
                     className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
@@ -84,7 +87,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                         fill={isFavorited ? 'currentColor' : 'none'}
                     />
                 </button>
-                <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{game.gameView} &gt;</a>
             </div>
         </div>
     );
