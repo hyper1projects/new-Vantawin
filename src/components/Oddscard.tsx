@@ -1,98 +1,40 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
-import { getLogoSrc } from '../utils/logoMap'; // Correct path
-import { Team, Odds, Game } from '../types/game'; // Import necessary types
-import OddsButton from './OddsButton'; // Import the new OddsButton component
+import React from 'react';
+import { format } from 'date-fns';
 
-interface OddscardProps {
-    team1: Team;
-    team2: Team;
-    odds: Odds;
-    time: string;
-    date: string;
-    league: string;
-    isLive: boolean;
-    gameView: string;
-    game: Game; // Keep the full game object for context usage
-}
-
-const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView, game }) => {
-    const [isFavorited, setIsFavorited] = useState(false);
-
-    const handleFavoriteClick = () => {
-        setIsFavorited(!isFavorited);
-        console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
-    };
-
-    const renderTeam = (team: Team) => (
-        <div className="flex items-center">
-            <img 
-                src={getLogoSrc(team.logoIdentifier)} 
-                alt={team.name} 
-                className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0" 
-            /> 
-            <span className="text-white font-semibold truncate">{team.name}</span>
-        </div>
-    );
+const Oddscard = ({ game }) => {
+    const gameView = game.status === 'live' ? 'Live' : 'Game View';
 
     return (
-        <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
-            
-            {/* Top section: Time/Live & Date (left), League (right) */}
-            <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
-                <div className="flex items-center space-x-3 font-medium"> 
-                    {isLive ? ( // Conditionally render LIVE indicator
-                        <span className="flex items-center text-red-400 font-bold tracking-wider">
-                            <span className="relative flex h-2 w-2 mr-1">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                            </span>
-                            LIVE
-                        </span>
-                    ) : (
-                        <span>{time}</span> 
-                    )}
-                    <span className="text-gray-500 text-xs">|</span>
-                    <span>{date}</span>
+        <div className="relative p-4 bg-gray-800 rounded-lg shadow-lg flex flex-col justify-between h-full">
+            {/* Game time moved to the top-left */}
+            <div className="absolute top-2 left-2 text-gray-400 text-xs">
+                {format(game.time, 'p')}
+            </div>
+
+            <div className="flex flex-col items-center text-white text-lg font-semibold mt-6 mb-4">
+                <div className="flex items-center w-full justify-between">
+                    <span>{game.homeTeam}</span>
+                    <span className="text-sm text-gray-400 ml-2">{game.homeOdds}</span>
                 </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: League */}
-                    <span>{league}</span>
+                <div className="text-gray-500 text-sm my-1">vs</div>
+                <div className="flex items-center w-full justify-between">
+                    <span>{game.awayTeam}</span>
+                    <span className="text-sm text-gray-400 ml-2">{game.awayOdds}</span>
                 </div>
             </div>
 
-            {/* Middle section: Teams and Odds */}
-            <div className="flex justify-between items-center mb-4">
-                {/* Teams display */}
-                <div className="flex flex-col space-y-3">
-                    {renderTeam(team1)}
-                    {renderTeam(team2)}
-                </div>
-
-                {/* Odds buttons */}
-                <div className="flex flex-col items-end space-y-2">
-                    <div className='flex space-x-2'>
-                        <OddsButton value={odds.team1} /> 
-                        <OddsButton value={odds.draw} />
-                        <OddsButton value={odds.team2} />
-                    </div>
-                    <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
-                </div>
-            </div>
-
-            {/* Bottom section: Favorite icon and Game View link */}
-            <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
-                <button 
-                    onClick={handleFavoriteClick} 
-                    className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
-                >
-                    <Star
-                        className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
-                        fill={isFavorited ? 'currentColor' : 'none'}
-                    />
+            <div className="flex justify-between items-center">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded-md">
+                    Bet Now
                 </button>
                 <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{gameView} &gt;</a>
+            </div>
+
+            {/* Game league moved to the bottom-right */}
+            <div className="absolute bottom-2 right-2 text-gray-400 text-xs">
+                {game.league}
             </div>
         </div>
     );
