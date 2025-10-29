@@ -19,7 +19,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   const primaryNavItems = [
-    { name: "Ho", icon: Home, path: "/" },
+    { name: "Home", icon: Home, path: "/" },
     { name: "Games", icon: Gamepad2, path: "/games" },
     { name: "Pools", icon: Trophy, path: "/pools" },
     { name: "Leaderboard", icon: Users, path: "/leaderboard" },
