@@ -1,99 +1,78 @@
 "use client";
 
 import React from 'react';
-import { cn } from '../lib/utils'; // Assuming cn utility for tailwind-merge
-import { Game } from '../types/game'; // Ensure Game type is imported
-import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
-import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
-import OddsButton from './OddsButton'; // Import the new OddsButton component
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 interface OddscardProps {
-  time: string;
   date: string;
-  team1: { name: string; logoIdentifier: string; };
-  team2: { name: string; logoIdentifier: string; };
-  odds: { team1: number; draw: number; team2: number; };
-  league: string;
+  time: string;
   isLive: boolean;
-  gameView: string;
-  game: Game; // Pass the full game object
+  league: string;
+  team1: string;
+  team2: string;
+  odds1: string;
+  oddsX: string;
+  odds2: string;
 }
 
 const Oddscard: React.FC<OddscardProps> = ({
-  time,
   date,
+  time,
+  isLive,
+  league,
   team1,
   team2,
-  odds,
-  league,
-  isLive,
-  gameView,
-  game,
+  odds1,
+  oddsX,
+  odds2,
 }) => {
-  const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
-
-  const handleSelectOutcome = (outcome: 'team1' | 'draw' | 'team2') => {
-    setSelectedMatch(game, outcome);
-  };
-
-  // Defensive checks for odds values
-  const team1Odd = odds?.team1 !== undefined ? odds.team1.toFixed(2) : '-';
-  const drawOdd = odds?.draw !== undefined ? odds.draw.toFixed(2) : '-';
-  const team2Odd = odds?.team2 !== undefined ? odds.team2.toFixed(2) : '-';
-
   return (
     <div className="relative p-[2px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-full">
       <div className="bg-[#011B47] rounded-[27px] h-full w-full p-4 flex flex-col justify-between text-vanta-text-light">
+        {/* Question */}
+        <div className="text-lg font-bold text-white mb-4 text-center">
+          Will Aston Villa win this game?
+        </div>
+
         {/* Header: Date, Time, Live/League */}
         <div className="flex justify-between items-center mb-4">
           <span className="text-base font-semibold text-gray-400">{date} - {time}</span>
-          <span className={`text-[0.6rem] font-semibold px-2 py-1 rounded-md ${isLive ? 'bg-red-500 text-white' : 'bg-vanta-accent-dark-blue text-vanta-neon-blue'}`}>
-            {isLive ? 'LIVE' : league}
-          </span>
+          {isLive ? (
+            <span className="text-red-500 font-bold">LIVE</span>
+          ) : (
+            <span className="text-gray-400">{league}</span>
+          )}
         </div>
 
-        {/* Teams and Logos */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex flex-col items-center w-1/3">
-            <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-12 h-12 object-contain mb-1" />
-            <span className="text-[10px] font-medium text-center">{team1.name}</span>
+        {/* Teams and Odds */}
+        <div className="flex flex-col space-y-2 mb-4">
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold">{team1}</span>
+            <Button className="bg-[#00EEEE] text-[#011B47] font-bold py-2 px-4 rounded-full hover:bg-[#00EEEE]/80">
+              {odds1}
+            </Button>
           </div>
-          <span className="text-lg font-bold text-gray-400 w-1/3 text-center">VS</span>
-          <div className="flex flex-col items-center w-1/3">
-            <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-12 h-12 object-contain mb-1" />
-            <span className="text-[10px] font-medium text-center">{team2.name}</span>
+          <Separator className="bg-gray-700" />
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold">Draw</span>
+            <Button className="bg-[#00EEEE] text-[#011B47] font-bold py-2 px-4 rounded-full hover:bg-[#00EEEE]/80">
+              {oddsX}
+            </Button>
+          </div>
+          <Separator className="bg-gray-700" />
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold">{team2}</span>
+            <Button className="bg-[#00EEEE] text-[#011B47] font-bold py-2 px-4 rounded-full hover:bg-[#00EEEE]/80">
+              {odds2}
+            </Button>
           </div>
         </div>
 
-        {/* Odds Buttons */}
-        <div className="flex justify-between space-x-2 mb-4">
-          <OddsButton
-            isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'}
-            onClick={() => handleSelectOutcome('team1')}
-          >
-            {team1Odd}
-          </OddsButton>
-          <OddsButton
-            isSelected={selectedGame?.id === game.id && selectedOutcome === 'draw'}
-            onClick={() => handleSelectOutcome('draw')}
-          >
-            {drawOdd}
-          </OddsButton>
-          <OddsButton
-            isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'}
-            onClick={() => handleSelectOutcome('team2')}
-          >
-            {team2Odd}
-          </OddsButton>
-        </div>
-
-        {/* View Game Button */}
-        <OddsButton
-          isViewGameButton
-          onClick={() => console.log(`View game details for ${game.id}`)} // Placeholder for navigation
-        >
-          {gameView}
-        </OddsButton>
+        {/* Footer: Bet Now Button */}
+        <Button className="w-full bg-gradient-to-r from-[#9A3FFE] to-[#00EEEE] text-white font-bold py-3 px-4 rounded-full text-lg hover:from-[#9A3FFE]/80 hover:to-[#00EEEE]/80">
+          Bet Now
+        </Button>
       </div>
     </div>
   );
