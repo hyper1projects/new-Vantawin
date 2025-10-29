@@ -6,7 +6,6 @@ import { Game } from '../types/game'; // Ensure Game type is imported
 import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
 import { Button } from '@/components/ui/button'; // Import shadcn Button
-import { Heart } from 'lucide-react'; // Import Heart icon
 
 interface OddscardProps {
   time: string;
@@ -35,11 +34,6 @@ const Oddscard: React.FC<OddscardProps> = ({
 
   const handleSelectOutcome = (outcome: 'team1' | 'draw' | 'team2') => {
     setSelectedMatch(game, outcome);
-  };
-
-  const handleToggleFavorite = () => {
-    console.log(`Toggling favorite for game: ${game.id}`);
-    // Implement favorite logic here
   };
 
   // Defensive checks for odds values
@@ -109,18 +103,10 @@ const Oddscard: React.FC<OddscardProps> = ({
         </Button>
       </div>
 
-      {/* View Game Button and Favorites Button */}
-      <div className="flex items-center space-x-2 mt-2">
-        <Button className="flex-1 bg-[#0D2C60] text-vanta-neon-blue hover:bg-[#0D2C60]/80 rounded-[8px] py-1 text-xs font-semibold">
-          {gameView}
-        </Button>
-        <Button
-          className="bg-[#0D2C60] text-gray-300 hover:bg-[#0D2C60]/80 rounded-[8px] p-2"
-          onClick={handleToggleFavorite}
-        >
-          <Heart size={16} />
-        </Button>
-      </div>
+      {/* View Game Button */}
+      <Button className="w-full bg-[#0D2C60] text-vanta-neon-blue hover:bg-[#0D2C60]/80 rounded-[8px] py-1 text-xs font-semibold">
+        {gameView}
+      </Button>
 
       {/* League (Bottom-Right) */}
       <span className="absolute bottom-2 right-2 text-xs font-medium text-gray-400 z-10">
