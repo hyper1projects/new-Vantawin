@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
+import React from 'react'; // Removed useState as favoriting is removed
 import { getLogoSrc } from '../utils/logoMap'; // Correct path
 import { Game } from '../types/game'; // Import necessary types
 import OddsButton from './OddsButton'; // Import the new OddsButton component
@@ -12,12 +11,7 @@ interface OddscardProps {
 }
 
 const Oddscard: React.FC<OddscardProps> = ({ game }) => {
-    const [isFavorited, setIsFavorited] = useState(false);
-
-    const handleFavoriteClick = () => {
-        setIsFavorited(!isFavorited);
-        console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
-    };
+    // Removed isFavorited state and handleFavoriteClick function
 
     const renderTeam = (team: { name: string; logoIdentifier: string }) => (
         <div className="flex items-center">
@@ -33,10 +27,10 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     return (
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
-            {/* Top section: Time/Live & Date (left), Game View (right) */}
+            {/* Top section: Live indicator (left), Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
                 <div className="flex items-center space-x-3 font-medium"> 
-                    {game.isLive ? ( // Conditionally render LIVE indicator
+                    {game.isLive && ( // Only render LIVE indicator if game is live
                         <span className="flex items-center text-red-400 font-bold tracking-wider">
                             <span className="relative flex h-2 w-2 mr-1">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -44,13 +38,9 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                             </span>
                             LIVE
                         </span>
-                    ) : (
-                        <span>{game.time}</span> 
                     )}
-                    <span className="text-gray-500 text-xs">|</span>
-                    <span>{game.date}</span>
                 </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: Game View (now clickable) */}
+                <div className="text-gray-300 font-medium"> {/* Right side: Game View (clickable) */}
                     <Link to={`/games/${game.id}`} className="hover:underline">
                         <span>{game.gameView}</span>
                     </Link>
@@ -76,17 +66,15 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 </div>
             </div>
 
-            {/* Bottom section: Favorite icon (Game View link removed) */}
-            <div className="flex justify-start items-center pt-2 border-t border-gray-700/50"> {/* Changed justify-between to justify-start */}
-                <button 
-                    onClick={handleFavoriteClick} 
-                    className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
-                >
-                    <Star
-                        className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
-                        fill={isFavorited ? 'currentColor' : 'none'}
-                    />
-                </button>
+            {/* Bottom section: Time/Date (if not live) */}
+            <div className="flex justify-start items-center pt-2 border-t border-gray-700/50 text-gray-400 text-xs font-medium">
+                {!game.isLive && ( // Only show time/date if the game is not live
+                    <div className="flex items-center space-x-3">
+                        <span>{game.time}</span>
+                        <span className="text-gray-500 text-xs">|</span>
+                        <span>{game.date}</span>
+                    </div>
+                )}
             </div>
         </div>
     );
