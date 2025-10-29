@@ -40,7 +40,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
     return (
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
-            {/* Top section: Time/Live & Date (left), League (right) */}
+            {/* Top section: Time/Live & Date (left), Favorite & Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
                 <div className="flex items-center space-x-3 font-medium"> 
                     {isLive ? ( // Conditionally render LIVE indicator
@@ -57,8 +57,17 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                     <span className="text-gray-500 text-xs">|</span>
                     <span>{date}</span>
                 </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: League */}
-                    <span>{league}</span>
+                <div className="flex items-center space-x-2"> {/* This is the new container for star and link */}
+                    <button 
+                        onClick={handleFavoriteClick} 
+                        className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
+                    >
+                        <Star
+                            className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
+                            fill={isFavorited ? 'currentColor' : 'none'}
+                        />
+                    </button>
+                    <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{gameView} &gt;</a>
                 </div>
             </div>
 
@@ -81,18 +90,11 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                 </div>
             </div>
 
-            {/* Bottom section: Favorite icon and Game View link */}
-            <div className="flex justify-end items-center pt-2 border-t border-gray-700/50 space-x-2">
-                <button 
-                    onClick={handleFavoriteClick} 
-                    className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
-                >
-                    <Star
-                        className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
-                        fill={isFavorited ? 'currentColor' : 'none'}
-                    />
-                </button>
-                <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{gameView} &gt;</a>
+            {/* Bottom section: League (right) */}
+            <div className="flex justify-end items-center pt-2 border-t border-gray-700/50">
+                <div className="text-gray-300 font-medium"> {/* Right side: League */}
+                    <span>{league}</span>
+                </div>
             </div>
         </div>
     );
