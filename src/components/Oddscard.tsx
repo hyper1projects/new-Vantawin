@@ -43,18 +43,16 @@ const Oddscard: React.FC<OddscardProps> = ({
 
   return (
     <div className="relative bg-[#011B47] rounded-[18px] p-2 shadow-sm flex flex-col text-vanta-text-light w-full">
-      {/* Time and Date (Top-Left) */}
-      <span className="absolute top-2 left-2 text-xs font-medium text-gray-400 z-10">
-        {date} - {time}
-      </span>
+      {/* Header: Date, Time, Live/League */}
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs font-medium text-gray-400">{date} - {time}</span>
+        <span className={`text-[0.6rem] font-semibold px-1.5 py-0.5 rounded-md ${isLive ? 'bg-red-500 text-white' : 'bg-vanta-accent-dark-blue text-vanta-neon-blue'}`}>
+          {isLive ? 'LIVE' : league}
+        </span>
+      </div>
 
-      {/* Live Status (Top-Right) */}
-      <span className={`absolute top-2 right-2 text-[0.6rem] font-semibold px-1.5 py-0.5 rounded-md z-10 ${isLive ? 'bg-red-500 text-white' : 'bg-vanta-accent-dark-blue text-vanta-neon-blue'}`}>
-        {isLive ? 'LIVE' : ''}
-      </span>
-
-      {/* Teams and Logos - Adjusted margin-top to avoid overlap with absolute elements */}
-      <div className="flex items-center justify-between mb-2 mt-8">
+      {/* Teams and Logos */}
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-1.5 w-5/12">
           <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-6 h-6 object-contain" />
           <span className="text-sm font-semibold  max-w-[60px]">{team1.name}</span>
@@ -107,11 +105,6 @@ const Oddscard: React.FC<OddscardProps> = ({
       <Button className="w-full bg-[#0D2C60] text-vanta-neon-blue hover:bg-[#0D2C60]/80 rounded-[8px] py-1 text-xs font-semibold">
         {gameView}
       </Button>
-
-      {/* League (Bottom-Right) */}
-      <span className="absolute bottom-2 right-2 text-xs font-medium text-gray-400 z-10">
-        {league}
-      </span>
     </div>
   );
 };
