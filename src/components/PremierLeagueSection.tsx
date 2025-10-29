@@ -81,6 +81,14 @@ const PremierLeagueSection: React.FC = () => {
         {filteredGames.map((game) => (
           <Oddscard
             key={game.id}
+            time={game.time}
+            date={game.date}
+            team1={game.team1}
+            team2={game.team2}
+            odds={game.odds}
+            league={game.league}
+            isLive={game.isLive}
+            gameView={game.gameView}
             game={game} // Pass the full game object
           />
         ))}

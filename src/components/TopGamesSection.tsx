@@ -9,11 +9,7 @@ import { cn } from '@/lib/utils';
 
 type GameFilter = 'All' | 'Live' | 'Upcoming';
 
-interface TopGamesSectionProps {
-  className?: string; // Add className prop
-}
-
-const TopGamesSection: React.FC<TopGamesSectionProps> = ({ className }) => {
+const TopGamesSection: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All');
 
   // Define an array of game data, using the logo identifiers from logoMap.ts
@@ -78,7 +74,7 @@ const TopGamesSection: React.FC<TopGamesSectionProps> = ({ className }) => {
   };
 
   return (
-    <div className={cn("flex flex-col items-center space-y-2 bg-vanta-blue-medium rounded-[18px] shadow-sm pb-2", className)}>
+    <div className="flex flex-col items-center space-y-2 bg-vanta-blue-medium rounded-[18px] shadow-sm pb-2">
       {/* Header wrapper div now extends full width */}
       <div className="w-full bg-[#0D2C60] rounded-t-[18px]">
         <SectionHeader title="Top Games" className="w-full" textColor="text-white" />
@@ -108,8 +104,17 @@ const TopGamesSection: React.FC<TopGamesSectionProps> = ({ className }) => {
       {/* Wrapper div for Oddscards - now stacking vertically */}
       <div className="w-full flex flex-col space-y-1 px-1">
         {filteredGames.map((game) => (
-          <div className="w-full" key={game.id}>
+          <div className="w-full">
             <Oddscard
+              key={game.id}
+              time={game.time}
+              date={game.date}
+              team1={game.team1}
+              team2={game.team2}
+              odds={game.odds}
+              league={game.league}
+              isLive={game.isLive}
+              gameView={game.gameView}
               game={game} // Pass the full game object
             />
           </div>
