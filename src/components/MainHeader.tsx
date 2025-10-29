@@ -53,7 +53,7 @@ const MainHeader: React.FC = () => {
       </div>
 
       {/* Middle Section: Search Bar */}
-      <div className="flex-grow max-w-lg mx-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
+      <div className="flex-grow max-w-sm mx-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
         <Search className="absolute left-3 text-[#00EEEE]" size={18} />
         <Input
           type="text"
