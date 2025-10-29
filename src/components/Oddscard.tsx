@@ -40,24 +40,10 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
     return (
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
-            {/* Top section: Time/Live & Date (left), Favorite & Game View (right) */}
+            {/* Top section: Question (left), Favorite & Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
-                <div className="flex items-center space-x-3 font-medium"> 
-                    {isLive ? ( // Conditionally render LIVE indicator
-                        <span className="flex items-center text-red-400 font-bold tracking-wider">
-                            <span className="relative flex h-2 w-2 mr-1">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                            </span>
-                            LIVE
-                        </span>
-                    ) : (
-                        <span>{time}</span> 
-                    )}
-                    <span className="text-gray-500 text-xs">|</span>
-                    <span>{date}</span>
-                </div>
-                <div className="flex items-center space-x-2"> {/* This is the new container for star and link */}
+                <span className="text-gray-300 text-sm font-medium">Will {team1.name} win this match?</span> {/* Question content */}
+                <div className="flex items-center space-x-2"> {/* Container for star and link */}
                     <button 
                         onClick={handleFavoriteClick} 
                         className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
@@ -90,9 +76,23 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                 </div>
             </div>
 
-            {/* Bottom section: Question (left) and League (right) */}
+            {/* Bottom section: Time/Live & Date (left), League (right) */}
             <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
-                <span className="text-gray-300 text-sm font-medium">Will {team1.name} win this match?</span> {/* New text on the left */}
+                <div className="flex items-center space-x-3 font-medium text-gray-400 text-xs"> 
+                    {isLive ? ( // Conditionally render LIVE indicator
+                        <span className="flex items-center text-red-400 font-bold tracking-wider">
+                            <span className="relative flex h-2 w-2 mr-1">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </span>
+                            LIVE
+                        </span>
+                    ) : (
+                        <span>{time}</span> 
+                    )}
+                    <span className="text-gray-500 text-xs">|</span>
+                    <span>{date}</span>
+                </div>
                 <div className="text-gray-300 font-medium"> {/* Right side: League */}
                     <span>{league}</span>
                 </div>
