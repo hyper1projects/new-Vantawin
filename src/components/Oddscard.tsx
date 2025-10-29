@@ -3,22 +3,14 @@
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
 import { getLogoSrc } from '../utils/logoMap'; // Correct path
-import { Team, Odds, Game } from '../types/game'; // Import necessary types
+import { Game } from '../types/game'; // Import necessary types
 import OddsButton from './OddsButton'; // Import the new OddsButton component
 
 interface OddscardProps {
-    team1: Team;
-    team2: Team;
-    odds: Odds;
-    time: string;
-    date: string;
-    league: string;
-    isLive: boolean;
-    gameView: string;
-    game: Game; // Keep the full game object for context usage
+    game: Game; // Only accept the full game object
 }
 
-const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView, game }) => {
+const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     const [isFavorited, setIsFavorited] = useState(false);
 
     const handleFavoriteClick = () => {
@@ -26,7 +18,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
         console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
     };
 
-    const renderTeam = (team: Team) => (
+    const renderTeam = (team: { name: string; logoIdentifier: string }) => (
         <div className="flex items-center">
             <img 
                 src={getLogoSrc(team.logoIdentifier)} 
@@ -43,7 +35,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             {/* Top section: Time/Live & Date (left), League (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
                 <div className="flex items-center space-x-3 font-medium"> 
-                    {isLive ? ( // Conditionally render LIVE indicator
+                    {game.isLive ? ( // Conditionally render LIVE indicator
                         <span className="flex items-center text-red-400 font-bold tracking-wider">
                             <span className="relative flex h-2 w-2 mr-1">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -52,13 +44,13 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                             LIVE
                         </span>
                     ) : (
-                        <span>{time}</span> 
+                        <span>{game.time}</span> 
                     )}
                     <span className="text-gray-500 text-xs">|</span>
-                    <span>{date}</span>
+                    <span>{game.date}</span>
                 </div>
                 <div className="text-gray-300 font-medium"> {/* Right side: League */}
-                    <span>{league}</span>
+                    <span>{game.league}</span>
                 </div>
             </div>
 
@@ -66,16 +58,16 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             <div className="flex justify-between items-center mb-4">
                 {/* Teams display */}
                 <div className="flex flex-col space-y-3">
-                    {renderTeam(team1)}
-                    {renderTeam(team2)}
+                    {renderTeam(game.team1)}
+                    {renderTeam(game.team2)}
                 </div>
 
                 {/* Odds buttons */}
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
-                        <OddsButton value={odds.team1} /> 
-                        <OddsButton value={odds.draw} />
-                        <OddsButton value={odds.team2} />
+                        <OddsButton value={game.odds.team1} /> 
+                        <OddsButton value={game.odds.draw} />
+                        <OddsButton value={game.odds.team2} />
                     </div>
                     <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
                 </div>
@@ -92,7 +84,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                         fill={isFavorited ? 'currentColor' : 'none'}
                     />
                 </button>
-                <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{gameView} &gt;</a>
+                <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{game.gameView} &gt;</a>
             </div>
         </div>
     );
