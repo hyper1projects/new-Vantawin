@@ -49,8 +49,8 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                     <span className="text-gray-500 text-xs">|</span>
                     <span>{game.date}</span>
                 </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: League */}
-                    <span>{game.league}</span>
+                <div className="text-gray-300 font-medium"> {/* Right side: Game View */}
+                    <span>{game.gameView}</span> {/* Changed from game.league to game.gameView */}
                 </div>
             </div>
 
