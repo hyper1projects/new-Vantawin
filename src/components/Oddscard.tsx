@@ -16,7 +16,8 @@ interface OddscardProps {
 const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
-    const handleSelectOutcome = (outcome: 'team1' | 'draw' | 'team2') => {
+    // Updated to only allow 'team1' or 'team2' as outcomes
+    const handleSelectOutcome = (outcome: 'team1' | 'team2') => {
         setSelectedMatch(game, outcome);
     };
 
@@ -61,17 +62,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                         >
                             Yes
                         </Button>
-                        <Button
-                            className={cn(
-                                "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
-                                selectedGame?.id === game.id && selectedOutcome === 'draw'
-                                    ? "bg-vanta-neon-blue text-vanta-blue-dark"
-                                    : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
-                            )}
-                            onClick={() => handleSelectOutcome('draw')}
-                        >
-                            No (Draw)
-                        </Button>
+                        {/* Removed the 'No (Draw)' button */}
                         <Button
                             className={cn(
                                 "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
@@ -81,7 +72,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                             )}
                             onClick={() => handleSelectOutcome('team2')}
                         >
-                            No (Team 2)
+                            No
                         </Button>
                     </div>
                     <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
