@@ -1,101 +1,133 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
-import { getLogoSrc } from '../utils/logoMap'; // Correct path
-import { Team, Odds, Game } from '../types/game'; // Import necessary types
-import OddsButton from './OddsButton'; // Import the new OddsButton component
+import React from 'react';
+import { cn } from '../lib/utils'; // Assuming cn utility for tailwind-merge
+import { Game } from '../types/game'; // Ensure Game type is imported
+import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
+import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
+import { Button } from '@/components/ui/button'; // Import shadcn Button
+import { Heart } from 'lucide-react'; // Import Heart icon
 
 interface OddscardProps {
-    team1: Team;
-    team2: Team;
-    odds: Odds;
-    time: string;
-    date: string;
-    league: string;
-    isLive: boolean;
-    gameView: string;
-    game: Game; // Keep the full game object for context usage
+  time: string;
+  date: string;
+  team1: { name: string; logoIdentifier: string; };
+  team2: { name: string; logoIdentifier: string; };
+  odds: { team1: number; draw: number; team2: number; };
+  league: string;
+  isLive: boolean;
+  gameView: string;
+  game: Game; // Pass the full game object
 }
 
-const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView, game }) => {
-    const [isFavorited, setIsFavorited] = useState(false);
+const Oddscard: React.FC<OddscardProps> = ({
+  time,
+  date,
+  team1,
+  team2,
+  odds,
+  league,
+  isLive,
+  gameView,
+  game,
+}) => {
+  const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
-    const handleFavoriteClick = () => {
-        setIsFavorited(!isFavorited);
-        console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
-    };
+  const handleSelectOutcome = (outcome: 'team1' | 'draw' | 'team2') => {
+    setSelectedMatch(game, outcome);
+  };
 
-    const renderTeam = (team: Team) => (
-        <div className="flex items-center">
-            <img 
-                src={getLogoSrc(team.logoIdentifier)} 
-                alt={team.name} 
-                className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0" 
-            /> 
-            <span className="text-white font-semibold truncate">{team.name}</span>
+  const handleToggleFavorite = () => {
+    console.log(`Toggling favorite for game: ${game.id}`);
+    // Implement favorite logic here
+  };
+
+  // Defensive checks for odds values
+  const team1Odd = odds?.team1 !== undefined ? odds.team1.toFixed(2) : '-';
+  const drawOdd = odds?.draw !== undefined ? odds.draw.toFixed(2) : '-';
+  const team2Odd = odds?.team2 !== undefined ? odds.team2.toFixed(2) : '-';
+
+  return (
+    <div className="relative bg-[#011B47] rounded-[18px] p-2 shadow-sm flex flex-col text-vanta-text-light w-full">
+      {/* Time and Date (Top-Left) */}
+      <span className="absolute top-2 left-2 text-xs font-medium text-gray-400 z-10">
+        {date} - {time}
+      </span>
+
+      {/* Live Status (Top-Right) */}
+      <span className={`absolute top-2 right-2 text-[0.6rem] font-semibold px-1.5 py-0.5 rounded-md z-10 ${isLive ? 'bg-red-500 text-white' : 'bg-vanta-accent-dark-blue text-vanta-neon-blue'}`}>
+        {isLive ? 'LIVE' : ''}
+      </span>
+
+      {/* Teams and Logos - Adjusted margin-top to avoid overlap with absolute elements */}
+      <div className="flex items-center justify-between mb-2 mt-8">
+        <div className="flex items-center space-x-1.5 w-5/12">
+          <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-6 h-6 object-contain" />
+          <span className="text-sm font-semibold  max-w-[60px]">{team1.name}</span>
         </div>
-    );
-
-    return (
-        <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
-            
-            {/* Top section: Time/Live & Date (left), League (right) */}
-            <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
-                <div className="flex items-center space-x-3 font-medium"> 
-                    {isLive ? ( // Conditionally render LIVE indicator
-                        <span className="flex items-center text-red-400 font-bold tracking-wider">
-                            <span className="relative flex h-2 w-2 mr-1">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                            </span>
-                            LIVE
-                        </span>
-                    ) : (
-                        <span>{time}</span> 
-                    )}
-                    <span className="text-gray-500 text-xs">|</span>
-                    <span>{date}</span>
-                </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: League */}
-                    <span>{league}</span>
-                </div>
-            </div>
-
-            {/* Middle section: Teams and Odds */}
-            <div className="flex justify-between items-center mb-4">
-                {/* Teams display */}
-                <div className="flex flex-col space-y-3">
-                    {renderTeam(team1)}
-                    {renderTeam(team2)}
-                </div>
-
-                {/* Odds buttons */}
-                <div className="flex flex-col items-end space-y-2">
-                    <div className='flex space-x-2'>
-                        <OddsButton value={odds.team1} /> 
-                        <OddsButton value={odds.draw} />
-                        <OddsButton value={odds.team2} />
-                    </div>
-                    <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
-                </div>
-            </div>
-
-            {/* Bottom section: Favorite icon and Game View link */}
-            <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
-                <button 
-                    onClick={handleFavoriteClick} 
-                    className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
-                >
-                    <Star
-                        className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
-                        fill={isFavorited ? 'currentColor' : 'none'}
-                    />
-                </button>
-                <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{gameView} &gt;</a>
-            </div>
+        <span className="text-base font-bold text-gray-400 w-2/12 text-center">VS</span>
+        <div className="flex items-center justify-end space-x-1.5 w-5/12">
+          <span className="text-sm font-semibold text-right  max-w-[60px]">{team2.name}</span>
+          <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-6 h-6 object-contain" />
         </div>
-    );
+      </div>
+
+      {/* Odds Buttons */}
+      <div className="flex justify-between space-x-1 mb-1">
+        <Button
+          className={cn(
+            "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
+            selectedGame?.id === game.id && selectedOutcome === 'team1'
+              ? "bg-vanta-neon-blue text-vanta-blue-dark"
+              : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
+          )}
+          onClick={() => handleSelectOutcome('team1')}
+        >
+          {team1Odd}
+        </Button>
+        <Button
+          className={cn(
+            "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
+            selectedGame?.id === game.id && selectedOutcome === 'draw'
+              ? "bg-vanta-neon-blue text-vanta-blue-dark"
+              : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
+          )}
+          onClick={() => handleSelectOutcome('draw')}
+        >
+          {drawOdd}
+        </Button>
+        <Button
+          className={cn(
+            "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
+            selectedGame?.id === game.id && selectedOutcome === 'team2'
+              ? "bg-vanta-neon-blue text-vanta-blue-dark"
+              : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
+          )}
+          onClick={() => handleSelectOutcome('team2')}
+        >
+          {team2Odd}
+        </Button>
+      </div>
+
+      {/* View Game Button and Favorites Button */}
+      <div className="flex items-center space-x-2 mt-2">
+        <Button className="flex-1 bg-[#0D2C60] text-vanta-neon-blue hover:bg-[#0D2C60]/80 rounded-[8px] py-1 text-xs font-semibold">
+          {gameView}
+        </Button>
+        <Button
+          className="bg-[#0D2C60] text-gray-300 hover:bg-[#0D2C60]/80 rounded-[8px] p-2"
+          onClick={handleToggleFavorite}
+        >
+          <Heart size={16} />
+        </Button>
+      </div>
+
+      {/* League (Bottom-Right) */}
+      <span className="absolute bottom-2 right-2 text-xs font-medium text-gray-400 z-10">
+        {league}
+      </span>
+    </div>
+  );
 };
 
 export default Oddscard;
