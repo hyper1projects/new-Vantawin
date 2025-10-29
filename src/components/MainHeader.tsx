@@ -21,48 +21,50 @@ const MainHeader: React.FC = () => {
 
   return (
     <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 pr-20 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
-      {/* Left Section: Logo, Sports Categories and How to play, and Search Bar */}
-      <div className="flex items-center">
-        {/* VantaWin Logo */}
-        <Link to="/" className="flex items-center cursor-pointer mr-12"> {/* Added mr-12 for spacing */}
-          <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
-          <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
-        </Link>
+      {/* Leftmost: VantaWin Logo */}
+      <Link to="/" className="flex items-center cursor-pointer">
+        <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
+        <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
+      </Link>
+
+      {/* Middle Group: Sports Categories, How to play, Search Bar */}
+      <div className="flex items-center space-x-8"> {/* This div groups the middle elements */}
+        {/* Sports Categories and How to play */}
         <div className="flex items-center space-x-6">
-        {sportsCategories.map((category) => (
-          <Link 
-            key={category} 
-            to={`/games?category=${category.toLowerCase().replace('.', '')}`} // All categories route to /games with a query param
-          >
-            <Button
-              variant="ghost"
-              className={`font-medium text-sm ${isActive(category) ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
+          {sportsCategories.map((category) => (
+            <Link 
+              key={category} 
+              to={`/games?category=${category.toLowerCase().replace('.', '')}`} // All categories route to /games with a query param
             >
-              {category}
+              <Button
+                variant="ghost"
+                className={`font-medium text-sm ${isActive(category) ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
+              >
+                {category}
+              </Button>
+            </Link>
+          ))}
+          {/* How to play link */}
+          <Link to="/how-to-play" className="flex items-center space-x-1">
+            <AlertCircle size={18} className="text-[#00EEEE]" />
+            <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
+              How to play
             </Button>
           </Link>
-        ))}
-        {/* How to play link */}
-        <Link to="/how-to-play" className="flex items-center space-x-1"> {/* Removed ml-4, now handled by parent space-x-6 */}
-          <AlertCircle size={18} className="text-[#00EEEE]" />
-          <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
-            How to play
-          </Button>
-        </Link>
+        </div>
+
+        {/* Search Bar */}
+        <div className="max-w-sm ml-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
+          <Search className="absolute left-3 text-[#00EEEE]" size={18} />
+          <Input
+            type="text"
+            placeholder="Search..."
+            className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0"
+          />
+        </div>
       </div>
 
-      {/* Middle Section: Search Bar (now part of the left group for better spacing control) */}
-      <div className="flex-grow max-w-sm ml-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center"> {/* Added ml-8 */}
-        <Search className="absolute left-3 text-[#00EEEE]" size={18} />
-        <Input
-          type="text"
-          placeholder="Search..."
-          className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0"
-        />
-      </div>
-      </div>
-
-      {/* Right Section: Login, Register */}
+      {/* Rightmost: Login, Register */}
       <div className="flex items-center space-x-4">
         <Link to="/login">
           <Button className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10">
