@@ -82,7 +82,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             </div>
 
             {/* Bottom section: Favorite icon and Game View link */}
-            <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
+            <div className="flex justify-end items-center pt-2 border-t border-gray-700/50 space-x-2">
                 <button 
                     onClick={handleFavoriteClick} 
                     className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
