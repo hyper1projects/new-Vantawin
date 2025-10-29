@@ -90,8 +90,9 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                 </div>
             </div>
 
-            {/* Bottom section: League (right) */}
-            <div className="flex justify-end items-center pt-2 border-t border-gray-700/50">
+            {/* Bottom section: Question (left) and League (right) */}
+            <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
+                <span className="text-gray-300 text-sm font-medium">Will {team1.name} win this match?</span> {/* New text on the left */}
                 <div className="text-gray-300 font-medium"> {/* Right side: League */}
                     <span>{league}</span>
                 </div>
