@@ -4,13 +4,13 @@ import React from 'react';
 import { getLogoSrc } from '../utils/logoMap';
 import { Game } from '../types/game';
 import OddsButton from './OddsButton';
-import { Link } from 'react-router-dom'; // Keep Link for potential future use or if other components rely on it, though not directly used in this card's text anymore.
-import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
-import { cn } from '../lib/utils'; // For conditional class merging
-import { Button } from '@/components/ui/button'; // Import shadcn Button
+import { Link } from 'react-router-dom';
+import { useMatchSelection } from '../context/MatchSelectionContext';
+import { cn } from '../lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface OddscardProps {
-    game: Game; // Only accept the full game object
+    game: Game;
 }
 
 const Oddscard: React.FC<OddscardProps> = ({ game }) => {
@@ -40,7 +40,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
             {/* Top section: Question */}
-            <div className="flex justify-center items-center text-vanta-text-light text-base font-semibold mb-4 border-b border-gray-700/50 pb-2">
+            <div className="flex justify-start items-center text-vanta-text-light text-base font-semibold mb-4 border-b border-gray-700/50 pb-2">
                 <span>Will {game.team1.name} win this game?</span>
             </div>
 
