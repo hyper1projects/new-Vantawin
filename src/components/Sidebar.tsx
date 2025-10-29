@@ -33,7 +33,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <ShadcnSidebar className="border-r border-vanta-blue-medium" collapsible="none">
+    <ShadcnSidebar className="border-r border-vanta-blue-medium bg-[#011B47]" collapsible="none">
 
       <SidebarContent>
         <SidebarGroup>
@@ -46,9 +46,9 @@ const Sidebar = () => {
                     <SidebarMenuButton 
                       asChild 
                       isActive={isActive}
-                      className={isActive ? 'bg-vanta-accent-dark-blue' : ''}
+                      className={isActive ? 'bg-vanta-accent-dark-blue text-white' : 'text-white'}
                     >
-                      <Link to={item.path}>
+                      <Link to={item.path} className="flex items-center gap-2">
                         <item.icon size={24} />
                         <span className="text-lg">{item.name}</span>
                       </Link>
@@ -66,7 +66,7 @@ const Sidebar = () => {
             return (
               <SidebarMenuItem key={item.name}>
                 <SidebarMenuButton asChild>
-                  <Link to={item.path} className="flex items-center justify-between w-full">
+                  <Link to={item.path} className="flex items-center justify-between w-full text-white">
                     <div className="flex items-center gap-2">
                       <item.icon size={18} />
                       <span>{item.name}</span>

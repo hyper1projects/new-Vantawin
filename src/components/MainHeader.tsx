@@ -24,10 +24,10 @@ const MainHeader: React.FC = () => {
       {/* Left Section: Logo, Sports Categories and How to play */}
       <div className="flex items-center space-x-8">
         {/* VantaWin Logo */}
-        <div className="flex items-center">
+        <Link to="/" className="flex items-center cursor-pointer">
           <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
           <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
-        </div>
+        </Link>
         <div className="flex items-center space-x-6">
         {sportsCategories.map((category) => (
           <Link 
