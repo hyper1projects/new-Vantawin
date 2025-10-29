@@ -1,17 +1,24 @@
 "use client";
 
-import React from 'react'; // Removed useState as favoriting is removed
-import { getLogoSrc } from '../utils/logoMap'; // Correct path
-import { Game } from '../types/game'; // Import necessary types
-import OddsButton from './OddsButton'; // Import the new OddsButton component
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import React from 'react';
+import { getLogoSrc } from '../utils/logoMap';
+import { Game } from '../types/game';
+import OddsButton from './OddsButton';
+import { Link } from 'react-router-dom'; // Keep Link for potential future use or if other components rely on it, though not directly used in this card's text anymore.
+import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
+import { cn } from '../lib/utils'; // For conditional class merging
+import { Button } from '@/components/ui/button'; // Import shadcn Button
 
 interface OddscardProps {
     game: Game; // Only accept the full game object
 }
 
 const Oddscard: React.FC<OddscardProps> = ({ game }) => {
-    // Removed isFavorited state and handleFavoriteClick function
+    const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
+
+    const handleSelectOutcome = (outcome: 'team1' | 'draw' | 'team2') => {
+        setSelectedMatch(game, outcome);
+    };
 
     const renderTeam = (team: { name: string; logoIdentifier: string }) => (
         <div className="flex items-center">
@@ -24,27 +31,17 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         </div>
     );
 
+    // Defensive checks for odds values
+    const team1Odd = game.odds?.team1 !== undefined ? game.odds.team1.toFixed(2) : '-';
+    const drawOdd = game.odds?.draw !== undefined ? game.odds.draw.toFixed(2) : '-';
+    const team2Odd = game.odds?.team2 !== undefined ? game.odds.team2.toFixed(2) : '-';
+
     return (
         <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
             
-            {/* Top section: Live indicator (left), Game View (right) */}
-            <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
-                <div className="flex items-center space-x-3 font-medium"> 
-                    {game.isLive && ( // Only render LIVE indicator if game is live
-                        <span className="flex items-center text-red-400 font-bold tracking-wider">
-                            <span className="relative flex h-2 w-2 mr-1">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                            </span>
-                            LIVE
-                        </span>
-                    )}
-                </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: Game View (clickable) */}
-                    <Link to={`/games/${game.id}`} className="hover:underline">
-                        <span>{game.gameView}</span>
-                    </Link>
-                </div>
+            {/* Top section: Question */}
+            <div className="flex justify-center items-center text-vanta-text-light text-base font-semibold mb-4 border-b border-gray-700/50 pb-2">
+                <span>Will {game.team1.name} win this game?</span>
             </div>
 
             {/* Middle section: Teams and Odds */}
@@ -58,9 +55,39 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 {/* Odds buttons */}
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
-                        <OddsButton value={game.odds.team1} /> 
-                        <OddsButton value={game.odds.draw} />
-                        <OddsButton value={game.odds.team2} />
+                        <Button
+                            className={cn(
+                                "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
+                                selectedGame?.id === game.id && selectedOutcome === 'team1'
+                                    ? "bg-vanta-neon-blue text-vanta-blue-dark"
+                                    : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
+                            )}
+                            onClick={() => handleSelectOutcome('team1')}
+                        >
+                            {team1Odd}
+                        </Button>
+                        <Button
+                            className={cn(
+                                "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
+                                selectedGame?.id === game.id && selectedOutcome === 'draw'
+                                    ? "bg-vanta-neon-blue text-vanta-blue-dark"
+                                    : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
+                            )}
+                            onClick={() => handleSelectOutcome('draw')}
+                        >
+                            {drawOdd}
+                        </Button>
+                        <Button
+                            className={cn(
+                                "flex-1 py-1 px-2 rounded-md transition-colors duration-300 text-xs font-semibold",
+                                selectedGame?.id === game.id && selectedOutcome === 'team2'
+                                    ? "bg-vanta-neon-blue text-vanta-blue-dark"
+                                    : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
+                            )}
+                            onClick={() => handleSelectOutcome('team2')}
+                        >
+                            {team2Odd}
+                        </Button>
                     </div>
                     <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
                 </div>
