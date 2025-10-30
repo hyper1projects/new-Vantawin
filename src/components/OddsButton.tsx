@@ -14,12 +14,11 @@ const OddsButton: React.FC<OddsButtonProps> = ({ label, value, onClick, isSelect
   return (
     <Button
       onClick={onClick}
-      className={`flex flex-col items-center justify-center p-4 rounded-[12px] text-vanta-text-light transition-colors duration-200
+      className={`flex flex-col items-center justify-center p-2 rounded-[12px] text-vanta-text-light transition-colors duration-200
         ${isSelected ? 'bg-vanta-neon-blue text-vanta-blue-dark' : 'bg-vanta-blue-dark hover:bg-vanta-accent-dark-blue'}
-        w-full h-full min-h-[80px]`}
+        w-full h-full min-h-[50px]`} {/* Reduced padding and min-height */}
     >
-      <span className="text-xl font-bold">{label}</span> {/* Display only the label */}
-      {/* Removed the line that displayed value.toFixed(2) */}
+      <span className="text-lg font-semibold">{label}</span> {/* Reduced font size */}
     </Button>
   );
 };
