@@ -47,7 +47,9 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                 alt={team.name} 
                 className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0" 
             /> 
-            <span className="text-white font-semibold truncate">{team.name}</span>
+            <span className="text-white font-semibold truncate text-sm"> {/* Reduced team name font size */}
+                {team.name}
+            </span>
         </div>
     );
 
@@ -73,7 +75,9 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             
             {/* Top section: Question (left), Favorite & Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
-                <span className="text-gray-300 text-sm font-medium">{getQuestionText(game)}</span> {/* Dynamic question content */}
+                <span className="text-white text-base font-medium"> {/* Increased question font size and set color to white */}
+                    {getQuestionText(game)}
+                </span>
                 <div className="flex items-center space-x-2"> {/* Container for star and link */}
                     <button 
                         onClick={handleFavoriteClick} 
