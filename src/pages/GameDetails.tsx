@@ -8,6 +8,7 @@ import { ArrowLeft } from 'lucide-react';
 import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the MatchHeaderImage component
 import FullTimeCard from '../components/FullTimeCard'; // Import FullTimeCard
 import TotalGoalsCard from '../components/TotalGoalsCard'; // Import the new TotalGoalsCard
+import SimpleQuestionCard from '../components/SimpleQuestionCard'; // Import SimpleQuestionCard
 
 const GameDetails: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -45,14 +46,19 @@ const GameDetails: React.FC = () => {
         <MatchHeaderImage game={game} />
       </div>
 
-      {/* Conditionally render FullTimeCard based on game.questionType */}
-      {(game.questionType === 'win_match' || game.questionType === 'btts') && (
+      {/* Conditionally render cards based on game.questionType */}
+      {game.questionType === 'win_match' && (
         <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
           <FullTimeCard game={game} />
         </div>
       )}
 
-      {/* Conditionally render TotalGoalsCard based on game.questionType */}
+      {game.questionType === 'btts' && (
+        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
+          <SimpleQuestionCard game={game} />
+        </div>
+      )}
+
       {(game.questionType === 'over_2_5_goals' || game.questionType === 'score_goals') && (
         <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
           <TotalGoalsCard game={game} />
