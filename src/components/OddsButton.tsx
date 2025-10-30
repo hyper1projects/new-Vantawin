@@ -4,12 +4,13 @@ import React from 'react';
 import { cn } from '../lib/utils'; // Import cn for conditional class merging
 
 interface OddsButtonProps {
-    value: number;
-    onClick: () => void; // Add onClick handler
+    value: number; // Keep value for internal logic/context, but not displayed
+    label: string; // New prop for the button's display text
+    onClick: (e: React.MouseEvent) => void; // Add onClick handler
     isSelected: boolean; // Add isSelected prop for styling
 }
 
-const OddsButton: React.FC<OddsButtonProps> = ({ value, onClick, isSelected }) => (
+const OddsButton: React.FC<OddsButtonProps> = ({ value, label, onClick, isSelected }) => (
     <button
         onClick={onClick}
         className={cn(
@@ -17,7 +18,7 @@ const OddsButton: React.FC<OddsButtonProps> = ({ value, onClick, isSelected }) =
             isSelected ? "bg-vanta-neon-blue text-vanta-blue-dark" : "hover:bg-gray-700"
         )}
     >
-        {value.toFixed(2)}
+        {label}
     </button>
 );
 

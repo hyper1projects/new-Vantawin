@@ -87,16 +87,14 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                     <div className='flex space-x-2'>
                         <OddsButton 
                             value={odds.team1} 
+                            label="Yes" // Display "Yes"
                             onClick={(e) => handleOddsClick(e, 'team1')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'} 
                         /> 
-                        <OddsButton 
-                            value={odds.draw} 
-                            onClick={(e) => handleOddsClick(e, 'draw')} 
-                            isSelected={selectedGame?.id === game.id && selectedOutcome === 'draw'} 
-                        />
+                        {/* Removed the draw button */}
                         <OddsButton 
                             value={odds.team2} 
+                            label="No" // Display "No"
                             onClick={(e) => handleOddsClick(e, 'team2')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'} 
                         />
