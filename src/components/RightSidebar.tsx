@@ -162,7 +162,7 @@ const RightSidebar = () => {
   };
 
   return (
-    <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
+    <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4 items-center"> {/* Added items-center here */}
       {selectedGame ? (
         <>
           {/* Logo and Match Code */}
@@ -187,9 +187,9 @@ const RightSidebar = () => {
             </div>
           </div>
 
-          <div className="flex flex-col flex-grow items-center"> {/* Added items-center here */}
+          <div className="flex flex-col flex-grow w-full items-center"> {/* Added w-full and items-center here */}
             {/* Selected Outcome Display */}
-            <div className="mb-4 text-center">
+            <div className="mb-4 text-center w-full"> {/* Added w-full */}
               <h4 className="text-lg font-semibold text-vanta-neon-blue">{getSelectedOutcomeDisplayText()}</h4>
               {currentSelectedOdd > 0 && (
                 <span className="text-sm text-gray-400">Odds: {currentSelectedOdd.toFixed(2)}</span>
@@ -197,9 +197,9 @@ const RightSidebar = () => {
             </div>
 
             {/* Amount Selection */}
-            <div className="mb-4 w-full"> {/* Added w-full to make it take full width */}
-              <div className="flex justify-between items-center mb-2">
-                <h4 className="text-sm font-semibold">Amount</h4>
+            <div className="mb-4 w-full">
+              <div className="flex justify-center items-center mb-2"> {/* Changed justify-between to justify-center */}
+                <h4 className="text-sm font-semibold mr-2">Amount</h4> {/* Added margin-right */}
                 <div className="flex items-center bg-vanta-blue-dark rounded-md px-2 py-1">
                   <span className="text-gray-400 text-lg font-bold mr-1">₦</span>
                   <Input
@@ -213,7 +213,7 @@ const RightSidebar = () => {
                   />
                 </div>
               </div>
-              <div className="flex gap-1 justify-end">
+              <div className="flex gap-1 justify-center"> {/* Changed justify-end to justify-center */}
                 {quickAddAmountButtons.map((amount) => (
                   <Button
                     key={amount}
@@ -228,9 +228,9 @@ const RightSidebar = () => {
             </div>
 
             {/* Potential Win Section */}
-            <div className="mb-6 w-full"> {/* Added w-full */}
-              <div className="flex justify-between items-center mb-3">
-                <h4 className="text-base font-semibold">Potential Win</h4>
+            <div className="mb-6 w-full text-center"> {/* Added text-center */}
+              <div className="flex justify-center items-center mb-3"> {/* Changed justify-between to justify-center */}
+                <h4 className="text-base font-semibold mr-2">Potential Win</h4> {/* Added margin-right */}
                 <span className="text-yellow-400 text-xl font-bold">{potentialWinXP.toFixed(2)} XP</span>
               </div>
             </div>
