@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Button } from './ui/button'; // Changed to relative import path
+import { Button } from '@/components/ui/button'; // Changed to absolute import path
 
 interface OddsButtonProps {
   label: string; // Added label prop
