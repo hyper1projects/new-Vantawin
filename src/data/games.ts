@@ -10,7 +10,7 @@ export const allGamesData: Game[] = [
     odds: { team1: 1.5, draw: 3.0, team2: 2.5 },
     league: 'Premier League',
     isLive: false,
-    gameView: 'View Game Details',
+    gameView: 'View Game Details', // Updated
     questionType: 'win_match',
   },
   {
@@ -22,7 +22,7 @@ export const allGamesData: Game[] = [
     odds: { team1: 2.1, draw: 3.2, team2: 1.9 },
     league: 'Premier League',
     isLive: true,
-    gameView: 'View Matchup',
+    gameView: 'View Game Details', // Updated
     questionType: 'score_goals',
   },
   {
@@ -34,7 +34,7 @@ export const allGamesData: Game[] = [
     odds: { team1: 1.8, draw: 3.5, team2: 2.2 },
     league: 'Premier League',
     isLive: false,
-    gameView: 'Match Info',
+    gameView: 'View Game Details', // Updated
     questionType: 'btts', // New question type: Both Teams To Score
   },
   {
@@ -46,7 +46,7 @@ export const allGamesData: Game[] = [
     odds: { team1: 1.2, draw: 4.0, team2: 6.0 },
     league: 'Premier League',
     isLive: false,
-    gameView: 'Derby Details',
+    gameView: 'View Game Details', // Updated
     questionType: 'over_2_5_goals', // New question type: Over 2.5 Goals
   },
   {
@@ -58,7 +58,7 @@ export const allGamesData: Game[] = [
     odds: { team1: 2.0, draw: 3.1, team2: 2.0 },
     league: 'La Liga',
     isLive: true,
-    gameView: 'El Clásico',
+    gameView: 'View Game Details', // Updated
     questionType: 'score_goals',
   },
   {
@@ -70,7 +70,7 @@ export const allGamesData: Game[] = [
     odds: { team1: 1.6, draw: 3.8, team2: 4.5 },
     league: 'Bundesliga',
     isLive: false,
-    gameView: 'German Derby',
+    gameView: 'View Game Details', // Updated
     questionType: 'win_match',
   },
   {
@@ -82,7 +82,7 @@ export const allGamesData: Game[] = [
     odds: { team1: 2.3, draw: 3.0, team2: 3.1 },
     league: 'La Liga',
     isLive: false,
-    gameView: 'Match Details',
+    gameView: 'View Game Details', // Updated
     questionType: 'win_match',
   },
 ];

@@ -117,7 +117,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'} 
                         />
                     </div>
-                    <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline' onClick={(e) => e.stopPropagation()}>+ More Markets</span>
+                    {/* Removed "+ More Markets" span */}
                 </div>
             </div>
 
