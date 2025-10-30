@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Game } from '../types/game'; // Assuming Game type is defined here
 
 interface MatchSelectionContextType {
@@ -14,10 +15,14 @@ const MatchSelectionContext = createContext<MatchSelectionContextType | undefine
 export const MatchSelectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [selectedOutcome, setSelectedOutcome] = useState<'team1' | 'draw' | 'team2' | null>(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const setSelectedMatch = (game: Game | null, outcome: 'team1' | 'draw' | 'team2' | null = null) => {
     setSelectedGame(game);
     setSelectedOutcome(outcome);
+    if (game) {
+      navigate(`/games/${game.id}`); // Navigate to the game details page
+    }
   };
 
   return (

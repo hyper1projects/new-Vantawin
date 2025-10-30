@@ -15,6 +15,7 @@ import Contact from './pages/Contact';
 import Users from './pages/Users';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
+import GameDetails from './pages/GameDetails'; // Import GameDetails
 import { MatchSelectionProvider } from './context/MatchSelectionContext'; // Import the provider
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Index />} />
             <Route path="games" element={<Games />} />
+            <Route path="games/:gameId" element={<GameDetails />} /> {/* New route for game details */}
             <Route path="pools" element={<Pools />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="wallet" element={<Wallet />} />
