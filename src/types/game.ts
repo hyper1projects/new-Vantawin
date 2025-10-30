@@ -19,4 +19,5 @@ export interface Game {
     league: string;
     isLive: boolean;
     gameView: string;
+    questionType?: 'win_match' | 'score_goals'; // New optional property for question variation
 }

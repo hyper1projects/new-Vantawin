@@ -51,6 +51,13 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
         </div>
     );
 
+    const getQuestionText = (game: Game) => {
+        if (game.questionType === 'score_goals') {
+            return `Will ${game.team1.name} score more than 2 goals?`;
+        }
+        return `Will ${game.team1.name} win this match?`; // Default question
+    };
+
     return (
         <div 
             className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50 cursor-pointer"
@@ -59,7 +66,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             
             {/* Top section: Question (left), Favorite & Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
-                <span className="text-gray-300 text-sm font-medium">Will {team1.name} win this match?</span> {/* Question content */}
+                <span className="text-gray-300 text-sm font-medium">{getQuestionText(game)}</span> {/* Dynamic question content */}
                 <div className="flex items-center space-x-2"> {/* Container for star and link */}
                     <button 
                         onClick={handleFavoriteClick} 

@@ -11,6 +11,7 @@ export const allGamesData: Game[] = [
     league: 'Premier League',
     isLive: false,
     gameView: 'View Game Details',
+    questionType: 'win_match', // Explicitly set for clarity
   },
   {
     id: 'game-2',
@@ -22,6 +23,7 @@ export const allGamesData: Game[] = [
     league: 'Premier League',
     isLive: true,
     gameView: 'View Matchup',
+    questionType: 'score_goals', // New question type
   },
   {
     id: 'game-3',
@@ -33,6 +35,7 @@ export const allGamesData: Game[] = [
     league: 'Premier League',
     isLive: false,
     gameView: 'Match Info',
+    questionType: 'win_match',
   },
   {
     id: 'game-4',
@@ -44,6 +47,7 @@ export const allGamesData: Game[] = [
     league: 'Premier League',
     isLive: false,
     gameView: 'Derby Details',
+    questionType: 'win_match',
   },
   {
     id: 'game-5',
@@ -55,6 +59,7 @@ export const allGamesData: Game[] = [
     league: 'La Liga',
     isLive: true,
     gameView: 'El Clásico',
+    questionType: 'score_goals', // New question type
   },
   {
     id: 'game-6',
@@ -66,6 +71,7 @@ export const allGamesData: Game[] = [
     league: 'Bundesliga',
     isLive: false,
     gameView: 'German Derby',
+    questionType: 'win_match',
   },
   {
     id: 'game-7',
@@ -77,5 +83,6 @@ export const allGamesData: Game[] = [
     league: 'La Liga',
     isLive: false,
     gameView: 'Match Details',
+    questionType: 'win_match',
   },
 ];
