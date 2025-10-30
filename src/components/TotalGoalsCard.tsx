@@ -34,7 +34,7 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
       {/* Fixed Header for Total Goals */}
       <div className="w-full text-center mb-2">
-        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Total Goals</span>
+        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Will both teams score..</span>
       </div>
 
       {/* Dynamic Question */}
