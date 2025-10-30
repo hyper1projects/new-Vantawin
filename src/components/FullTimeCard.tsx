@@ -75,3 +75,8 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game }) => {
 };
 
 export default FullTimeCard;
+    </div>
+  );
+};
+
+export default FullTimeCard;
