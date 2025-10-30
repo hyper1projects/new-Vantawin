@@ -3,10 +3,8 @@
 import React from 'react';
 import { Game } from '../types/game';
 import OddsButton from './OddsButton';
-import DrawOddsButton from './DrawOddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { getLogoSrc } from '../utils/logoMap';
-import { getAbbreviatedTeamName } from '../utils/teamUtils'; // Import the new utility
 
 interface SimpleQuestionCardProps {
   game: Game;
@@ -21,17 +19,16 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
     setSelectedMatch(game, outcome);
   };
 
+  // Function to get the dynamic question text based on game.questionType for match outcomes
   const getQuestionText = (game: Game) => {
     switch (game.questionType) {
       case 'btts':
         return `Will both teams score?`;
       case 'win_match':
       default:
-        return `What team will win this match?`;
+        return `What team will win this match?`; // Changed text here
     }
   };
-
-  const isWinMatchQuestion = game.questionType === 'win_match';
 
   return (
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
@@ -46,39 +43,27 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
       </h3>
 
       {/* Team Logos/Names and Buttons */}
-      <div className={`flex items-center justify-center w-full ${isWinMatchQuestion ? 'space-x-4' : 'space-x-6'}`}>
+      <div className="flex items-center justify-center space-x-6 w-full">
         <div className="flex flex-col items-center">
           <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
+          {/* Yes Button moved under team1 */}
           <OddsButton
             value={game.odds.team1}
-            label={isWinMatchQuestion ? getAbbreviatedTeamName(team1.name, team1.logoIdentifier) : "Yes"}
+            label="Yes"
             onClick={(e) => handleOddsClick(e, 'team1')}
             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'}
             className="rounded-[12px] px-6 py-2 mt-2"
           />
         </div>
-
-        {isWinMatchQuestion && (
-          <div className="flex flex-col items-center">
-            <span className="text-2xl font-bold text-vanta-neon-blue mb-2">VS</span>
-            <DrawOddsButton
-              value={game.odds.draw}
-              label="Draw" // Label is just "Draw", value is appended by DrawOddsButton
-              onClick={(e) => handleOddsClick(e, 'draw')}
-              isSelected={selectedGame?.id === game.id && selectedOutcome === 'draw'}
-              className="rounded-[12px] px-6 py-2 mt-2"
-            />
-          </div>
-        )}
-        {!isWinMatchQuestion && <span className="text-2xl font-bold text-vanta-neon-blue">VS</span>}
-
+        <span className="text-2xl font-bold text-vanta-neon-blue">VS</span>
         <div className="flex flex-col items-center">
           <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
+          {/* No Button moved under team2 */}
           <OddsButton
             value={game.odds.team2}
-            label={isWinMatchQuestion ? getAbbreviatedTeamName(team2.name, team2.logoIdentifier) : "No"}
+            label="No"
             onClick={(e) => handleOddsClick(e, 'team2')}
             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'}
             className="rounded-[12px] px-6 py-2 mt-2"
