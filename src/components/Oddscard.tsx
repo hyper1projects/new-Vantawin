@@ -52,10 +52,17 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
     );
 
     const getQuestionText = (game: Game) => {
-        if (game.questionType === 'score_goals') {
-            return `Will ${game.team1.name} score more than 2 goals?`;
+        switch (game.questionType) {
+            case 'score_goals':
+                return `Will ${game.team1.name} score more than 2 goals?`;
+            case 'btts':
+                return `Will both teams score?`;
+            case 'over_2_5_goals':
+                return `Will there be over 2.5 goals?`;
+            case 'win_match':
+            default:
+                return `Will ${game.team1.name} win this match?`;
         }
-        return `Will ${game.team1.name} win this match?`; // Default question
     };
 
     return (
