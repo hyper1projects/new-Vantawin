@@ -37,7 +37,7 @@ const GameDetails: React.FC = () => {
 
       <div
         className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg"
-        style={{ clipPath: 'polygon(0% 0%, 40% 0%, 50% 20px, 60% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
+        style={{ clipPath: 'polygon(0% 0%, 25% 0%, 35% 30px, 65% 30px, 75% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
       >
         {/* Removed 'Game Overview' heading */}
 
