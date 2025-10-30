@@ -6,7 +6,7 @@ import SportCategoryButtons from '../components/SportCategoryButtons';
 import LiveGamesSection from '../components/LiveGamesSection';
 import PremierLeagueSection from '../components/PremierLeagueSection';
 import LaLigaSection from '../components/LaLigaSection';
-import SimpleQuestionCard from '../components/SimpleQuestionCard'; // Import the new component
+// Removed SimpleQuestionCard import
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Game } from '../types/game'; // Import Game type for the dummy data
 
@@ -32,19 +32,19 @@ const Games = () => {
 
   const formattedSelectedSport = selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
 
-  // Dummy game data for the new SimpleQuestionCard
-  const dummyQuestionGame: Game = {
-    id: 'question-game-1',
-    time: 'N/A',
-    date: 'N/A',
-    team1: { name: 'Manchester City', logoIdentifier: 'MCI' }, // Using existing logo identifiers
-    team2: { name: 'Arsenal', logoIdentifier: 'ARS' },
-    odds: { team1: 1.0, draw: 1.0, team2: 1.0 }, // Placeholder odds, not displayed by SimpleQuestionCard
-    league: 'Premier League',
-    isLive: false,
-    gameView: 'N/A',
-    questionType: 'win_match', // Ensures the question is "Will team1 win this game?"
-  };
+  // Dummy game data for the new SimpleQuestionCard - Removed as it's moved
+  // const dummyQuestionGame: Game = {
+  //   id: 'question-game-1',
+  //   time: 'N/A',
+  //   date: 'N/A',
+  //   team1: { name: 'Manchester City', logoIdentifier: 'MCI' }, // Using existing logo identifiers
+  //   team2: { name: 'Arsenal', logoIdentifier: 'ARS' },
+  //   odds: { team1: 1.0, draw: 1.0, team2: 1.0 }, // Placeholder odds, not displayed by SimpleQuestionCard
+  //   league: 'Premier League',
+  //   isLive: false,
+  //   gameView: 'N/A',
+  //   questionType: 'win_match', // Ensures the question is "Will team1 win this game?"
+  // };
 
   return (
     <div className="p-4">
@@ -71,10 +71,10 @@ const Games = () => {
             <LaLigaSection />
           </div>
 
-          {/* New Simple Question Card */}
-          <div className="mt-8">
+          {/* New Simple Question Card - Removed */}
+          {/* <div className="mt-8">
             <SimpleQuestionCard game={dummyQuestionGame} />
-          </div>
+          </div> */}
         </>
       ) : (
         <div className="mt-8">

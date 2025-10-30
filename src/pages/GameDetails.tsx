@@ -6,6 +6,7 @@ import { allGamesData } from '../data/games'; // Import centralized game data
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the MatchHeaderImage component
+import SimpleQuestionCard from '../components/SimpleQuestionCard'; // Import SimpleQuestionCard
 
 const GameDetails: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -39,12 +40,13 @@ const GameDetails: React.FC = () => {
         className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg"
         style={{ clipPath: 'polygon(0% 0%, 25% 0%, 30% 50px, 70% 50px, 75% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
       >
-        {/* Removed 'Game Overview' heading */}
-
         {/* Use the MatchHeaderImage component */}
         <MatchHeaderImage game={game} />
 
-        {/* MatchDetailsInfo component was removed as it was empty */}
+        {/* Add the SimpleQuestionCard here, passing the current game */}
+        <div className="mt-8">
+          <SimpleQuestionCard game={game} />
+        </div>
       </div>
     </div>
   );
