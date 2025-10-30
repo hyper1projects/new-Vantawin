@@ -2,15 +2,15 @@
 
 import React from 'react';
 import { Game } from '../types/game';
-import OddsButton from './OddsButton';
+import NewOddsButton from './NewOddsButton'; // Changed import from OddsButton to NewOddsButton
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { getLogoSrc } from '../utils/logoMap';
 
-interface FullTimeCardProps { // Renamed interface
+interface FullTimeCardProps {
   game: Game;
 }
 
-const FullTimeCard: React.FC<FullTimeCardProps> = ({ game }) => { // Renamed component
+const FullTimeCard: React.FC<FullTimeCardProps> = ({ game }) => {
   const { team1, team2 } = game;
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
@@ -48,9 +48,9 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game }) => { // Renamed com
           <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
           {/* Yes Button moved under team1 */}
-          <OddsButton
+          <NewOddsButton // Changed to NewOddsButton
             value={game.odds.team1}
-            label="Yes"
+            label={team1.name} // Pass team1.name as label for abbreviation
             onClick={(e) => handleOddsClick(e, 'team1')}
             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'}
             className="rounded-[12px] px-6 py-2 mt-2"
@@ -61,9 +61,9 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game }) => { // Renamed com
           <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
           {/* No Button moved under team2 */}
-          <OddsButton
+          <NewOddsButton // Changed to NewOddsButton
             value={game.odds.team2}
-            label="No"
+            label={team2.name} // Pass team2.name as label for abbreviation
             onClick={(e) => handleOddsClick(e, 'team2')}
             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'}
             className="rounded-[12px] px-6 py-2 mt-2"
