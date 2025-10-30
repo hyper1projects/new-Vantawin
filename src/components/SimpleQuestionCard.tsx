@@ -34,11 +34,21 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
     }
   };
 
+  // Determine the header text based on questionType
+  const getHeaderText = (questionType: Game['questionType']) => {
+    if (questionType === 'score_goals' || questionType === 'over_2_5_goals') {
+      return 'Total Goals';
+    }
+    return 'FullTime';
+  };
+
   return (
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
-      {/* New FullTime Header */}
+      {/* Dynamic Header */}
       <div className="w-full text-center mb-2">
-        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">FullTime</span>
+        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">
+          {getHeaderText(game.questionType)}
+        </span>
       </div>
 
       {/* Question moved to the top, now dynamic */}
