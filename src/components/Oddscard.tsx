@@ -27,14 +27,20 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
     };
 
-    const handleOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
+    // Handler for 'win_match' type questions (using NewOddsButton)
+    const handleWinMatchOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
         e.stopPropagation(); // Prevent card click from triggering
-        // When selecting an outcome, store the full outcome string including the odd value
         let oddValue;
         if (outcome === 'team1') oddValue = odds.team1;
         else if (outcome === 'draw') oddValue = odds.draw;
         else oddValue = odds.team2;
         setSelectedMatch(game, `${outcome}_${oddValue.toFixed(2)}`);
+    };
+
+    // Handler for other question types (using OddsButton for Yes/No)
+    const handleQuestionOddsClick = (e: React.MouseEvent, choice: 'yes' | 'no', questionId: string, oddValue: number) => {
+        e.stopPropagation(); // Prevent card click from triggering
+        setSelectedMatch(game, `${questionId}_${choice}_${oddValue.toFixed(2)}`);
     };
 
     const handleCardClick = () => {
@@ -64,9 +70,15 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 return `Will there be over 2.5 goals?`;
             case 'win_match':
             default:
-                return `What team will win this game?`; // Updated default question
+                return `What team will win this game?`;
         }
     };
+
+    // Determine the questionId for non-win_match questions
+    let currentQuestionId = '';
+    if (questionType && questionType !== 'win_match') {
+        currentQuestionId = questionType;
+    }
 
     return (
         <div 
@@ -104,19 +116,38 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 {/* Odds buttons */}
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
-                        <NewOddsButton 
-                            value={odds.team1} 
-                            label={team1.abbreviation} // Display team1 abbreviation
-                            onClick={(e) => handleOddsClick(e, 'team1')} 
-                            isSelected={selectedGame?.id === game.id && selectedOutcome === `team1_${odds.team1.toFixed(2)}`} 
-                        /> 
-                        {/* Removed the draw button */}
-                        <NewOddsButton 
-                            value={odds.team2} 
-                            label={team2.abbreviation} // Display team2 abbreviation
-                            onClick={(e) => handleOddsClick(e, 'team2')} 
-                            isSelected={selectedGame?.id === game.id && selectedOutcome === `team2_${odds.team2.toFixed(2)}`} 
-                        />
+                        {game.questionType === 'win_match' ? (
+                            <>
+                                <NewOddsButton 
+                                    value={odds.team1} 
+                                    label={team1.abbreviation} // Display team1 abbreviation
+                                    onClick={(e) => handleWinMatchOddsClick(e, 'team1')} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `team1_${odds.team1.toFixed(2)}`} 
+                                /> 
+                                {/* Removed the draw button */}
+                                <NewOddsButton 
+                                    value={odds.team2} 
+                                    label={team2.abbreviation} // Display team2 abbreviation
+                                    onClick={(e) => handleWinMatchOddsClick(e, 'team2')} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `team2_${odds.team2.toFixed(2)}`} 
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <OddsButton 
+                                    value={odds.team1} // Assuming odds.team1 is for 'Yes'
+                                    label="Yes"
+                                    onClick={(e) => handleQuestionOddsClick(e, 'yes', currentQuestionId, odds.team1)} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${currentQuestionId}_yes_${odds.team1.toFixed(2)}`} 
+                                /> 
+                                <OddsButton 
+                                    value={odds.team2} // Assuming odds.team2 is for 'No'
+                                    label="No"
+                                    onClick={(e) => handleQuestionOddsClick(e, 'no', currentQuestionId, odds.team2)} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${currentQuestionId}_no_${odds.team2.toFixed(2)}`} 
+                                />
+                            </>
+                        )}
                     </div>
                     {/* Removed "+ More Markets" span */}
                 </div>
