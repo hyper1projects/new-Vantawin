@@ -36,8 +36,11 @@ const GameDetails: React.FC = () => {
         <ArrowLeft size={20} /> Back to Games
       </Button>
 
-      {/* Container for MatchHeaderImage */}
-      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
+      {/* Container for MatchHeaderImage with clipPath */}
+      <div
+        className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6"
+        style={{ clipPath: 'polygon(0% 0%, 25% 0%, 30% 50px, 70% 50px, 75% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
+      >
         <MatchHeaderImage game={game} />
       </div>
 
