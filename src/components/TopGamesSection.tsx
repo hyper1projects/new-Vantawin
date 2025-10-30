@@ -6,51 +6,15 @@ import { Game } from '../types/game'; // Ensure Game type is imported
 import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { allGamesData } from '../data/games'; // Import centralized game data
 
 type GameFilter = 'All' | 'Live' | 'Upcoming';
 
 const TopGamesSection: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All');
 
-  // Define an array of game data, using the logo identifiers from logoMap.ts
-  const games: Game[] = [
-    {
-      id: 'game-1',
-      time: '7:00 PM',
-      date: 'Today',
-      team1: { name: 'Crystal Palace', logoIdentifier: 'CRY' },
-      team2: { name: 'West Ham United', logoIdentifier: 'WHU' },
-      odds: { team1: 1.5, draw: 3.0, team2: 2.5 },
-      league: 'Premier League',
-      isLive: false,
-      gameView: 'View Game Details',
-    },
-    {
-      id: 'game-2',
-      time: '8:30 PM',
-      date: 'Tomorrow',
-      team1: { name: 'Manchester United', logoIdentifier: 'MANU' },
-      team2: { name: 'Leicester City', logoIdentifier: 'LEIC' },
-      odds: { team1: 2.1, draw: 3.2, team2: 1.9 },
-      league: 'La Liga',
-      isLive: true,
-      gameView: 'View Matchup',
-    },
-    {
-      id: 'game-3', // Added a third game
-      time: '9:00 PM',
-      date: 'Today',
-      team1: { name: 'Arsenal', logoIdentifier: 'ARS' },
-      team2: { name: 'Chelsea', logoIdentifier: 'CHE' },
-      odds: { team1: 1.8, draw: 3.5, team2: 2.2 },
-      league: 'Premier League',
-      isLive: false,
-      gameView: 'Match Info',
-    },
-  ];
-
-  // Filter games based on the selectedFilter
-  const filteredGames = games.filter(game => {
+  // Filter games based on the selectedFilter from allGamesData
+  const filteredGames = allGamesData.filter(game => {
     if (selectedFilter === 'All') {
       return true;
     }
@@ -61,7 +25,7 @@ const TopGamesSection: React.FC = () => {
       return !game.isLive; // Assuming 'Upcoming' means not live
     }
     return false;
-  });
+  }).slice(0, 3); // Display only the first 3 filtered games for "Top Games"
 
   const getButtonClasses = (filter: GameFilter) => {
     const isSelected = selectedFilter === filter;
@@ -104,7 +68,7 @@ const TopGamesSection: React.FC = () => {
       {/* Wrapper div for Oddscards - now stacking vertically */}
       <div className="w-full flex flex-col space-y-1 px-1">
         {filteredGames.map((game) => (
-          <div className="w-full">
+          <div className="w-full" key={game.id}>
             <Oddscard
               key={game.id}
               time={game.time}
