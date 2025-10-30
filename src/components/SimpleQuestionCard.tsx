@@ -4,7 +4,7 @@ import React from 'react';
 import { Game, Question } from '../types/game'; // Import Question type
 import OddsButton from './OddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
-import { getLogoSrc } from '../utils/logoMap';
+// Removed getLogoSrc import as it's no longer needed
 
 interface SimpleQuestionCardProps {
   game: Game;
@@ -12,7 +12,7 @@ interface SimpleQuestionCardProps {
 }
 
 const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game, question }) => {
-  const { team1, team2 } = game;
+  // Removed team1, team2 destructuring as they are no longer displayed
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
   // Use question.text and question.odds directly
@@ -38,33 +38,25 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game, question 
         {questionText}
       </h3>
 
-      {/* Team Logos/Names and Buttons */}
+      {/* Buttons only, team logos/names removed */}
       <div className="flex items-center justify-center space-x-6 w-full">
-        <div className="flex flex-col items-center">
-          <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
-          <span className="text-lg font-semibold">{team1.name}</span>
-          {/* Yes Button moved under team1 */}
-          <OddsButton
-            value={yesOdd}
-            label="Yes" // Removed odds from label
-            onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
-            isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_yes_${yesOdd.toFixed(2)}`}
-            className="rounded-[12px] px-6 py-2 mt-2"
-          />
-        </div>
-        <span className="text-2xl font-bold text-vanta-neon-blue">VS</span>
-        <div className="flex flex-col items-center">
-          <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
-          <span className="text-lg font-semibold">{team2.name}</span>
-          {/* No Button moved under team2 */}
-          <OddsButton
-            value={noOdd}
-            label="No" // Removed odds from label
-            onClick={(e) => handleOddsClick(e, 'no', noOdd)}
-            isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_no_${noOdd.toFixed(2)}`}
-            className="rounded-[12px] px-6 py-2 mt-2"
-          />
-        </div>
+        {/* Removed team1 logo and name */}
+        <OddsButton
+          value={yesOdd}
+          label="Yes"
+          onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
+          isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_yes_${yesOdd.toFixed(2)}`}
+          className="rounded-[12px] px-6 py-2 mt-2"
+        />
+        <span className="text-2xl font-bold text-vanta-neon-blue">VS</span> {/* Keep VS for visual separation */}
+        {/* Removed team2 logo and name */}
+        <OddsButton
+          value={noOdd}
+          label="No"
+          onClick={(e) => handleOddsClick(e, 'no', noOdd)}
+          isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_no_${noOdd.toFixed(2)}`}
+          className="rounded-[12px] px-6 py-2 mt-2"
+        />
       </div>
     </div>
   );
