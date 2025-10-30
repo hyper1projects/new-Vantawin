@@ -11,23 +11,47 @@ interface SimpleQuestionCardProps {
 }
 
 const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
-  const { team1, team2 } = game;
+  const { team1, team2, odds, questionType } = game;
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
-  const handleOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
-    e.stopPropagation();
-    setSelectedMatch(game, outcome);
-  };
+  let questionId = '';
+  let yesOdd = 0;
+  let noOdd = 0;
 
-  // Function to get the dynamic question text based on game.questionType for match outcomes
-  const getQuestionText = (game: Game) => {
-    switch (game.questionType) {
+  // Determine question text and odds based on questionType
+  const getQuestionDetails = () => {
+    switch (questionType) {
       case 'btts':
+        questionId = 'btts';
+        yesOdd = odds.team1; // Assuming team1 odd is for 'Yes' for BTTS
+        noOdd = odds.team2;  // Assuming team2 odd is for 'No' for BTTS
         return `Will both teams score?`;
       case 'win_match':
+        questionId = 'win_match';
+        yesOdd = odds.team1; // Odd for team1 to win
+        noOdd = odds.team2;  // Odd for team2 to win (as a proxy for 'No' to team1 winning)
+        return `Will ${team1.name} win this match?`;
+      case 'over_2_5_goals':
+        questionId = 'over_2_5_goals';
+        yesOdd = odds.team1;
+        noOdd = odds.team2;
+        return `Will there be over 2.5 goals?`;
+      case 'score_goals':
+        questionId = 'score_goals';
+        yesOdd = odds.team1;
+        noOdd = odds.team2;
+        return `Will ${team1.name} score more than 2 goals?`;
       default:
-        return `What team will win this match?`; // Changed text here
+        questionId = 'unknown';
+        return `Make a prediction for this match.`;
     }
+  };
+
+  const dynamicQuestionText = getQuestionDetails();
+
+  const handleOddsClick = (e: React.MouseEvent, choice: 'yes' | 'no', oddValue: number) => {
+    e.stopPropagation();
+    setSelectedMatch(game, `${questionId}_${choice}_${oddValue.toFixed(2)}`);
   };
 
   return (
@@ -39,7 +63,7 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
 
       {/* Question moved to the top, now dynamic */}
       <h3 className="text-xl font-bold text-white text-center mb-4">
-        {getQuestionText(game)}
+        {dynamicQuestionText}
       </h3>
 
       {/* Team Logos/Names and Buttons */}
@@ -49,10 +73,10 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
           <span className="text-lg font-semibold">{team1.name}</span>
           {/* Yes Button moved under team1 */}
           <OddsButton
-            value={game.odds.team1}
+            value={yesOdd}
             label="Yes"
-            onClick={(e) => handleOddsClick(e, 'team1')}
-            isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'}
+            onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
+            isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_yes_${yesOdd.toFixed(2)}`}
             className="rounded-[12px] px-6 py-2 mt-2"
           />
         </div>
@@ -62,10 +86,10 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
           <span className="text-lg font-semibold">{team2.name}</span>
           {/* No Button moved under team2 */}
           <OddsButton
-            value={game.odds.team2}
+            value={noOdd}
             label="No"
-            onClick={(e) => handleOddsClick(e, 'team2')}
-            isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'}
+            onClick={(e) => handleOddsClick(e, 'no', noOdd)}
+            isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_no_${noOdd.toFixed(2)}`}
             className="rounded-[12px] px-6 py-2 mt-2"
           />
         </div>
