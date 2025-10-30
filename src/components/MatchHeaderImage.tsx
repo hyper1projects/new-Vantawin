@@ -21,10 +21,8 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
       </div>
 
       {/* Center Info (Time only) */}
-      <div className="flex flex-col items-center text-center w-1/3 self-start pt-4"> {/* Added self-start and pt-4 */}
-        <span className="text-lg font-bold text-vanta-text-light"> {/* Changed text-2xl to text-lg and removed mb-2 */}
-          {game.time}
-        </span>
+      <div className="flex flex-col items-center text-center w-1/3">
+        <span className="text-2xl font-bold text-vanta-text-light mb-2">{game.time}</span>
         {/* Removed league logo and name */}
       </div>
 

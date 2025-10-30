@@ -18,10 +18,10 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
     setSelectedMatch(game, outcome);
   };
 
-  // Defensive checks for odds values, ensuring they are numbers before calling toFixed
-  const team1Odd = (game.odds?.team1 !== undefined && game.odds.team1 !== null) ? game.odds.team1.toFixed(2) : '-';
-  const drawOdd = (game.odds?.draw !== undefined && game.odds.draw !== null) ? game.odds.draw.toFixed(2) : '-';
-  const team2Odd = (game.odds?.team2 !== undefined && game.odds.team2 !== null) ? game.odds.team2.toFixed(2) : '-';
+  // Defensive checks for odds values
+  const team1Odd = game.odds?.team1 !== undefined ? game.odds.team1.toFixed(2) : '-';
+  const drawOdd = game.odds?.draw !== undefined ? game.odds.draw.toFixed(2) : '-';
+  const team2Odd = game.odds?.team2 !== undefined ? game.odds.team2.toFixed(2) : '-';
 
   return (
     <div className="relative p-[2px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-[230px] h-[230px] flex-shrink-0">
