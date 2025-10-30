@@ -14,11 +14,6 @@ const GameDetails: React.FC = () => {
   const navigate = useNavigate();
 
   const game = allGamesData.find(g => g.id === gameId);
-  // Find a game specifically for the 'btts' question type
-  const bttsGame = allGamesData.find(g => g.questionType === 'btts');
-  // Find a game specifically for 'over_2_5_goals' question type for TotalGoalsCard
-  const totalGoalsGame = allGamesData.find(g => g.questionType === 'over_2_5_goals');
-
 
   if (!game) {
     return (
@@ -50,22 +45,17 @@ const GameDetails: React.FC = () => {
         <MatchHeaderImage game={game} />
       </div>
 
-      {/* First FullTimeCard (for win_match or other non-goal questions) */}
-      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
-        <FullTimeCard game={game} />
-      </div>
-
-      {/* TotalGoalsCard for 'Will there be over 2.5 goals?' */}
-      {totalGoalsGame && (
+      {/* Conditionally render FullTimeCard based on game.questionType */}
+      {(game.questionType === 'win_match' || game.questionType === 'btts') && (
         <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
-          <TotalGoalsCard game={totalGoalsGame} />
+          <FullTimeCard game={game} />
         </div>
       )}
 
-      {/* FullTimeCard for 'Will both teams score?' */}
-      {bttsGame && (
-        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
-          <FullTimeCard game={bttsGame} />
+      {/* Conditionally render TotalGoalsCard based on game.questionType */}
+      {(game.questionType === 'over_2_5_goals' || game.questionType === 'score_goals') && (
+        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
+          <TotalGoalsCard game={game} />
         </div>
       )}
     </div>
