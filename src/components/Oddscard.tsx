@@ -9,18 +9,13 @@ import { useMatchSelection } from '../context/MatchSelectionContext'; // Import 
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 interface OddscardProps {
-    team1: Team;
-    team2: Team;
-    odds: Odds;
-    time: string;
-    date: string;
-    league: string;
-    isLive: boolean;
-    gameView: string;
-    game: Game; // Keep the full game object for context usage
+    game: Game; // Now only accepting the full game object
 }
 
-const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView, game }) => {
+const Oddscard: React.FC<OddscardProps> = ({ game }) => {
+    // Destructure all necessary properties directly from the game object
+    const { team1, team2, odds, time, date, league, isLive, gameView, questionType } = game;
+
     const [isFavorited, setIsFavorited] = useState(false);
     const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection(); // Use the context
     const navigate = useNavigate(); // Initialize useNavigate
