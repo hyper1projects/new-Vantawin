@@ -62,6 +62,10 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         }
     };
 
+    // Safely format odds values for display
+    const team1OddDisplay = odds?.team1 !== undefined ? odds.team1.toFixed(2) : '-';
+    const team2OddDisplay = odds?.team2 !== undefined ? odds.team2.toFixed(2) : '-';
+
     return (
         <div 
             className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50 cursor-pointer"
@@ -99,15 +103,15 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
                         <OddsButton 
-                            value={odds.team1} 
-                            label="Yes" // Display "Yes"
+                            value={odds?.team1 ?? 0} // Provide a default of 0 if undefined/null
+                            label={team1OddDisplay} // Display formatted odds
                             onClick={(e) => handleOddsClick(e, 'team1')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'} 
                         /> 
                         {/* Removed the draw button */}
                         <OddsButton 
-                            value={odds.team2} 
-                            label="No" // Display "No"
+                            value={odds?.team2 ?? 0} // Provide a default of 0 if undefined/null
+                            label={team2OddDisplay} // Display formatted odds
                             onClick={(e) => handleOddsClick(e, 'team2')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'} 
                         />
