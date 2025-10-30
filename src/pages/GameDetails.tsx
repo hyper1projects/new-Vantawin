@@ -40,7 +40,7 @@ const GameDetails: React.FC = () => {
 
       {/* Container for MatchHeaderImage with clipPath */}
       <div
-        className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6"
+        className="bg-transparent rounded-[27px] p-8 shadow-lg mb-6" // Changed bg-vanta-blue-medium to bg-transparent
         style={{ clipPath: 'polygon(0% 0%, 25% 0%, 30% 50px, 70% 50px, 75% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
       >
         <MatchHeaderImage game={game} />
@@ -52,7 +52,7 @@ const GameDetails: React.FC = () => {
           switch (question.type) {
             case 'win_match':
               return (
-                <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg"> {/* Changed bg-vanta-blue-medium to bg-transparent */}
                   <FullTimeCard game={game} question={question} />
                 </div>
               );
@@ -60,7 +60,7 @@ const GameDetails: React.FC = () => {
             case 'total_goals_even':
             case 'is_draw': // Added 'is_draw' here
               return (
-                <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg"> {/* Changed bg-vanta-blue-medium to bg-transparent */}
                   <SimpleQuestionCard game={game} question={question} />
                 </div>
               );
@@ -69,7 +69,7 @@ const GameDetails: React.FC = () => {
             case 'over_3_5_goals':
             case 'score_goals':
               return (
-                <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg"> {/* Changed bg-vanta-blue-medium to bg-transparent */}
                   <TotalGoalsCard game={game} question={question} />
                 </div>
               );
