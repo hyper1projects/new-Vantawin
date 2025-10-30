@@ -7,7 +7,6 @@ import { Team, Odds, Game } from '../types/game'; // Import necessary types
 import OddsButton from './OddsButton'; // Import the new OddsButton component
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { Button } from '@/components/ui/button'; // Import shadcn Button
 
 interface OddscardProps {
     team1: Team;
@@ -74,12 +73,12 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
             onClick={handleCardClick} // Add onClick to the entire card
         >
             
-            {/* Top section: Question (left), Favorite (right) */}
+            {/* Top section: Question (left), Favorite & Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
                 <span className="text-white text-base font-medium"> {/* Increased question font size and set color to white */}
                     {getQuestionText(game)}
                 </span>
-                <div className="flex items-center space-x-2"> {/* Container for star */}
+                <div className="flex items-center space-x-2"> {/* Container for star and link */}
                     <button 
                         onClick={handleFavoriteClick} 
                         className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
@@ -89,6 +88,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                             fill={isFavorited ? 'currentColor' : 'none'}
                         />
                     </button>
+                    <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{gameView} &gt;</a>
                 </div>
             </div>
 
@@ -109,6 +109,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                             onClick={(e) => handleOddsClick(e, 'team1')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'} 
                         /> 
+                        {/* Removed the draw button */}
                         <OddsButton 
                             value={odds.team2} 
                             label="No" // Display "No"
@@ -116,11 +117,11 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'} 
                         />
                     </div>
-                    {/* Removed "+ More Markets" */}
+                    <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline' onClick={(e) => e.stopPropagation()}>+ More Markets</span>
                 </div>
             </div>
 
-            {/* Bottom section: Time/Live & Date (left), League (right), and consistent Gameview Button */}
+            {/* Bottom section: Time/Live & Date (left), League (right) */}
             <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
                 <div className="flex items-center space-x-3 font-medium text-gray-400 text-xs"> 
                     {isLive ? ( // Conditionally render LIVE indicator
@@ -141,13 +142,6 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                     <span>{league}</span>
                 </div>
             </div>
-            {/* Consistent Gameview Button */}
-            <Button 
-              className="w-full bg-[#0D2C60] text-vanta-neon-blue hover:bg-[#0D2C60]/80 rounded-[8px] py-1 text-xs font-semibold mt-4"
-              onClick={handleCardClick} // Ensure this button also navigates to game details
-            >
-              {gameView}
-            </Button>
         </div>
     );
 };
