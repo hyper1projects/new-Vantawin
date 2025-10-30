@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the MatchHeaderImage component
 import SimpleQuestionCard from '../components/SimpleQuestionCard'; // Import SimpleQuestionCard
+import TotalGoalsCard from '../components/TotalGoalsCard'; // Import the new TotalGoalsCard
 
 const GameDetails: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -15,6 +16,9 @@ const GameDetails: React.FC = () => {
   const game = allGamesData.find(g => g.id === gameId);
   // Find a game specifically for the 'btts' question type
   const bttsGame = allGamesData.find(g => g.questionType === 'btts');
+  // Find a game specifically for 'over_2_5_goals' question type for TotalGoalsCard
+  const totalGoalsGame = allGamesData.find(g => g.questionType === 'over_2_5_goals');
+
 
   if (!game) {
     return (
@@ -46,12 +50,19 @@ const GameDetails: React.FC = () => {
         <MatchHeaderImage game={game} />
       </div>
 
-      {/* First SimpleQuestionCard */}
-      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6"> {/* Added mb-6 for spacing */}
+      {/* First SimpleQuestionCard (for win_match or other non-goal questions) */}
+      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
         <SimpleQuestionCard game={game} />
       </div>
 
-      {/* Second SimpleQuestionCard for 'Will both teams score?' */}
+      {/* TotalGoalsCard for 'Will there be over 2.5 goals?' */}
+      {totalGoalsGame && (
+        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
+          <TotalGoalsCard game={totalGoalsGame} />
+        </div>
+      )}
+
+      {/* SimpleQuestionCard for 'Will both teams score?' */}
       {bttsGame && (
         <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
           <SimpleQuestionCard game={bttsGame} />
