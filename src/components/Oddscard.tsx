@@ -6,6 +6,7 @@ import { getLogoSrc } from '../utils/logoMap'; // Correct path
 import { Team, Odds, Game } from '../types/game'; // Import necessary types
 import OddsButton from './OddsButton'; // Import the new OddsButton component
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 interface OddscardProps {
     team1: Team;
@@ -22,14 +23,21 @@ interface OddscardProps {
 const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView, game }) => {
     const [isFavorited, setIsFavorited] = useState(false);
     const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection(); // Use the context
+    const navigate = useNavigate(); // Initialize useNavigate
 
-    const handleFavoriteClick = () => {
+    const handleFavoriteClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent card click from triggering
         setIsFavorited(!isFavorited);
         console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
     };
 
-    const handleOddsClick = (outcome: 'team1' | 'draw' | 'team2') => {
+    const handleOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
+        e.stopPropagation(); // Prevent card click from triggering
         setSelectedMatch(game, outcome);
+    };
+
+    const handleCardClick = () => {
+        navigate(`/games/${game.id}`); // Navigate to game details when the card is clicked
     };
 
     const renderTeam = (team: Team) => (
@@ -44,7 +52,10 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
     );
 
     return (
-        <div className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50">
+        <div 
+            className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50 cursor-pointer"
+            onClick={handleCardClick} // Add onClick to the entire card
+        >
             
             {/* Top section: Question (left), Favorite & Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
@@ -59,7 +70,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                             fill={isFavorited ? 'currentColor' : 'none'}
                         />
                     </button>
-                    <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium">{gameView} &gt;</a>
+                    <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{gameView} &gt;</a>
                 </div>
             </div>
 
@@ -76,21 +87,21 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                     <div className='flex space-x-2'>
                         <OddsButton 
                             value={odds.team1} 
-                            onClick={() => handleOddsClick('team1')} 
+                            onClick={(e) => handleOddsClick(e, 'team1')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'} 
                         /> 
                         <OddsButton 
                             value={odds.draw} 
-                            onClick={() => handleOddsClick('draw')} 
+                            onClick={(e) => handleOddsClick(e, 'draw')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'draw'} 
                         />
                         <OddsButton 
                             value={odds.team2} 
-                            onClick={() => handleOddsClick('team2')} 
+                            onClick={(e) => handleOddsClick(e, 'team2')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'} 
                         />
                     </div>
-                    <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
+                    <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline' onClick={(e) => e.stopPropagation()}>+ More Markets</span>
                 </div>
             </div>
 
