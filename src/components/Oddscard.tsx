@@ -100,14 +100,14 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                     <div className='flex space-x-2'>
                         <OddsButton 
                             value={odds.team1} 
-                            label={`Yes (${odds.team1.toFixed(2)})`} // Display "Yes" with odds
+                            label="Yes" // Display "Yes" only
                             onClick={(e) => handleOddsClick(e, 'team1')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'} 
                         /> 
                         {/* Removed the draw button */}
                         <OddsButton 
                             value={odds.team2} 
-                            label={`No (${odds.team2.toFixed(2)})`} // Display "No" with odds
+                            label="No" // Display "No" only
                             onClick={(e) => handleOddsClick(e, 'team2')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'} 
                         />
