@@ -5,6 +5,7 @@ import { Star } from 'lucide-react';
 import { getLogoSrc } from '../utils/logoMap'; // Correct path
 import { Team, Odds, Game } from '../types/game'; // Import necessary types
 import OddsButton from './OddsButton'; // Import the new OddsButton component
+import NewOddsButton from './NewOddsButton'; // Import NewOddsButton
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -103,16 +104,16 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 {/* Odds buttons */}
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
-                        <OddsButton 
+                        <NewOddsButton 
                             value={odds.team1} 
-                            label="Yes" // Display "Yes"
+                            label={team1.abbreviation} // Display team1 abbreviation
                             onClick={(e) => handleOddsClick(e, 'team1')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === `team1_${odds.team1.toFixed(2)}`} 
                         /> 
                         {/* Removed the draw button */}
-                        <OddsButton 
+                        <NewOddsButton 
                             value={odds.team2} 
-                            label="No" // Display "No"
+                            label={team2.abbreviation} // Display team2 abbreviation
                             onClick={(e) => handleOddsClick(e, 'team2')} 
                             isSelected={selectedGame?.id === game.id && selectedOutcome === `team2_${odds.team2.toFixed(2)}`} 
                         />
