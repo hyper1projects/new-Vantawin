@@ -5,6 +5,7 @@ import { Star } from 'lucide-react';
 import { getLogoSrc } from '../utils/logoMap'; // Correct path
 import { Team, Odds, Game } from '../types/game'; // Import necessary types
 import OddsButton from './OddsButton'; // Import the new OddsButton component
+import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
 
 interface OddscardProps {
     team1: Team;
@@ -20,10 +21,15 @@ interface OddscardProps {
 
 const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, league, isLive, gameView, game }) => {
     const [isFavorited, setIsFavorited] = useState(false);
+    const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection(); // Use the context
 
     const handleFavoriteClick = () => {
         setIsFavorited(!isFavorited);
         console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
+    };
+
+    const handleOddsClick = (outcome: 'team1' | 'draw' | 'team2') => {
+        setSelectedMatch(game, outcome);
     };
 
     const renderTeam = (team: Team) => (
@@ -68,9 +74,21 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                 {/* Odds buttons */}
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
-                        <OddsButton value={odds.team1} /> 
-                        <OddsButton value={odds.draw} />
-                        <OddsButton value={odds.team2} />
+                        <OddsButton 
+                            value={odds.team1} 
+                            onClick={() => handleOddsClick('team1')} 
+                            isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'} 
+                        /> 
+                        <OddsButton 
+                            value={odds.draw} 
+                            onClick={() => handleOddsClick('draw')} 
+                            isSelected={selectedGame?.id === game.id && selectedOutcome === 'draw'} 
+                        />
+                        <OddsButton 
+                            value={odds.team2} 
+                            onClick={() => handleOddsClick('team2')} 
+                            isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'} 
+                        />
                     </div>
                     <span className='text-xs text-indigo-400 font-medium cursor-pointer hover:underline'>+ More Markets</span>
                 </div>
