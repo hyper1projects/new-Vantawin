@@ -12,7 +12,7 @@ interface OddscardProps {
   date: string;
   team1: { name: string; logoIdentifier: string; };
   team2: { name: string; logoIdentifier: string; };
-  odds: { team1?: number; draw?: number; team2?: number; }; // Updated to reflect optional odds properties
+  odds: { team1: number; draw: number; team2: number; }; // Reverted to non-optional odds properties
   league: string;
   isLive: boolean;
   gameView: string;
@@ -36,10 +36,10 @@ const Oddscard: React.FC<OddscardProps> = ({
     setSelectedMatch(game, outcome);
   };
 
-  // Defensive checks for odds values, ensuring they are numbers before calling toFixed
-  const team1Odd = (odds?.team1 !== undefined && odds.team1 !== null) ? odds.team1.toFixed(2) : '-';
-  const drawOdd = (odds?.draw !== undefined && odds.draw !== null) ? odds.draw.toFixed(2) : '-';
-  const team2Odd = (odds?.team2 !== undefined && odds.team2 !== null) ? odds.team2.toFixed(2) : '-';
+  // Reverted to original simpler calls, assuming odds are always numbers
+  const team1Odd = odds.team1.toFixed(2);
+  const drawOdd = odds.draw.toFixed(2);
+  const team2Odd = odds.team2.toFixed(2);
 
   return (
     <div className="relative bg-[#011B47] rounded-[18px] p-2 shadow-sm flex flex-col text-vanta-text-light w-full">
