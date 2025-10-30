@@ -4,7 +4,7 @@ import React from 'react';
 import { Game } from '../types/game';
 import OddsButton from './OddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
-// Removed getLogoSrc import as logos are no longer used
+import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 
 interface TotalGoalsCardProps {
   game: Game;
@@ -18,6 +18,7 @@ interface GoalQuestion {
 }
 
 const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
+  const { team1, team2 } = game; // Destructure team1 and team2
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
   // Define multiple goal-related questions
@@ -50,6 +51,19 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
 
   return (
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
+      {/* Team Logos and Names at the top */}
+      <div className="flex items-center justify-center space-x-6 w-full mb-4">
+        <div className="flex flex-col items-center">
+          <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
+          <span className="text-lg font-semibold">{team1.name}</span>
+        </div>
+        <span className="text-2xl font-bold text-gray-400">VS</span>
+        <div className="flex flex-col items-center">
+          <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
+          <span className="text-lg font-semibold">{team2.name}</span>
+        </div>
+      </div>
+
       {/* Fixed Header for Total Goals */}
       <div className="w-full text-center mb-2">
         <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Total Goals</span>
