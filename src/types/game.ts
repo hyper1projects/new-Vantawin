@@ -1,6 +1,7 @@
 export interface Team {
     name: string;
     logoIdentifier: string; // This is the key that maps to the logo in logoMap.ts
+    abbreviation: string; // Added abbreviation property
 }
 
 export interface Odds {
