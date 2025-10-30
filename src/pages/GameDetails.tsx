@@ -3,9 +3,9 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { allGamesData } from '../data/games'; // Import centralized game data
-import { getLogoSrc } from '../utils/logoMap';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the new component
 
 const GameDetails: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -38,18 +38,8 @@ const GameDetails: React.FC = () => {
       <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
         <h1 className="text-3xl font-bold text-vanta-text-light mb-6 text-center">Game Overview</h1>
 
-        {/* Match Header */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-8">
-          <div className="flex flex-col items-center text-center">
-            <img src={getLogoSrc(game.team1.logoIdentifier)} alt={game.team1.name} className="w-24 h-24 object-contain mb-2" />
-            <span className="text-2xl font-bold text-vanta-text-light">{game.team1.name}</span>
-          </div>
-          <span className="text-4xl font-extrabold text-gray-400 mx-8">VS</span>
-          <div className="flex flex-col items-center text-center">
-            <img src={getLogoSrc(game.team2.logoIdentifier)} alt={game.team2.name} className="w-24 h-24 object-contain mb-2" />
-            <span className="text-2xl font-bold text-vanta-text-light">{game.team2.name}</span>
-          </div>
-        </div>
+        {/* Use the new MatchHeaderImage component */}
+        <MatchHeaderImage game={game} />
 
         {/* Game Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg mb-8">
@@ -66,7 +56,6 @@ const GameDetails: React.FC = () => {
             <span className="font-semibold">{game.league}</span>
           </div>
           <div className="flex justify-between items-center bg-[#012A5E] p-4 rounded-lg">
-            <span className="text-gray-400">Status:</span>
             <span className={`font-semibold ${game.isLive ? 'text-red-500' : 'text-green-500'}`}>
               {game.isLive ? 'LIVE' : 'Upcoming'}
             </span>
