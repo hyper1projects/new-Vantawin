@@ -187,7 +187,7 @@ const RightSidebar = () => {
             </div>
           </div>
 
-          <div className="flex flex-col flex-grow items-center"> {/* Added items-center here */}
+          <div className="flex flex-col flex-grow">
             {/* Selected Outcome Display */}
             <div className="mb-4 text-center">
               <h4 className="text-lg font-semibold text-vanta-neon-blue">{getSelectedOutcomeDisplayText()}</h4>
@@ -197,7 +197,7 @@ const RightSidebar = () => {
             </div>
 
             {/* Amount Selection */}
-            <div className="mb-4 w-full"> {/* Added w-full to make it take full width */}
+            <div className="mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-semibold">Amount</h4>
                 <div className="flex items-center bg-vanta-blue-dark rounded-md px-2 py-1">
@@ -228,7 +228,7 @@ const RightSidebar = () => {
             </div>
 
             {/* Potential Win Section */}
-            <div className="mb-6 w-full"> {/* Added w-full */}
+            <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-base font-semibold">Potential Win</h4>
                 <span className="text-yellow-400 text-xl font-bold">{potentialWinXP.toFixed(2)} XP</span>
