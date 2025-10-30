@@ -3,10 +3,9 @@
 import React from 'react';
 import Oddscard from './Oddscard';
 import { Game } from '../types/game';
-import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 import { allGamesData } from '../data/games'; // Import centralized game data
-import LivePredictionsHeader from './LivePredictionsHeader'; // Import the new header component
+import CollapsibleSection from './CollapsibleSection'; // Import the new CollapsibleSection
 
 const LiveGamesSection: React.FC = () => {
   // Filter games to show only live games from allGamesData
@@ -15,31 +14,32 @@ const LiveGamesSection: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
-      {/* Header wrapper div now extends full width */}
-      <div className="w-full bg-[#0D2C60] rounded-t-[27px]">
-        {/* Use the new LivePredictionsHeader here */}
-        <LivePredictionsHeader liveCount={liveGamesCount} />
-      </div>
-      
-      {/* Wrapper div for Oddscards - now stacking vertically */}
-      <div className="w-full flex flex-col space-y-4 px-4">
-        {filteredGames.map((game) => (
-          <Oddscard
-            key={game.id}
-            game={game} // Pass the full game object
-          />
-        ))}
-      </div>
+      {/* Use the new CollapsibleSection here */}
+      <CollapsibleSection title="Live Predictions" count={liveGamesCount} defaultOpen={true}>
+        {/* Wrapper div for Oddscards - now stacking vertically */}
+        <div className="w-full flex flex-col space-y-4 px-4 pt-4"> {/* Added pt-4 for spacing below the header */}
+          {filteredGames.length > 0 ? (
+            filteredGames.map((game) => (
+              <Oddscard
+                key={game.id}
+                game={game} // Pass the full game object
+              />
+            ))
+          ) : (
+            <p className="text-vanta-text-light text-center py-8">No live games available at the moment.</p>
+          )}
+        </div>
 
-      {/* Show More Button positioned to bottom right */}
-      <div className="w-full flex justify-end px-4 pt-4">
-        <Button 
-          className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2"
-          onClick={() => console.log('Show More clicked')} // Placeholder for future functionality
-        >
-          Show More
-        </Button>
-      </div>
+        {/* Show More Button positioned to bottom right */}
+        <div className="w-full flex justify-end px-4 pt-4">
+          <Button 
+            className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2"
+            onClick={() => console.log('Show More clicked')} // Placeholder for future functionality
+          >
+            Show More
+          </Button>
+        </div>
+      </CollapsibleSection>
     </div>
   );
 };
