@@ -15,7 +15,7 @@ const NewOddsButton: React.FC<NewOddsButtonProps> = ({ value, label, onClick, is
         onClick={onClick}
         className={cn(
             "bg-[#0B295B] text-white border border-gray-600 h-8 px-3 text-sm rounded-md transition-colors shadow-inner font-semibold",
-            isSelected ? "bg-vanta-neon-blue text-vanta-blue-dark" : "hover:bg-gray-700"
+            isSelected ? "bg-vanta-neon-blue text-vanta-blue-dark" : "hover:border-vanta-accent-dark-blue"
         )}
     >
         {label.substring(0, 3).toUpperCase()} {/* Display the first 3 characters of the label in uppercase */}
