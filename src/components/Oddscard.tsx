@@ -138,7 +138,7 @@ const Oddscard: React.FC<OddscardProps> = ({ team1, team2, odds, time, date, lea
                     <span className="text-gray-500 text-xs">|</span>
                     <span>{date}</span>
                 </div>
-                <div className="text-gray-300 font-medium"> {/* Right side: League */}
+                <div className="text-gray-300 font-medium text-xs"> {/* Right side: League - Reduced font size to text-xs */}
                     <span>{league}</span>
                 </div>
             </div>
