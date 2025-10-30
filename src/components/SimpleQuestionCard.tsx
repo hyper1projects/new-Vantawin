@@ -21,6 +21,11 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
 
   return (
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
+      {/* New FullTime Header */}
+      <div className="w-full text-center mb-2">
+        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">FullTime</span>
+      </div>
+
       {/* Question moved to the top */}
       <h3 className="text-xl font-bold text-white text-center mb-4">
         Will {team1.name} win this game?
