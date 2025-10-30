@@ -36,17 +36,14 @@ const GameDetails: React.FC = () => {
         <ArrowLeft size={20} /> Back to Games
       </Button>
 
-      <div
-        className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg"
-        style={{ clipPath: 'polygon(0% 0%, 25% 0%, 30% 50px, 70% 50px, 75% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
-      >
-        {/* Use the MatchHeaderImage component */}
+      {/* Container for MatchHeaderImage */}
+      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
         <MatchHeaderImage game={game} />
+      </div>
 
-        {/* Add the SimpleQuestionCard here, passing the current game */}
-        <div className="mt-8">
-          <SimpleQuestionCard game={game} />
-        </div>
+      {/* Container for SimpleQuestionCard */}
+      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+        <SimpleQuestionCard game={game} />
       </div>
     </div>
   );
