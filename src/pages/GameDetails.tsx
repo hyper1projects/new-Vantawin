@@ -40,7 +40,7 @@ const GameDetails: React.FC = () => {
 
       {/* Container for MatchHeaderImage with clipPath */}
       <div
-        className="bg-transparent rounded-[27px] p-8 shadow-lg mb-6" // Changed bg-vanta-blue-medium to bg-transparent
+        className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6" // Changed bg-transparent back to bg-vanta-blue-medium
         style={{ clipPath: 'polygon(0% 0%, 25% 0%, 30% 50px, 70% 50px, 75% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
       >
         <MatchHeaderImage game={game} />
@@ -52,15 +52,15 @@ const GameDetails: React.FC = () => {
           switch (question.type) {
             case 'win_match':
               return (
-                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg"> {/* Changed bg-vanta-blue-medium to bg-transparent */}
+                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg">
                   <FullTimeCard game={game} question={question} />
                 </div>
               );
             case 'btts':
             case 'total_goals_even':
-            case 'is_draw': // Added 'is_draw' here
+            case 'is_draw':
               return (
-                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg"> {/* Changed bg-vanta-blue-medium to bg-transparent */}
+                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg">
                   <SimpleQuestionCard game={game} question={question} />
                 </div>
               );
@@ -69,12 +69,12 @@ const GameDetails: React.FC = () => {
             case 'over_3_5_goals':
             case 'score_goals':
               return (
-                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg"> {/* Changed bg-vanta-blue-medium to bg-transparent */}
+                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg">
                   <TotalGoalsCard game={game} question={question} />
                 </div>
               );
             default:
-              return null; // Don't render if question type is unknown
+              return null;
           }
         })}
       </div>
