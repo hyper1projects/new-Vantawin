@@ -2,11 +2,10 @@
 
 import React from 'react';
 import Oddscard from './Oddscard';
-import { Game } from '../types/game'; // Ensure Game type is imported
-import SectionHeader from './SectionHeader';
+import { Game } from '../types/game';
+import SectionHeader from './SectionHeader'; // Re-import SectionHeader
 import { Button } from '@/components/ui/button';
 import { allGamesData } from '../data/games'; // Import centralized game data
-// Removed `cn` import as it's no longer needed without filter buttons
 
 const LiveGamesSection: React.FC = () => {
   // Filter games to show only live games from allGamesData
@@ -19,24 +18,11 @@ const LiveGamesSection: React.FC = () => {
         <SectionHeader title="Live Games" className="w-full" textColor="text-white" />
       </div>
       
-      {/* Removed filter buttons section */}
-      {/* <div className="flex space-x-2 w-full justify-start px-4 -mt-4 mb-4 border-b border-gray-700 pb-4">
-        ... filter buttons ...
-      </div> */}
-
       {/* Wrapper div for Oddscards - now stacking vertically */}
       <div className="w-full flex flex-col space-y-4 px-4">
         {filteredGames.map((game) => (
           <Oddscard
             key={game.id}
-            time={game.time}
-            date={game.date}
-            team1={game.team1}
-            team2={game.team2}
-            odds={game.odds}
-            league={game.league}
-            isLive={game.isLive}
-            gameView={game.gameView}
             game={game} // Pass the full game object
           />
         ))}
