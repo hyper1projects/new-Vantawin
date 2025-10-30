@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Game } from '../types/game';
-import { getLogoSrc } from '../utils/teamLogos';
+import { getLogoSrc } from '../utils/logoMap'; // Corrected import path
 
 interface MatchHeaderImageProps {
   game: Game;
