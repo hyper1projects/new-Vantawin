@@ -13,6 +13,8 @@ const GameDetails: React.FC = () => {
   const navigate = useNavigate();
 
   const game = allGamesData.find(g => g.id === gameId);
+  // Find a game specifically for the 'btts' question type
+  const bttsGame = allGamesData.find(g => g.questionType === 'btts');
 
   if (!game) {
     return (
@@ -44,10 +46,17 @@ const GameDetails: React.FC = () => {
         <MatchHeaderImage game={game} />
       </div>
 
-      {/* Container for SimpleQuestionCard */}
-      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+      {/* First SimpleQuestionCard */}
+      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6"> {/* Added mb-6 for spacing */}
         <SimpleQuestionCard game={game} />
       </div>
+
+      {/* Second SimpleQuestionCard for 'Will both teams score?' */}
+      {bttsGame && (
+        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+          <SimpleQuestionCard game={bttsGame} />
+        </div>
+      )}
     </div>
   );
 };
