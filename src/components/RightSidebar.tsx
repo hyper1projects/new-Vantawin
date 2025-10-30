@@ -6,19 +6,19 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
-import RightSidebarLeaderboardCard from './RightSidebarLeaderboardCard'; // Import the new component
-import { LeaderboardPlayer } from '../types/leaderboard'; // Import the type
+// Removed RightSidebarLeaderboardCard import
+// Removed LeaderboardPlayer import
 
 const RightSidebar = () => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
   const [predictionAmount, setPredictionAmount] = useState(0);
 
-  // Dummy data for leaderboard players
-  const dummyLeaderboardPlayers: LeaderboardPlayer[] = [
-    { id: 'p1', rank: 1, playerName: 'VantaMaster', avatar: '/images/8.png', winRate: 75, gamesPlayed: 120 },
-    { id: 'p2', rank: 2, playerName: 'ProPredictor', avatar: '/images/Group 1000005755.png', winRate: 70, gamesPlayed: 110 },
-    { id: 'p3', rank: 3, playerName: 'GoalGetter', avatar: '/images/Group 1000005762.png', winRate: 68, gamesPlayed: 105 },
-  ];
+  // Dummy data for leaderboard players - no longer needed here
+  // const dummyLeaderboardPlayers: LeaderboardPlayer[] = [
+  //   { id: 'p1', rank: 1, playerName: 'VantaMaster', avatar: '/images/8.png', winRate: 75, gamesPlayed: 120 },
+  //   { id: 'p2', rank: 2, playerName: 'ProPredictor', avatar: '/images/Group 1000005755.png', winRate: 70, gamesPlayed: 110 },
+  //   { id: 'p3', rank: 3, playerName: 'GoalGetter', avatar: '/images/Group 1000005762.png', winRate: 68, gamesPlayed: 105 },
+  // ];
 
   // Reset prediction amount when a new game is selected
   useEffect(() => {
@@ -55,8 +55,8 @@ const RightSidebar = () => {
 
   return (
     <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
-      {/* Leaderboard Card - Moved to the top */}
-      <RightSidebarLeaderboardCard players={dummyLeaderboardPlayers} />
+      {/* Leaderboard Card - Removed */}
+      {/* <RightSidebarLeaderboardCard players={dummyLeaderboardPlayers} /> */}
 
       {selectedGame ? (
         <>
