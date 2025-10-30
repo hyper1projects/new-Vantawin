@@ -18,8 +18,8 @@ const OddsButton: React.FC<OddsButtonProps> = ({ label, value, onClick, isSelect
         ${isSelected ? 'bg-vanta-neon-blue text-vanta-blue-dark' : 'bg-vanta-blue-dark hover:bg-vanta-accent-dark-blue'}
         w-full h-full min-h-[80px]`}
     >
-      <span className="text-lg font-semibold">{label}</span>
-      <span className="text-xl font-bold mt-1">{value.toFixed(2)}</span>
+      <span className="text-xl font-bold">{label}</span> {/* Display only the label */}
+      {/* Removed the line that displayed value.toFixed(2) */}
     </Button>
   );
 };
