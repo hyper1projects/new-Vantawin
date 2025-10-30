@@ -10,54 +10,74 @@ interface TotalGoalsCardProps {
   game: Game;
 }
 
+interface GoalQuestion {
+  id: string; // Unique ID for the question type (e.g., 'over_2_5', 'btts_yes')
+  questionText: string; // Display text for the question
+  yesOdd: number;
+  noOdd: number;
+}
+
 const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
-  const handleOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
-    e.stopPropagation();
-    setSelectedMatch(game, outcome);
-  };
+  // Define multiple goal-related questions
+  const goalQuestions: GoalQuestion[] = [
+    {
+      id: 'over_2_5_goals',
+      questionText: 'Over 2.5 Goals',
+      yesOdd: 1.85,
+      noOdd: 1.95,
+    },
+    {
+      id: 'btts',
+      questionText: 'Both Teams To Score',
+      yesOdd: 1.70,
+      noOdd: 2.10,
+    },
+    {
+      id: 'total_goals_even',
+      questionText: 'Total Goals Even',
+      yesOdd: 1.90,
+      noOdd: 1.80,
+    },
+  ];
 
-  // Function to get the dynamic question text based on game.questionType for total goals
-  const getQuestionText = (game: Game) => {
-    switch (game.questionType) {
-      case 'score_goals':
-        return `Will ${game.team1.name} score more than 2 goals?`;
-      case 'over_2_5_goals':
-        return `Will there be 2 or more goals?`;
-      default:
-        return `Total Goals question for ${game.team1.name} vs ${game.team2.name}`;
-    }
+  const handleOddsClick = (e: React.MouseEvent, questionId: string, choice: 'yes' | 'no', oddValue: number) => {
+    e.stopPropagation();
+    // Create a unique outcome string for the context
+    setSelectedMatch(game, `${questionId}_${choice}_${oddValue.toFixed(2)}`);
   };
 
   return (
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
       {/* Fixed Header for Total Goals */}
       <div className="w-full text-center mb-2">
-        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Will both teams score..</span>
+        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Total Goals</span>
       </div>
 
-      {/* Dynamic Question */}
-      <h3 className="text-xl font-bold text-white text-center mb-4">
-        {getQuestionText(game)}
-      </h3>
-
-      {/* Buttons only, centered */}
-      <div className="flex items-center justify-center space-x-6 w-full">
-        <OddsButton
-          value={game.odds.team1}
-          label="Yes"
-          onClick={(e) => handleOddsClick(e, 'team1')}
-          isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'}
-          className="rounded-[12px] px-6 py-2 mt-2"
-        />
-        <OddsButton
-          value={game.odds.team2}
-          label="No"
-          onClick={(e) => handleOddsClick(e, 'team2')}
-          isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'}
-          className="rounded-[12px] px-6 py-2 mt-2"
-        />
+      {/* Dynamic Questions and Buttons */}
+      <div className="w-full space-y-4">
+        {goalQuestions.map((question) => (
+          <div key={question.id} className="flex flex-col items-center space-y-2">
+            <h3 className="text-xl font-bold text-white text-center">{question.questionText}</h3>
+            <div className="flex items-center justify-center space-x-6 w-full">
+              <OddsButton
+                value={question.yesOdd}
+                label={`Yes (${question.yesOdd.toFixed(2)})`}
+                onClick={(e) => handleOddsClick(e, question.id, 'yes', question.yesOdd)}
+                isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_yes_${question.yesOdd.toFixed(2)}`}
+                className="rounded-[12px] px-6 py-2 mt-2"
+              />
+              <OddsButton
+                value={question.noOdd}
+                label={`No (${question.noOdd.toFixed(2)})`}
+                onClick={(e) => handleOddsClick(e, question.id, 'no', question.noOdd)}
+                isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_no_${question.noOdd.toFixed(2)}`}
+                className="rounded-[12px] px-6 py-2 mt-2"
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

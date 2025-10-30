@@ -6,19 +6,10 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
-// Removed RightSidebarLeaderboardCard import
-// Removed LeaderboardPlayer import
 
 const RightSidebar = () => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
   const [predictionAmount, setPredictionAmount] = useState(0);
-
-  // Dummy data for leaderboard players - no longer needed here
-  // const dummyLeaderboardPlayers: LeaderboardPlayer[] = [
-  //   { id: 'p1', rank: 1, playerName: 'VantaMaster', avatar: '/images/8.png', winRate: 75, gamesPlayed: 120 },
-  //   { id: 'p2', rank: 2, playerName: 'ProPredictor', avatar: '/images/Group 1000005755.png', winRate: 70, gamesPlayed: 110 },
-  //   { id: 'p3', rank: 3, playerName: 'GoalGetter', avatar: '/images/Group 1000005762.png', winRate: 68, gamesPlayed: 105 },
-  // ];
 
   // Reset prediction amount when a new game is selected
   useEffect(() => {
@@ -39,25 +30,113 @@ const RightSidebar = () => {
       return;
     }
     
-    let outcomeText = '';
-    if (selectedOutcome === 'team1') outcomeText = selectedGame.team1.name;
-    else if (selectedOutcome === 'team2') outcomeText = selectedGame.team2.name;
-    else if (selectedOutcome === 'draw') outcomeText = 'Draw';
+    let outcomeDisplay = '';
+    let selectedOdd = 0;
 
-    toast.success(`Predicted ${predictionAmount} on ${outcomeText} for ${selectedGame.team1.name} vs ${selectedGame.team2.name}`);
+    // Parse the selectedOutcome string
+    if (selectedOutcome) {
+      const parts = selectedOutcome.split('_');
+      if (parts.length === 3) { // Format: questionId_choice_oddValue (e.g., 'over_2_5_goals_yes_1.85')
+        const questionId = parts[0];
+        const choice = parts[1];
+        selectedOdd = parseFloat(parts[2]);
+
+        // Map questionId to a more readable text
+        let questionText = '';
+        switch (questionId) {
+          case 'team1':
+            questionText = selectedGame.team1.name;
+            break;
+          case 'draw':
+            questionText = 'Draw';
+            break;
+          case 'team2':
+            questionText = selectedGame.team2.name;
+            break;
+          case 'over_2_5_goals':
+            questionText = 'Over 2.5 Goals';
+            break;
+          case 'btts':
+            questionText = 'Both Teams To Score';
+            break;
+          case 'total_goals_even':
+            questionText = 'Total Goals Even';
+            break;
+          default:
+            questionText = questionId;
+        }
+        outcomeDisplay = `${questionText}: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`;
+      } else if (parts.length === 1) { // Old format: 'team1', 'draw', 'team2'
+        if (selectedOutcome === 'team1') outcomeDisplay = selectedGame.team1.name;
+        else if (selectedOutcome === 'team2') outcomeDisplay = selectedGame.team2.name;
+        else if (selectedOutcome === 'draw') outcomeDisplay = 'Draw';
+        
+        // Get the odd for the old format
+        if (selectedOutcome === 'team1') selectedOdd = selectedGame.odds.team1;
+        else if (selectedOutcome === 'draw') selectedOdd = selectedGame.odds.draw;
+        else if (selectedOutcome === 'team2') selectedOdd = selectedGame.odds.team2;
+      }
+    }
+
+    toast.success(`Predicted ${predictionAmount} on ${outcomeDisplay} for ${selectedGame.team1.name} vs ${selectedGame.team2.name}`);
     // Here you would typically send the prediction to a backend
   };
 
   const quickAddAmountButtons = [100, 200, 500, 1000];
 
   // Calculate potential win (simple example, could be more complex with actual odds)
-  const potentialWinXP = predictionAmount > 0 ? predictionAmount : 0;
+  let currentSelectedOdd = 0;
+  if (selectedOutcome) {
+    const parts = selectedOutcome.split('_');
+    if (parts.length === 3) {
+      currentSelectedOdd = parseFloat(parts[2]);
+    } else if (parts.length === 1 && selectedGame) {
+      if (selectedOutcome === 'team1') currentSelectedOdd = selectedGame.odds.team1;
+      else if (selectedOutcome === 'draw') currentSelectedOdd = selectedGame.odds.draw;
+      else if (selectedOutcome === 'team2') currentSelectedOdd = selectedGame.odds.team2;
+    }
+  }
+  const potentialWinXP = predictionAmount > 0 ? (predictionAmount * currentSelectedOdd) : 0;
+
+
+  // Helper to determine if a specific outcome is selected for a given question type
+  const isOutcomeSelected = (questionId: string, choice: 'yes' | 'no', oddValue: number) => {
+    return selectedGame?.id === game.id && selectedOutcome === `${questionId}_${choice}_${oddValue.toFixed(2)}`;
+  };
+
+  // Helper to get the display text for the selected outcome in the sidebar
+  const getSelectedOutcomeDisplayText = () => {
+    if (!selectedOutcome || !selectedGame) return '';
+
+    const parts = selectedOutcome.split('_');
+    if (parts.length === 3) {
+      const questionId = parts[0];
+      const choice = parts[1];
+      let questionText = '';
+      switch (questionId) {
+        case 'over_2_5_goals':
+          questionText = 'Over 2.5 Goals';
+          break;
+        case 'btts':
+          questionText = 'Both Teams To Score';
+          break;
+        case 'total_goals_even':
+          questionText = 'Total Goals Even';
+          break;
+        default:
+          questionText = questionId; // Fallback
+      }
+      return `${questionText}: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`;
+    } else if (parts.length === 1) {
+      if (selectedOutcome === 'team1') return selectedGame.team1.name;
+      if (selectedOutcome === 'draw') return 'Draw';
+      if (selectedOutcome === 'team2') return selectedGame.team2.name;
+    }
+    return '';
+  };
 
   return (
     <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
-      {/* Leaderboard Card - Removed */}
-      {/* <RightSidebarLeaderboardCard players={dummyLeaderboardPlayers} /> */}
-
       {selectedGame ? (
         <>
           {/* Logo and Match Code */}
@@ -83,28 +162,12 @@ const RightSidebar = () => {
           </div>
 
           <div className="flex flex-col flex-grow">
-            {/* Outcome Selection Buttons */}
-            <div className="mb-4">
-              <div className="flex gap-1">
-                <Button
-                  className={`flex-1 py-2 text-xs font-semibold ${selectedOutcome === 'team1' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
-                  onClick={() => setSelectedMatch(selectedGame, 'team1')}
-                >
-                  {selectedGame.team1.name.substring(0,3).toUpperCase()}<br/>({selectedGame.odds.team1.toFixed(2)})
-                </Button>
-                <Button
-                  className={`flex-1 py-2 text-xs font-semibold ${selectedOutcome === 'draw' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
-                  onClick={() => setSelectedMatch(selectedGame, 'draw')}
-                >
-                  DRAW<br/>({selectedGame.odds.draw.toFixed(2)})
-                </Button>
-                <Button
-                  className={`flex-1 py-2 text-xs font-semibold ${selectedOutcome === 'team2' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
-                  onClick={() => setSelectedMatch(selectedGame, 'team2')}
-                >
-                  {selectedGame.team2.name.substring(0,3).toUpperCase()}<br/>({selectedGame.odds.team2.toFixed(2)})
-                </Button>
-              </div>
+            {/* Selected Outcome Display */}
+            <div className="mb-4 text-center">
+              <h4 className="text-lg font-semibold text-vanta-neon-blue">{getSelectedOutcomeDisplayText()}</h4>
+              {currentSelectedOdd > 0 && (
+                <span className="text-sm text-gray-400">Odds: {currentSelectedOdd.toFixed(2)}</span>
+              )}
             </div>
 
             {/* Amount Selection */}
@@ -142,7 +205,7 @@ const RightSidebar = () => {
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-base font-semibold">Potential Win</h4>
-                <span className="text-yellow-400 text-xl font-bold">{potentialWinXP} XP</span>
+                <span className="text-yellow-400 text-xl font-bold">{potentialWinXP.toFixed(2)} XP</span>
               </div>
             </div>
 
