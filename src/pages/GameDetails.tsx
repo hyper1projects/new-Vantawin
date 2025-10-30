@@ -6,7 +6,6 @@ import { allGamesData } from '../data/games'; // Import centralized game data
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the MatchHeaderImage component
-import MatchDetailsInfo from '../components/MatchDetailsInfo'; // Import the new MatchDetailsInfo component
 
 const GameDetails: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -36,14 +35,16 @@ const GameDetails: React.FC = () => {
         <ArrowLeft size={20} /> Back to Games
       </Button>
 
-      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
-        <h1 className="text-3xl font-bold text-vanta-text-light mb-6 text-center">Game Overview</h1>
+      <div
+        className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg"
+        style={{ clipPath: 'polygon(0% 0%, 40% 0%, 50% 20px, 60% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
+      >
+        {/* Removed 'Game Overview' heading */}
 
         {/* Use the MatchHeaderImage component */}
         <MatchHeaderImage game={game} />
 
-        {/* Use the new MatchDetailsInfo component */}
-        <MatchDetailsInfo game={game} />
+        {/* MatchDetailsInfo component was removed as it was empty */}
       </div>
     </div>
   );
