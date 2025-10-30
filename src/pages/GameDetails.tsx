@@ -58,14 +58,15 @@ const GameDetails: React.FC = () => {
               );
             case 'btts':
             case 'total_goals_even':
+            case 'is_draw': // Added 'is_draw' here
               return (
                 <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
                   <SimpleQuestionCard game={game} question={question} />
                 </div>
               );
-            case 'over_1_5_goals': // New case
+            case 'over_1_5_goals':
             case 'over_2_5_goals':
-            case 'over_3_5_goals': // New case
+            case 'over_3_5_goals':
             case 'score_goals':
               return (
                 <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">

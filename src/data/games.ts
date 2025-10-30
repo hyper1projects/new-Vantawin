@@ -41,6 +41,12 @@ export const allGamesData: Game[] = [
         text: 'Will both teams score?',
         odds: { yes: 1.7, no: 2.1 },
       },
+      {
+        id: 'is_draw_q_1', // New draw question
+        type: 'is_draw',
+        text: 'Will the game end as a draw?',
+        odds: { yes: 3.0, no: 1.3 },
+      },
     ],
   },
   {
@@ -70,6 +76,12 @@ export const allGamesData: Game[] = [
         type: 'total_goals_even',
         text: 'Will the total number of goals be even?',
         odds: { yes: 1.9, no: 1.9 },
+      },
+      {
+        id: 'is_draw_q_2', // New draw question
+        type: 'is_draw',
+        text: 'Will the game end as a draw?',
+        odds: { yes: 3.2, no: 1.25 },
       },
     ],
   },
@@ -131,6 +143,12 @@ export const allGamesData: Game[] = [
         text: 'Will there be 4 or more goals?',
         odds: { yes: 2.0, no: 1.7 },
       },
+      {
+        id: 'is_draw_q_3', // New draw question
+        type: 'is_draw',
+        text: 'Will the game end as a draw?',
+        odds: { yes: 4.0, no: 1.2 },
+      },
     ],
   },
   {
@@ -172,6 +190,12 @@ export const allGamesData: Game[] = [
         type: 'btts',
         text: 'Will both teams score?',
         odds: { yes: 1.5, no: 2.3 },
+      },
+      {
+        id: 'is_draw_q_4', // New draw question
+        type: 'is_draw',
+        text: 'Will the game end as a draw?',
+        odds: { yes: 3.1, no: 1.3 },
       },
     ],
   },
@@ -226,6 +250,12 @@ export const allGamesData: Game[] = [
         type: 'btts',
         text: 'Will both teams score?',
         odds: { yes: 1.8, no: 2.0 },
+      },
+      {
+        id: 'is_draw_q_5', // New draw question
+        type: 'is_draw',
+        text: 'Will the game end as a draw?',
+        odds: { yes: 3.0, no: 1.3 },
       },
     ],
   },
