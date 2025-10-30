@@ -25,7 +25,7 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
       case 'score_goals':
         return `Will ${game.team1.name} score more than 2 goals?`;
       case 'over_2_5_goals':
-        return `Will there be over 2.5 goals?`;
+        return `Will there be 2 or more goals?`; // Changed text here
       default:
         return `Total Goals question for ${game.team1.name} vs ${game.team2.name}`;
     }
