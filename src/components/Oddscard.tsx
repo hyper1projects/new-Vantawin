@@ -35,6 +35,10 @@ const Oddscard: React.FC<OddscardProps> = ({
   // Defensive check for odds prop
   const safeOdds = odds || { team1: 1.00, draw: 1.00, team2: 1.00 };
 
+  // Defensive checks for team objects
+  const safeTeam1 = team1 || { name: 'Unknown Team 1', logoIdentifier: 'DEFAULT' };
+  const safeTeam2 = team2 || { name: 'Unknown Team 2', logoIdentifier: 'DEFAULT' };
+
   const handleSelectOutcome = (outcome: 'team1' | 'draw' | 'team2') => {
     setSelectedMatch(game, outcome);
   };
@@ -57,13 +61,13 @@ const Oddscard: React.FC<OddscardProps> = ({
       {/* Teams and Logos */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-1.5 w-5/12">
-          <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-6 h-6 object-contain" />
-          <span className="text-sm font-semibold  max-w-[60px]">{team1.name}</span>
+          <img src={getLogoSrc(safeTeam1.logoIdentifier)} alt={safeTeam1.name} className="w-6 h-6 object-contain" />
+          <span className="text-sm font-semibold  max-w-[60px]">{safeTeam1.name}</span>
         </div>
         <span className="text-base font-bold text-gray-400 w-2/12 text-center">VS</span>
         <div className="flex items-center justify-end space-x-1.5 w-5/12">
-          <span className="text-sm font-semibold text-right  max-w-[60px]">{team2.name}</span>
-          <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-6 h-6 object-contain" />
+          <span className="text-sm font-semibold text-right  max-w-[60px]">{safeTeam2.name}</span>
+          <img src={getLogoSrc(safeTeam2.logoIdentifier)} alt={safeTeam2.name} className="w-6 h-6 object-contain" />
         </div>
       </div>
 
