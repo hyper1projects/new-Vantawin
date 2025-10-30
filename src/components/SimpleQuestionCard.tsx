@@ -46,7 +46,7 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game, question 
           {/* Yes Button moved under team1 */}
           <OddsButton
             value={yesOdd}
-            label={`Yes (${yesOdd.toFixed(2)})`} // Display odd value in label
+            label="Yes" // Removed odds from label
             onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
             isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_yes_${yesOdd.toFixed(2)}`}
             className="rounded-[12px] px-6 py-2 mt-2"
@@ -59,7 +59,7 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game, question 
           {/* No Button moved under team2 */}
           <OddsButton
             value={noOdd}
-            label={`No (${noOdd.toFixed(2)})`} // Display odd value in label
+            label="No" // Removed odds from label
             onClick={(e) => handleOddsClick(e, 'no', noOdd)}
             isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_no_${noOdd.toFixed(2)}`}
             className="rounded-[12px] px-6 py-2 mt-2"
