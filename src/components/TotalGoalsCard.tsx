@@ -4,65 +4,60 @@ import React from 'react';
 import { Game } from '../types/game';
 import OddsButton from './OddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
+// Removed getLogoSrc import as logos are no longer used
 
 interface TotalGoalsCardProps {
-  bttsGame?: Game; // Optional prop for BTTS question
-  over2_5GoalsGame?: Game; // Optional prop for Over 2.5 Goals question
-  over3_5GoalsGame?: Game; // Optional prop for Over 3.5 Goals question
+  game: Game;
 }
 
-const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({
-  bttsGame,
-  over2_5GoalsGame,
-  over3_5GoalsGame,
-}) => {
+const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
-  const handleOddsClick = (e: React.MouseEvent, game: Game, outcome: 'team1' | 'team2') => {
+  const handleOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
     e.stopPropagation();
     setSelectedMatch(game, outcome);
   };
 
-  // Helper component for a single question row
-  const QuestionRow: React.FC<{ game: Game; question: string }> = ({ game, question }) => (
-    <div className="flex items-center justify-between w-full py-2 border-b border-vanta-blue-dark last:border-b-0">
-      <h4 className="text-lg font-medium text-white">{question}</h4>
-      <div className="flex space-x-4">
+  // Function to get the dynamic question text based on game.questionType for total goals
+  const getQuestionText = (game: Game) => {
+    switch (game.questionType) {
+      case 'score_goals':
+        return `Will ${game.team1.name} score more than 2 goals?`;
+      case 'over_2_5_goals':
+        return `Will there be 2 or more goals?`;
+      default:
+        return `Total Goals question for ${game.team1.name} vs ${game.team2.name}`;
+    }
+  };
+
+  return (
+    <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
+      {/* Fixed Header for Total Goals */}
+      <div className="w-full text-center mb-2">
+        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Total Goals</span>
+      </div>
+
+      {/* Dynamic Question */}
+      <h3 className="text-xl font-bold text-white text-center mb-4">
+        {getQuestionText(game)}
+      </h3>
+
+      {/* Buttons only, centered */}
+      <div className="flex items-center justify-center space-x-6 w-full">
         <OddsButton
           value={game.odds.team1}
           label="Yes"
-          onClick={(e) => handleOddsClick(e, game, 'team1')}
+          onClick={(e) => handleOddsClick(e, 'team1')}
           isSelected={selectedGame?.id === game.id && selectedOutcome === 'team1'}
-          className="rounded-[12px] px-4 py-1 text-sm"
+          className="rounded-[12px] px-6 py-2 mt-2"
         />
         <OddsButton
           value={game.odds.team2}
           label="No"
-          onClick={(e) => handleOddsClick(e, game, 'team2')}
+          onClick={(e) => handleOddsClick(e, 'team2')}
           isSelected={selectedGame?.id === game.id && selectedOutcome === 'team2'}
-          className="rounded-[12px] px-4 py-1 text-sm"
+          className="rounded-[12px] px-6 py-2 mt-2"
         />
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
-      {/* Fixed Header for Match Questions */}
-      <div className="w-full text-center mb-4">
-        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Match Questions</span>
-      </div>
-
-      <div className="w-full space-y-2">
-        {bttsGame && (
-          <QuestionRow game={bttsGame} question={`Will both teams score?`} />
-        )}
-        {over2_5GoalsGame && (
-          <QuestionRow game={over2_5GoalsGame} question={`Will there be 2 or more goals?`} />
-        )}
-        {over3_5GoalsGame && (
-          <QuestionRow game={over3_5GoalsGame} question={`Will there be 3 or more goals?`} />
-        )}
       </div>
     </div>
   );
