@@ -20,12 +20,10 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
         <span className="text-xl font-bold text-vanta-text-light">{game.team1.name}</span>
       </div>
 
-      {/* Center Info (Time and League Logo) */}
+      {/* Center Info (Time only) */}
       <div className="flex flex-col items-center text-center w-1/3">
         <span className="text-2xl font-bold text-vanta-text-light mb-2">{game.time}</span>
-        {/* Placeholder for league logo if available, otherwise just show league name */}
-        <img src="/public/placeholder.svg" alt={game.league} className="w-12 h-12 object-contain" />
-        <span className="text-sm text-gray-400 mt-1">{game.league}</span>
+        {/* Removed league logo and name */}
       </div>
 
       {/* Team 2 Info */}
