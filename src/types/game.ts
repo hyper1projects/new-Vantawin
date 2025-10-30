@@ -4,9 +4,9 @@ export interface Team {
 }
 
 export interface Odds {
-    team1: number;
-    draw: number;
-    team2: number;
+    team1?: number; // Made optional
+    draw?: number;  // Made optional
+    team2?: number;  // Made optional
 }
 
 export interface Game {

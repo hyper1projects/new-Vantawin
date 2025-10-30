@@ -13,13 +13,6 @@ const RightSidebar = () => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
   const [predictionAmount, setPredictionAmount] = useState(0);
 
-  // Dummy data for leaderboard players - no longer needed here
-  // const dummyLeaderboardPlayers: LeaderboardPlayer[] = [
-  //   { id: 'p1', rank: 1, playerName: 'VantaMaster', avatar: '/images/8.png', winRate: 75, gamesPlayed: 120 },
-  //   { id: 'p2', rank: 2, playerName: 'ProPredictor', avatar: '/images/Group 1000005755.png', winRate: 70, gamesPlayed: 110 },
-  //   { id: 'p3', rank: 3, playerName: 'GoalGetter', avatar: '/images/Group 1000005762.png', winRate: 68, gamesPlayed: 105 },
-  // ];
-
   // Reset prediction amount when a new game is selected
   useEffect(() => {
     setPredictionAmount(0);
@@ -55,9 +48,6 @@ const RightSidebar = () => {
 
   return (
     <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
-      {/* Leaderboard Card - Removed */}
-      {/* <RightSidebarLeaderboardCard players={dummyLeaderboardPlayers} /> */}
-
       {selectedGame ? (
         <>
           {/* Logo and Match Code */}
@@ -90,19 +80,19 @@ const RightSidebar = () => {
                   className={`flex-1 py-2 text-xs font-semibold ${selectedOutcome === 'team1' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
                   onClick={() => setSelectedMatch(selectedGame, 'team1')}
                 >
-                  {selectedGame.team1.name.substring(0,3).toUpperCase()}<br/>({selectedGame.odds.team1.toFixed(2)})
+                  {selectedGame.team1.name.substring(0,3).toUpperCase()}<br/>({(selectedGame.odds?.team1 !== undefined && selectedGame.odds.team1 !== null) ? selectedGame.odds.team1.toFixed(2) : '-'})
                 </Button>
                 <Button
                   className={`flex-1 py-2 text-xs font-semibold ${selectedOutcome === 'draw' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
                   onClick={() => setSelectedMatch(selectedGame, 'draw')}
                 >
-                  DRAW<br/>({selectedGame.odds.draw.toFixed(2)})
+                  DRAW<br/>({(selectedGame.odds?.draw !== undefined && selectedGame.odds.draw !== null) ? selectedGame.odds.draw.toFixed(2) : '-'})
                 </Button>
                 <Button
                   className={`flex-1 py-2 text-xs font-semibold ${selectedOutcome === 'team2' ? 'bg-[#015071]' : 'bg-vanta-blue-dark hover:bg-vanta-blue-darker'}`}
                   onClick={() => setSelectedMatch(selectedGame, 'team2')}
                 >
-                  {selectedGame.team2.name.substring(0,3).toUpperCase()}<br/>({selectedGame.odds.team2.toFixed(2)})
+                  {selectedGame.team2.name.substring(0,3).toUpperCase()}<br/>({(selectedGame.odds?.team2 !== undefined && selectedGame.odds.team2 !== null) ? selectedGame.odds.team2.toFixed(2) : '-'})
                 </Button>
               </div>
             </div>
