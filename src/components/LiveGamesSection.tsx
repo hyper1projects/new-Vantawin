@@ -3,19 +3,22 @@
 import React from 'react';
 import Oddscard from './Oddscard';
 import { Game } from '../types/game';
-import SectionHeader from './SectionHeader'; // Re-import SectionHeader
+import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 import { allGamesData } from '../data/games'; // Import centralized game data
+import LivePredictionsHeader from './LivePredictionsHeader'; // Import the new header component
 
 const LiveGamesSection: React.FC = () => {
   // Filter games to show only live games from allGamesData
   const filteredGames = allGamesData.filter(game => game.isLive);
+  const liveGamesCount = filteredGames.length; // Get the count of live games
 
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
       {/* Header wrapper div now extends full width */}
       <div className="w-full bg-[#0D2C60] rounded-t-[27px]">
-        <SectionHeader title="Live Games" className="w-full" textColor="text-white" />
+        {/* Use the new LivePredictionsHeader here */}
+        <LivePredictionsHeader liveCount={liveGamesCount} />
       </div>
       
       {/* Wrapper div for Oddscards - now stacking vertically */}
