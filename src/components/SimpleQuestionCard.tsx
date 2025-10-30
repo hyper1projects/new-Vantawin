@@ -19,6 +19,21 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
     setSelectedMatch(game, outcome);
   };
 
+  // Function to get the dynamic question text based on game.questionType
+  const getQuestionText = (game: Game) => {
+    switch (game.questionType) {
+      case 'score_goals':
+        return `Will ${game.team1.name} score more than 2 goals?`;
+      case 'btts':
+        return `Will both teams score?`;
+      case 'over_2_5_goals':
+        return `Will there be over 2.5 goals?`;
+      case 'win_match':
+      default:
+        return `Will ${game.team1.name} win this match?`;
+    }
+  };
+
   return (
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
       {/* New FullTime Header */}
@@ -26,9 +41,9 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
         <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">FullTime</span>
       </div>
 
-      {/* Question moved to the top */}
+      {/* Question moved to the top, now dynamic */}
       <h3 className="text-xl font-bold text-white text-center mb-4">
-        Will {team1.name} win this game?
+        {getQuestionText(game)}
       </h3>
 
       {/* Team Logos/Names and Buttons */}
