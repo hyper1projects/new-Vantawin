@@ -63,7 +63,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 return `Will there be over 2.5 goals?`;
             case 'win_match':
             default:
-                return `Will ${game.team1.name} win this match?`;
+                return `What team will win this game?`; // Updated default question
         }
     };
 
