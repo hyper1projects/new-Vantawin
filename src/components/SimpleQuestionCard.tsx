@@ -26,7 +26,7 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game }) => {
         return `Will both teams score?`;
       case 'win_match':
       default:
-        return `Who will win this game?`; // Changed text here
+        return `Will ${game.team1.name} win this match?`;
     }
   };
 

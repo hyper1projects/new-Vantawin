@@ -23,7 +23,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card click from triggering
         setIsFavorited(!isFavorited);
-        console.log(Game ${isFavorited ? 'unfavorited' : 'favorited'}!);
+        console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`); // Fixed template literal syntax
     };
 
     const handleOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
@@ -32,7 +32,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     };
 
     const handleCardClick = () => {
-        navigate(/games/${game.id}); // Navigate to game details when the card is clicked
+        navigate(`/games/${game.id}`); // Fixed template literal syntax
     };
 
     const renderTeam = (team: Team) => (
@@ -51,14 +51,14 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     const getQuestionText = (game: Game) => {
         switch (game.questionType) {
             case 'score_goals':
-                return Will ${game.team1.name} score more than 2 goals?;
+                return `Will ${game.team1.name} score more than 2 goals?`; // Fixed template literal syntax
             case 'btts':
-                return Will both teams score?;
+                return `Will both teams score?`; // Fixed template literal syntax
             case 'over_2_5_goals':
-                return Will there be over 2.5 goals?;
+                return `Will there be over 2.5 goals?`; // Fixed template literal syntax
             case 'win_match':
             default:
-                return Will ${game.team1.name} win this match?;
+                return `Will ${game.team1.name} win this match?`; // Fixed template literal syntax
         }
     };
 
@@ -79,11 +79,11 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                         className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
                     >
                         <Star
-                            className={w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}}
+                            className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`} // Fixed template literal syntax
                             fill={isFavorited ? 'currentColor' : 'none'}
                         />
                     </button>
-                    <a href={/games/${game.id}} className="text-gray-300 text-sm hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{gameView} &gt;</a>
+                    <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{gameView} &gt;</a> {/* Fixed template literal syntax */}
                 </div>
             </div>
 
@@ -141,4 +141,4 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     );
 };
 
-export default Oddscard;
+export default Oddscard;
