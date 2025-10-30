@@ -3,14 +3,14 @@
 import React from 'react';
 import { cn } from '../lib/utils'; // Import cn for conditional class merging
 
-interface NewOddsButtonProps { // Renamed interface
+interface NewOddsButtonProps {
     value: number; // Keep value for internal logic/context, but not displayed
-    label: string; // New prop for the button's display text
+    label: string; // This label will now be treated as a team name to be abbreviated
     onClick: (e: React.MouseEvent) => void; // Add onClick handler
     isSelected: boolean; // Add isSelected prop for styling
 }
 
-const NewOddsButton: React.FC<NewOddsButtonProps> = ({ value, label, onClick, isSelected }) => ( // Renamed component
+const NewOddsButton: React.FC<NewOddsButtonProps> = ({ value, label, onClick, isSelected }) => (
     <button
         onClick={onClick}
         className={cn(
@@ -18,7 +18,7 @@ const NewOddsButton: React.FC<NewOddsButtonProps> = ({ value, label, onClick, is
             isSelected ? "bg-vanta-neon-blue text-vanta-blue-dark" : "hover:bg-gray-700"
         )}
     >
-        {label}
+        {label.substring(0, 3).toUpperCase()} {/* Display the first 3 characters of the label in uppercase */}
     </button>
 );
 
