@@ -14,8 +14,8 @@ interface RightSidebarLeaderboardCardProps {
 const RightSidebarLeaderboardCard: React.FC<RightSidebarLeaderboardCardProps> = ({ players }) => {
   return (
     <div className="bg-vanta-blue-medium rounded-[27px] p-4 shadow-sm text-vanta-text-light mb-6">
-      <h3 className="text-lg font-bold text-vanta-text-light mb-4">Leaderboard</h3>
-      <div className="space-y-3">
+      {/* Removed the h3 tag for "Leaderboard" */}
+      <div className="space-y-3 pt-2"> {/* Added pt-2 to bring content slightly closer to the top */}
         {players.slice(0, 3).map((player) => ( // Display only top 3
           <div key={player.id} className="flex items-center justify-between bg-[#01112D] p-3 rounded-xl">
             <div className="flex items-center space-x-3">
