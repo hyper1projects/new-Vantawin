@@ -7,17 +7,30 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the MatchHeaderImage component
 import FullTimeCard from '../components/FullTimeCard'; // Import FullTimeCard
-import TotalGoalsCard from '../components/TotalGoalsCard'; // Import the new TotalGoalsCard
+import TotalGoalsCard from '../components/TotalGoalsCard'; // Import the updated TotalGoalsCard
 
 const GameDetails: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
 
   const game = allGamesData.find(g => g.id === gameId);
-  // Find a game specifically for the 'btts' question type
-  const bttsGame = allGamesData.find(g => g.questionType === 'btts');
-  // Find a game specifically for 'over_2_5_goals' question type for TotalGoalsCard
-  const totalGoalsGame = allGamesData.find(g => g.questionType === 'over_2_5_goals');
+
+  // Find specific games for the TotalGoalsCard based on the current game's teams
+  const bttsGame = allGamesData.find(g =>
+    g.questionType === 'btts' &&
+    g.team1.name === game?.team1.name &&
+    g.team2.name === game?.team2.name
+  );
+  const over2_5GoalsGame = allGamesData.find(g =>
+    g.questionType === 'over_2_5_goals' &&
+    g.team1.name === game?.team1.name &&
+    g.team2.name === game?.team2.name
+  );
+  const over3_5GoalsGame = allGamesData.find(g =>
+    g.questionType === 'over_3_5_goals' &&
+    g.team1.name === game?.team1.name &&
+    g.team2.name === game?.team2.name
+  );
 
 
   if (!game) {
@@ -55,19 +68,18 @@ const GameDetails: React.FC = () => {
         <FullTimeCard game={game} />
       </div>
 
-      {/* TotalGoalsCard for 'Will there be over 2.5 goals?' */}
-      {totalGoalsGame && (
+      {/* Combined Goals and BTTS Card */}
+      {(bttsGame || over2_5GoalsGame || over3_5GoalsGame) && (
         <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
-          <TotalGoalsCard game={totalGoalsGame} />
+          <TotalGoalsCard
+            bttsGame={bttsGame}
+            over2_5GoalsGame={over2_5GoalsGame}
+            over3_5GoalsGame={over3_5GoalsGame}
+          />
         </div>
       )}
 
-      {/* FullTimeCard for 'Will both teams score?' */}
-      {bttsGame && (
-        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
-          <FullTimeCard game={bttsGame} />
-        </div>
-      )}
+      {/* The separate FullTimeCard for bttsGame is removed as it's now handled by TotalGoalsCard */}
     </div>
   );
 };
