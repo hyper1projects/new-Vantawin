@@ -18,10 +18,22 @@ export const allGamesData: Game[] = [
         odds: { team1: 1.5, draw: 3.0, team2: 2.5 },
       },
       {
+        id: 'over_1_5_goals_q',
+        type: 'over_1_5_goals',
+        text: 'Will there be 2 or more goals?',
+        odds: { yes: 1.2, no: 3.5 },
+      },
+      {
         id: 'over_2_5_goals_q',
         type: 'over_2_5_goals',
-        text: 'Will there be over 2.5 goals?',
+        text: 'Will there be 3 or more goals?',
         odds: { yes: 1.8, no: 2.0 },
+      },
+      {
+        id: 'over_3_5_goals_q',
+        type: 'over_3_5_goals',
+        text: 'Will there be 4 or more goals?',
+        odds: { yes: 2.5, no: 1.5 },
       },
       {
         id: 'btts_q',
@@ -78,6 +90,12 @@ export const allGamesData: Game[] = [
         odds: { team1: 1.8, draw: 3.5, team2: 2.2 },
       },
       {
+        id: 'over_1_5_goals_q',
+        type: 'over_1_5_goals',
+        text: 'Will there be 2 or more goals?',
+        odds: { yes: 1.3, no: 3.0 },
+      },
+      {
         id: 'btts_q',
         type: 'btts',
         text: 'Will both teams score?',
@@ -104,8 +122,14 @@ export const allGamesData: Game[] = [
       {
         id: 'over_2_5_goals_q',
         type: 'over_2_5_goals',
-        text: 'Will there be over 2.5 goals?',
+        text: 'Will there be 3 or more goals?',
         odds: { yes: 1.5, no: 2.5 },
+      },
+      {
+        id: 'over_3_5_goals_q',
+        type: 'over_3_5_goals',
+        text: 'Will there be 4 or more goals?',
+        odds: { yes: 2.0, no: 1.7 },
       },
     ],
   },
@@ -124,6 +148,18 @@ export const allGamesData: Game[] = [
         type: 'win_match',
         text: 'What team will win this game?',
         odds: { team1: 2.0, draw: 3.1, team2: 2.0 },
+      },
+      {
+        id: 'over_1_5_goals_q',
+        type: 'over_1_5_goals',
+        text: 'Will there be 2 or more goals?',
+        odds: { yes: 1.1, no: 4.0 },
+      },
+      {
+        id: 'over_2_5_goals_q',
+        type: 'over_2_5_goals',
+        text: 'Will there be 3 or more goals?',
+        odds: { yes: 1.6, no: 2.2 },
       },
       {
         id: 'score_goals_real_madrid',
@@ -158,8 +194,14 @@ export const allGamesData: Game[] = [
       {
         id: 'over_2_5_goals_q',
         type: 'over_2_5_goals',
-        text: 'Will there be over 2.5 goals?',
+        text: 'Will there be 3 or more goals?',
         odds: { yes: 1.4, no: 2.8 },
+      },
+      {
+        id: 'over_3_5_goals_q',
+        type: 'over_3_5_goals',
+        text: 'Will there be 4 or more goals?',
+        odds: { yes: 1.8, no: 2.0 },
       },
     ],
   },

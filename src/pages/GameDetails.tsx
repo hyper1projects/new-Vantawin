@@ -57,13 +57,15 @@ const GameDetails: React.FC = () => {
                 </div>
               );
             case 'btts':
-            case 'total_goals_even': // SimpleQuestionCard can handle these generic Yes/No questions
+            case 'total_goals_even':
               return (
                 <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
                   <SimpleQuestionCard game={game} question={question} />
                 </div>
               );
+            case 'over_1_5_goals': // New case
             case 'over_2_5_goals':
+            case 'over_3_5_goals': // New case
             case 'score_goals':
               return (
                 <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
