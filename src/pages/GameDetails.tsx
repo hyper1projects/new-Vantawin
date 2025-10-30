@@ -44,8 +44,8 @@ const GameDetails: React.FC = () => {
         <MatchHeaderImage game={game} />
       </div>
 
-      {/* Container for SimpleQuestionCard - now transparent */}
-      <div className="bg-transparent rounded-[27px] p-8 shadow-lg">
+      {/* Container for SimpleQuestionCard */}
+      <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
         <SimpleQuestionCard game={game} />
       </div>
     </div>
