@@ -55,6 +55,9 @@ const RightSidebar = () => {
 
   return (
     <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
+      {/* Leaderboard Card - Moved to the top */}
+      <RightSidebarLeaderboardCard players={dummyLeaderboardPlayers} />
+
       {selectedGame ? (
         <>
           {/* Logo and Match Code */}
@@ -157,8 +160,6 @@ const RightSidebar = () => {
           <p className="text-sm">Click on any odds to start predicting!</p>
         </div>
       )}
-      {/* Leaderboard Card */}
-      <RightSidebarLeaderboardCard players={dummyLeaderboardPlayers} />
     </div>
   );
 };
