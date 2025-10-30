@@ -6,7 +6,7 @@ import { allGamesData } from '../data/games'; // Import centralized game data
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the MatchHeaderImage component
-import SimpleQuestionCard from '../components/SimpleQuestionCard'; // Import SimpleQuestionCard
+import FullTimeCard from '../components/FullTimeCard'; // Import FullTimeCard
 import TotalGoalsCard from '../components/TotalGoalsCard'; // Import the new TotalGoalsCard
 
 const GameDetails: React.FC = () => {
@@ -50,9 +50,9 @@ const GameDetails: React.FC = () => {
         <MatchHeaderImage game={game} />
       </div>
 
-      {/* First SimpleQuestionCard (for win_match or other non-goal questions) */}
+      {/* First FullTimeCard (for win_match or other non-goal questions) */}
       <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
-        <SimpleQuestionCard game={game} />
+        <FullTimeCard game={game} />
       </div>
 
       {/* TotalGoalsCard for 'Will there be over 2.5 goals?' */}
@@ -62,10 +62,10 @@ const GameDetails: React.FC = () => {
         </div>
       )}
 
-      {/* SimpleQuestionCard for 'Will both teams score?' */}
+      {/* FullTimeCard for 'Will both teams score?' */}
       {bttsGame && (
         <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
-          <SimpleQuestionCard game={bttsGame} />
+          <FullTimeCard game={bttsGame} />
         </div>
       )}
     </div>
