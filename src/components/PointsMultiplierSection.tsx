@@ -14,7 +14,14 @@ interface PointsMultiplierSectionProps {
 const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ className }) => { // Destructure className
   // Function to get the highest odd for a game
   const getMaxOdd = (game: Game) => {
-    return Math.max(game.odds.team1, game.odds.draw, game.odds.team2);
+    const winMatchQuestion = game.questions.find(q => q.type === 'win_match');
+    if (winMatchQuestion && winMatchQuestion.odds) {
+      const { team1, draw, team2 } = winMatchQuestion.odds;
+      // Ensure all odds are numbers before calling Math.max
+      const validOdds = [team1, draw, team2].filter(o => typeof o === 'number') as number[];
+      return validOdds.length > 0 ? Math.max(...validOdds) : 0;
+    }
+    return 0; // Return 0 if no win_match question or odds are found
   };
 
   // Sort games by the highest odd in descending order and take only the top 3 from allGamesData
