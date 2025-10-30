@@ -12,7 +12,6 @@ interface SimpleQuestionCardProps {
 }
 
 const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game, question }) => {
-  // Removed team1, team2 destructuring as they are no longer displayed
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
   // Use question.text and question.odds directly
@@ -27,35 +26,33 @@ const SimpleQuestionCard: React.FC<SimpleQuestionCardProps> = ({ game, question 
   };
 
   return (
-    <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
+    <div className="bg-vanta-blue-medium rounded-[27px] p-4 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-3"> {/* Reduced p-6 to p-4, space-y-4 to space-y-3 */}
       {/* Fixed Header for FullTime */}
-      <div className="w-full text-center mb-2">
+      <div className="w-full text-center mb-1"> {/* Reduced mb-2 to mb-1 */}
         <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">FullTime</span>
       </div>
 
       {/* Question text from the question prop */}
-      <h3 className="text-xl font-bold text-white text-center mb-4">
+      <h3 className="text-lg font-bold text-white text-center mb-3"> {/* Reduced text-xl to text-lg, mb-4 to mb-3 */}
         {questionText}
       </h3>
 
       {/* Buttons only, team logos/names removed */}
-      <div className="flex items-center justify-center space-x-6 w-full">
-        {/* Removed team1 logo and name */}
+      <div className="flex items-center justify-center space-x-4 w-full"> {/* Reduced space-x-6 to space-x-4 */}
         <OddsButton
           value={yesOdd}
           label="Yes"
           onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
           isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_yes_${yesOdd.toFixed(2)}`}
-          className="rounded-[12px] px-6 py-2 mt-2"
+          className="rounded-[12px] px-4 py-1.5 mt-1" {/* Reduced px-6 py-2 to px-4 py-1.5, mt-2 to mt-1 */}
         />
-        <span className="text-2xl font-bold text-vanta-neon-blue">VS</span> {/* Keep VS for visual separation */}
-        {/* Removed team2 logo and name */}
+        <span className="text-xl font-bold text-vanta-neon-blue">VS</span> {/* Reduced text-2xl to text-xl */}
         <OddsButton
           value={noOdd}
           label="No"
           onClick={(e) => handleOddsClick(e, 'no', noOdd)}
           isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_no_${noOdd.toFixed(2)}`}
-          className="rounded-[12px] px-6 py-2 mt-2"
+          className="rounded-[12px] px-4 py-1.5 mt-1" {/* Reduced px-6 py-2 to px-4 py-1.5, mt-2 to mt-1 */}
         />
       </div>
     </div>
