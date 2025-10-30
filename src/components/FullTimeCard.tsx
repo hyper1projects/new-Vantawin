@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { OddsButton } from './OddsButton';
+import OddsButton from './OddsButton'; // Changed to default import
 import { cn } from '@/lib/utils';
 
 interface FullTimeCardProps {
@@ -26,7 +26,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({
   className,
 }) => {
   return (
-    <div className={cn("bg-transparent rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4", className)}> {/* Changed bg-vanta-blue-medium to bg-transparent */}
+    <div className={cn("bg-transparent rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4", className)}>
       {/* Fixed Header for FullTime */}
       <div className="w-full text-center mb-2">
         <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">FullTime</span>
