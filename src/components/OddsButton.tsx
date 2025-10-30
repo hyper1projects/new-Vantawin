@@ -1,25 +1,27 @@
 "use client";
 
 import React from 'react';
-import { cn } from '../lib/utils'; // Import cn for conditional class merging
+import { Button } from '@/components/ui/button'; // Assuming shadcn/ui Button
 
 interface OddsButtonProps {
-    value: number; // Keep value for internal logic/context, but not displayed
-    label: string; // New prop for the button's display text
-    onClick: (e: React.MouseEvent) => void; // Add onClick handler
-    isSelected: boolean; // Add isSelected prop for styling
+  label: string;
+  odds: number;
+  onClick?: () => void;
+  isSelected?: boolean; // Optional prop to indicate if the button is selected
 }
 
-const OddsButton: React.FC<OddsButtonProps> = ({ value, label, onClick, isSelected }) => (
-    <button
-        onClick={onClick}
-        className={cn(
-            "bg-[#0B295B] text-white border border-gray-600 h-8 px-3 text-sm rounded-md transition-colors shadow-inner font-semibold",
-            isSelected ? "bg-vanta-neon-blue text-vanta-blue-dark" : "hover:bg-gray-700"
-        )}
+const OddsButton: React.FC<OddsButtonProps> = ({ label, odds, onClick, isSelected = false }) => {
+  return (
+    <Button
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center p-4 rounded-[12px] text-vanta-text-light transition-colors duration-200
+        ${isSelected ? 'bg-vanta-neon-blue text-vanta-blue-dark' : 'bg-vanta-blue-dark hover:bg-vanta-accent-dark-blue'}
+        w-full h-full min-h-[80px]`}
     >
-        {label}
-    </button>
-);
+      <span className="text-lg font-semibold">{label}</span>
+      <span className="text-xl font-bold mt-1">{odds.toFixed(2)}</span>
+    </Button>
+  );
+};
 
 export default OddsButton;
