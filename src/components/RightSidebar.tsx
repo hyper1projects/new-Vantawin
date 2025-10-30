@@ -101,7 +101,9 @@ const RightSidebar = () => {
 
   // Helper to determine if a specific outcome is selected for a given question type
   const isOutcomeSelected = (questionId: string, choice: 'yes' | 'no', oddValue: number) => {
-    return selectedGame?.id === game.id && selectedOutcome === `${questionId}_${choice}_${oddValue.toFixed(2)}`;
+    // This function is not used in the current RightSidebar, but keeping it for context if needed elsewhere.
+    // It would typically compare against `selectedOutcome` and `selectedGame.id`.
+    return false; 
   };
 
   // Helper to get the display text for the selected outcome in the sidebar
@@ -114,14 +116,38 @@ const RightSidebar = () => {
       const choice = parts[1];
       let questionText = '';
       switch (questionId) {
-        case 'over_2_5_goals':
+        case 'full_time_result':
+          if (choice === 'team1') return selectedGame.team1.name;
+          if (choice === 'draw') return 'Draw';
+          if (choice === 'team2') return selectedGame.team2.name;
+          break;
+        case 'over_1_5_goals_q':
+          questionText = 'Over 1.5 Goals';
+          break;
+        case 'over_2_5_goals_q':
           questionText = 'Over 2.5 Goals';
           break;
-        case 'btts':
+        case 'over_3_5_goals_q':
+          questionText = 'Over 3.5 Goals';
+          break;
+        case 'btts_q':
           questionText = 'Both Teams To Score';
           break;
-        case 'total_goals_even':
+        case 'total_goals_even_q':
           questionText = 'Total Goals Even';
+          break;
+        case 'is_draw_q_1':
+        case 'is_draw_q_2':
+        case 'is_draw_q_3':
+        case 'is_draw_q_4':
+        case 'is_draw_q_5':
+          questionText = 'Game will be a Draw';
+          break;
+        case 'score_goals_man_utd':
+          questionText = `Man Utd score > 2 goals`;
+          break;
+        case 'score_goals_real_madrid':
+          questionText = `Real Madrid score > 2 goals`;
           break;
         default:
           questionText = questionId; // Fallback
@@ -219,8 +245,8 @@ const RightSidebar = () => {
         </>
       ) : (
         <div className="flex flex-col items-center justify-center h-full text-center text-gray-400 p-6">
-          <p className="text-lg font-semibold mb-2">No match selected</p>
-          <p className="text-sm">Click on any odds to start predicting!</p>
+          <p className="text-lg font-semibold mb-2">No game selected</p>
+          <p className="text-sm">Click on any game to start predicting!</p>
         </div>
       )}
     </div>
