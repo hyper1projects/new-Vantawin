@@ -4,13 +4,13 @@ import React from 'react';
 import { Button } from '@/components/ui/button'; // Assuming shadcn/ui Button
 
 interface OddsButtonProps {
-  label: string;
-  odds: number;
-  onClick?: () => void;
+  label: string; // Added label prop
+  value: number; // Changed from 'odds' to 'value'
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void; // Updated onClick type
   isSelected?: boolean; // Optional prop to indicate if the button is selected
 }
 
-const OddsButton: React.FC<OddsButtonProps> = ({ label, odds, onClick, isSelected = false }) => {
+const OddsButton: React.FC<OddsButtonProps> = ({ label, value, onClick, isSelected = false }) => {
   return (
     <Button
       onClick={onClick}
@@ -19,7 +19,7 @@ const OddsButton: React.FC<OddsButtonProps> = ({ label, odds, onClick, isSelecte
         w-full h-full min-h-[80px]`}
     >
       <span className="text-lg font-semibold">{label}</span>
-      <span className="text-xl font-bold mt-1">{odds.toFixed(2)}</span>
+      <span className="text-xl font-bold mt-1">{value.toFixed(2)}</span>
     </Button>
   );
 };
