@@ -29,7 +29,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
 
   // Defensive checks for odds values
   const team1Odd = question.odds?.team1 !== undefined ? question.odds.team1.toFixed(2) : '-';
-  const drawOdd = question.odds?.draw !== undefined ? question.odds.draw.toFixed(2) : '-';
+  const drawOdd = question.odds?.draw !== undefined ? question.odds.draw.toFixed(2) : '-'; // Still needed for selectedOutcome comparison
   const team2Odd = question.odds?.team2 !== undefined ? question.odds.team2.toFixed(2) : '-';
 
   return (
@@ -50,8 +50,8 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
           <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
           <NewOddsButton
-            value={question.odds.team1 || 0} // Provide a default if undefined
-            label={team1Odd} // Display the odd value
+            value={question.odds.team1 || 0}
+            label={team1.abbreviation} // Display team1 abbreviation
             onClick={(e) => handleOddsClick(e, 'team1')}
             isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_team1_${team1Odd}`}
             className="rounded-[12px] px-6 py-2 mt-2"
@@ -59,20 +59,22 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
         </div>
         <div className="flex flex-col items-center">
           <span className="text-2xl font-bold text-vanta-neon-blue mb-2">VS</span>
+          {/* The Draw button is removed as requested */}
+          {/* The space for the draw button is intentionally left to maintain layout, or could be filled with a different element if needed */}
           <NewOddsButton
-            value={question.odds.draw || 0} // Provide a default if undefined
-            label={drawOdd} // Display the odd value
+            value={question.odds.draw || 0} // Still pass draw value for consistency in type, though button is removed
+            label="Draw" // Placeholder label, this button is effectively hidden
             onClick={(e) => handleOddsClick(e, 'draw')}
             isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_draw_${drawOdd}`}
-            className="rounded-[12px] px-6 py-2 mt-2"
+            className="rounded-[12px] px-6 py-2 mt-2 opacity-0 pointer-events-none" // Hide and disable interaction
           />
         </div>
         <div className="flex flex-col items-center">
           <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
           <NewOddsButton
-            value={question.odds.team2 || 0} // Provide a default if undefined
-            label={team2Odd} // Display the odd value
+            value={question.odds.team2 || 0}
+            label={team2.abbreviation} // Display team2 abbreviation
             onClick={(e) => handleOddsClick(e, 'team2')}
             isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_team2_${team2Odd}`}
             className="rounded-[12px] px-6 py-2 mt-2"
