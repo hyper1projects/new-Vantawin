@@ -23,20 +23,20 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
   // Define multiple goal-related questions
   const goalQuestions: GoalQuestion[] = [
     {
-      id: 'over_2_5_goals',
-      questionText: 'Over 2.5 Goals',
+      id: 'btts_2_goals',
+      questionText: 'Both teams to score 2 goals or more?',
       yesOdd: 1.85,
       noOdd: 1.95,
     },
     {
-      id: 'btts',
-      questionText: 'Both Teams To Score',
+      id: 'btts_3_goals',
+      questionText: 'Both teams to score 3 goals or more?',
       yesOdd: 1.70,
       noOdd: 2.10,
     },
     {
-      id: 'total_goals_even',
-      questionText: 'Total Goals Even',
+      id: 'btts_4_goals',
+      questionText: 'Both teams to score 4 goals or more?',
       yesOdd: 1.90,
       noOdd: 1.80,
     },
