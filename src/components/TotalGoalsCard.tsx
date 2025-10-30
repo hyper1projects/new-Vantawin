@@ -1,42 +1,25 @@
 "use client";
 
 import React from 'react';
-import { Game } from '../types/game';
+import { Game, Question } from '../types/game'; // Import Question type
 import OddsButton from './OddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 
 interface TotalGoalsCardProps {
   game: Game;
+  question: Question; // Now accepts a specific question
 }
 
-const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
-  const { team1, team2, odds, questionType } = game;
+const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game, question }) => {
+  const { team1, team2 } = game;
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
-  let questionText = '';
-  let yesOdd = 0;
-  let noOdd = 0;
-  let questionId = '';
-
-  // Determine question and odds based on game.questionType
-  switch (questionType) {
-    case 'over_2_5_goals':
-      questionText = 'Will there be over 2.5 goals?';
-      yesOdd = odds.team1; // Using team1 odds for 'Yes'
-      noOdd = odds.team2;  // Using team2 odds for 'No'
-      questionId = 'over_2_5_goals';
-      break;
-    case 'score_goals':
-      questionText = `Will ${team1.name} score more than 2 goals?`;
-      yesOdd = odds.team1; // Using team1 odds for 'Yes'
-      noOdd = odds.team2;  // Using team2 odds for 'No'
-      questionId = 'score_goals';
-      break;
-    // Add other goal-related question types here if needed
-    default:
-      return null; // Don't render if questionType is not relevant for this card
-  }
+  // Use question.text and question.odds directly
+  const questionText = question.text;
+  const yesOdd = question.odds.yes !== undefined ? question.odds.yes : 0;
+  const noOdd = question.odds.no !== undefined ? question.odds.no : 0;
+  const questionId = question.id;
 
   const handleOddsClick = (e: React.MouseEvent, choice: 'yes' | 'no', oddValue: number) => {
     e.stopPropagation();
@@ -70,14 +53,14 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
           <div className="flex items-center justify-center space-x-6 w-full">
             <OddsButton
               value={yesOdd}
-              label="Yes"
+              label={`Yes (${yesOdd.toFixed(2)})`} // Display odd value in label
               onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
               isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_yes_${yesOdd.toFixed(2)}`}
               className="rounded-[12px] px-6 py-2 mt-2"
             />
             <OddsButton
               value={noOdd}
-              label="No"
+              label={`No (${noOdd.toFixed(2)})`} // Display odd value in label
               onClick={(e) => handleOddsClick(e, 'no', noOdd)}
               isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_no_${noOdd.toFixed(2)}`}
               className="rounded-[12px] px-6 py-2 mt-2"

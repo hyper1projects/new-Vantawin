@@ -7,11 +7,29 @@ export const allGamesData: Game[] = [
     date: 'Today',
     team1: { name: 'Crystal Palace', logoIdentifier: 'CRY', abbreviation: 'CRY' },
     team2: { name: 'West Ham United', logoIdentifier: 'WHU', abbreviation: 'WHU' },
-    odds: { team1: 1.5, draw: 3.0, team2: 2.5 },
     league: 'Premier League',
     isLive: false,
     gameView: 'View Game Details',
-    questionType: 'win_match',
+    questions: [
+      {
+        id: 'full_time_result',
+        type: 'win_match',
+        text: 'What team will win this game?',
+        odds: { team1: 1.5, draw: 3.0, team2: 2.5 },
+      },
+      {
+        id: 'over_2_5_goals_q',
+        type: 'over_2_5_goals',
+        text: 'Will there be over 2.5 goals?',
+        odds: { yes: 1.8, no: 2.0 },
+      },
+      {
+        id: 'btts_q',
+        type: 'btts',
+        text: 'Will both teams score?',
+        odds: { yes: 1.7, no: 2.1 },
+      },
+    ],
   },
   {
     id: 'game-2',
@@ -19,11 +37,29 @@ export const allGamesData: Game[] = [
     date: 'Tomorrow',
     team1: { name: 'Manchester United', logoIdentifier: 'MANU', abbreviation: 'MUN' },
     team2: { name: 'Leicester City', logoIdentifier: 'LEIC', abbreviation: 'LEI' },
-    odds: { team1: 2.1, draw: 3.2, team2: 1.9 },
     league: 'Premier League',
     isLive: true,
     gameView: 'View Game Details',
-    questionType: 'score_goals',
+    questions: [
+      {
+        id: 'full_time_result',
+        type: 'win_match',
+        text: 'What team will win this game?',
+        odds: { team1: 2.1, draw: 3.2, team2: 1.9 },
+      },
+      {
+        id: 'score_goals_man_utd',
+        type: 'score_goals',
+        text: `Will Manchester United score more than 2 goals?`,
+        odds: { yes: 2.5, no: 1.5 },
+      },
+      {
+        id: 'total_goals_even_q',
+        type: 'total_goals_even',
+        text: 'Will the total number of goals be even?',
+        odds: { yes: 1.9, no: 1.9 },
+      },
+    ],
   },
   {
     id: 'game-3',
@@ -31,11 +67,23 @@ export const allGamesData: Game[] = [
     date: 'Today',
     team1: { name: 'Arsenal', logoIdentifier: 'ARS', abbreviation: 'ARS' },
     team2: { name: 'Chelsea', logoIdentifier: 'CHE', abbreviation: 'CHE' },
-    odds: { team1: 1.8, draw: 3.5, team2: 2.2 },
     league: 'Premier League',
     isLive: false,
     gameView: 'View Game Details',
-    questionType: 'btts', // New question type: Both Teams To Score
+    questions: [
+      {
+        id: 'full_time_result',
+        type: 'win_match',
+        text: 'What team will win this game?',
+        odds: { team1: 1.8, draw: 3.5, team2: 2.2 },
+      },
+      {
+        id: 'btts_q',
+        type: 'btts',
+        text: 'Will both teams score?',
+        odds: { yes: 1.6, no: 2.2 },
+      },
+    ],
   },
   {
     id: 'game-4',
@@ -43,11 +91,23 @@ export const allGamesData: Game[] = [
     date: 'Today',
     team1: { name: 'Liverpool', logoIdentifier: 'LIV', abbreviation: 'LIV' },
     team2: { name: 'Everton', logoIdentifier: 'EVE', abbreviation: 'EVE' },
-    odds: { team1: 1.2, draw: 4.0, team2: 6.0 },
     league: 'Premier League',
     isLive: false,
     gameView: 'View Game Details',
-    questionType: 'over_2_5_goals', // New question type: Over 2.5 Goals
+    questions: [
+      {
+        id: 'full_time_result',
+        type: 'win_match',
+        text: 'What team will win this game?',
+        odds: { team1: 1.2, draw: 4.0, team2: 6.0 },
+      },
+      {
+        id: 'over_2_5_goals_q',
+        type: 'over_2_5_goals',
+        text: 'Will there be over 2.5 goals?',
+        odds: { yes: 1.5, no: 2.5 },
+      },
+    ],
   },
   {
     id: 'game-5',
@@ -55,11 +115,29 @@ export const allGamesData: Game[] = [
     date: 'Tomorrow',
     team1: { name: 'Real Madrid', logoIdentifier: 'RMA', abbreviation: 'RMA' },
     team2: { name: 'Barcelona', logoIdentifier: 'BAR', abbreviation: 'BAR' },
-    odds: { team1: 2.0, draw: 3.1, team2: 2.0 },
     league: 'La Liga',
     isLive: true,
     gameView: 'View Game Details',
-    questionType: 'score_goals',
+    questions: [
+      {
+        id: 'full_time_result',
+        type: 'win_match',
+        text: 'What team will win this game?',
+        odds: { team1: 2.0, draw: 3.1, team2: 2.0 },
+      },
+      {
+        id: 'score_goals_real_madrid',
+        type: 'score_goals',
+        text: `Will Real Madrid score more than 2 goals?`,
+        odds: { yes: 2.2, no: 1.7 },
+      },
+      {
+        id: 'btts_q',
+        type: 'btts',
+        text: 'Will both teams score?',
+        odds: { yes: 1.5, no: 2.3 },
+      },
+    ],
   },
   {
     id: 'game-6',
@@ -67,11 +145,23 @@ export const allGamesData: Game[] = [
     date: 'Yesterday',
     team1: { name: 'Bayern Munich', logoIdentifier: 'BAY', abbreviation: 'BAY' },
     team2: { name: 'Borussia Dortmund', logoIdentifier: 'DOR', abbreviation: 'DOR' },
-    odds: { team1: 1.6, draw: 3.8, team2: 4.5 },
     league: 'Bundesliga',
     isLive: false,
     gameView: 'View Game Details',
-    questionType: 'win_match',
+    questions: [
+      {
+        id: 'full_time_result',
+        type: 'win_match',
+        text: 'What team will win this game?',
+        odds: { team1: 1.6, draw: 3.8, team2: 4.5 },
+      },
+      {
+        id: 'over_2_5_goals_q',
+        type: 'over_2_5_goals',
+        text: 'Will there be over 2.5 goals?',
+        odds: { yes: 1.4, no: 2.8 },
+      },
+    ],
   },
   {
     id: 'game-7',
@@ -79,10 +169,22 @@ export const allGamesData: Game[] = [
     date: 'Today',
     team1: { name: 'Atletico Madrid', logoIdentifier: 'ATM', abbreviation: 'ATM' },
     team2: { name: 'Sevilla', logoIdentifier: 'SEV', abbreviation: 'SEV' },
-    odds: { team1: 2.3, draw: 3.0, team2: 3.1 },
     league: 'La Liga',
     isLive: false,
     gameView: 'View Game Details',
-    questionType: 'win_match',
+    questions: [
+      {
+        id: 'full_time_result',
+        type: 'win_match',
+        text: 'What team will win this game?',
+        odds: { team1: 2.3, draw: 3.0, team2: 3.1 },
+      },
+      {
+        id: 'btts_q',
+        type: 'btts',
+        text: 'Will both teams score?',
+        odds: { yes: 1.8, no: 2.0 },
+      },
+    ],
   },
 ];

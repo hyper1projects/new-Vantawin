@@ -46,24 +46,35 @@ const GameDetails: React.FC = () => {
         <MatchHeaderImage game={game} />
       </div>
 
-      {/* Conditionally render cards based on game.questionType */}
-      {game.questionType === 'win_match' && (
-        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
-          <FullTimeCard game={game} />
-        </div>
-      )}
-
-      {game.questionType === 'btts' && (
-        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
-          <SimpleQuestionCard game={game} />
-        </div>
-      )}
-
-      {(game.questionType === 'over_2_5_goals' || game.questionType === 'score_goals') && (
-        <div className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6">
-          <TotalGoalsCard game={game} />
-        </div>
-      )}
+      {/* Render all question cards */}
+      <div className="space-y-6">
+        {game.questions.map((question) => {
+          switch (question.type) {
+            case 'win_match':
+              return (
+                <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+                  <FullTimeCard game={game} question={question} />
+                </div>
+              );
+            case 'btts':
+            case 'total_goals_even': // SimpleQuestionCard can handle these generic Yes/No questions
+              return (
+                <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+                  <SimpleQuestionCard game={game} question={question} />
+                </div>
+              );
+            case 'over_2_5_goals':
+            case 'score_goals':
+              return (
+                <div key={question.id} className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg">
+                  <TotalGoalsCard game={game} question={question} />
+                </div>
+              );
+            default:
+              return null; // Don't render if question type is unknown
+          }
+        })}
+      </div>
     </div>
   );
 };

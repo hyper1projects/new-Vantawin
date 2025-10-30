@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
 import { getLogoSrc } from '../utils/logoMap'; // Correct path
-import { Team, Odds, Game } from '../types/game'; // Import necessary types
+import { Team, Odds, Game, Question } from '../types/game'; // Import necessary types, including Question
 import OddsButton from './OddsButton'; // Import the new OddsButton component
 import NewOddsButton from './NewOddsButton'; // Import NewOddsButton
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
@@ -15,11 +15,19 @@ interface OddscardProps {
 
 const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     // Destructure all necessary properties directly from the game object
-    const { team1, team2, odds, time, date, league, isLive, gameView, questionType } = game;
+    const { team1, team2, league, isLive, gameView, questions } = game;
 
     const [isFavorited, setIsFavorited] = useState(false);
     const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection(); // Use the context
     const navigate = useNavigate(); // Initialize useNavigate
+
+    // Determine the primary question to display on the Oddscard
+    const primaryQuestion: Question | undefined = questions.find(q => q.type === 'win_match') || questions[0];
+
+    if (!primaryQuestion) {
+        // Handle case where there are no questions for the game (shouldn't happen with current data)
+        return null;
+    }
 
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card click from triggering
@@ -31,16 +39,19 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     const handleWinMatchOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'draw' | 'team2') => {
         e.stopPropagation(); // Prevent card click from triggering
         let oddValue;
-        if (outcome === 'team1') oddValue = odds.team1;
-        else if (outcome === 'draw') oddValue = odds.draw;
-        else oddValue = odds.team2;
-        setSelectedMatch(game, `${outcome}_${oddValue.toFixed(2)}`);
+        if (outcome === 'team1') oddValue = primaryQuestion.odds.team1;
+        else if (outcome === 'draw') oddValue = primaryQuestion.odds.draw;
+        else oddValue = primaryQuestion.odds.team2;
+
+        if (oddValue !== undefined) {
+            setSelectedMatch(game, `${primaryQuestion.id}_${outcome}_${oddValue.toFixed(2)}`);
+        }
     };
 
     // Handler for other question types (using OddsButton for Yes/No)
-    const handleQuestionOddsClick = (e: React.MouseEvent, choice: 'yes' | 'no', questionId: string, oddValue: number) => {
+    const handleQuestionOddsClick = (e: React.MouseEvent, choice: 'yes' | 'no', oddValue: number) => {
         e.stopPropagation(); // Prevent card click from triggering
-        setSelectedMatch(game, `${questionId}_${choice}_${oddValue.toFixed(2)}`);
+        setSelectedMatch(game, `${primaryQuestion.id}_${choice}_${oddValue.toFixed(2)}`);
     };
 
     const handleCardClick = () => {
@@ -60,25 +71,12 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         </div>
     );
 
-    const getQuestionText = (game: Game) => {
-        switch (game.questionType) {
-            case 'score_goals':
-                return `Will ${game.team1.name} score more than 2 goals?`;
-            case 'btts':
-                return `Will both teams score?`;
-            case 'over_2_5_goals':
-                return `Will there be over 2.5 goals?`;
-            case 'win_match':
-            default:
-                return `What team will win this game?`;
-        }
-    };
-
-    // Determine the questionId for non-win_match questions
-    let currentQuestionId = '';
-    if (questionType && questionType !== 'win_match') {
-        currentQuestionId = questionType;
-    }
+    // Defensive checks for odds values for the primary question
+    const team1Odd = primaryQuestion.odds?.team1 !== undefined ? primaryQuestion.odds.team1.toFixed(2) : '-';
+    const drawOdd = primaryQuestion.odds?.draw !== undefined ? primaryQuestion.odds.draw.toFixed(2) : '-';
+    const team2Odd = primaryQuestion.odds?.team2 !== undefined ? primaryQuestion.odds.team2.toFixed(2) : '-';
+    const yesOdd = primaryQuestion.odds?.yes !== undefined ? primaryQuestion.odds.yes.toFixed(2) : '-';
+    const noOdd = primaryQuestion.odds?.no !== undefined ? primaryQuestion.odds.no.toFixed(2) : '-';
 
     return (
         <div 
@@ -89,7 +87,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
             {/* Top section: Question (left), Favorite & Game View (right) */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
                 <span className="text-white text-base font-medium"> {/* Increased question font size and set color to white */}
-                    {getQuestionText(game)}
+                    {primaryQuestion.text}
                 </span>
                 <div className="flex items-center space-x-2"> {/* Container for star and link */}
                     <button 
@@ -116,35 +114,35 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 {/* Odds buttons */}
                 <div className="flex flex-col items-end space-y-2">
                     <div className='flex space-x-2'>
-                        {game.questionType === 'win_match' ? (
+                        {primaryQuestion.type === 'win_match' ? (
                             <>
                                 <NewOddsButton 
-                                    value={odds.team1} 
+                                    value={primaryQuestion.odds.team1 || 0} 
                                     label={team1.abbreviation} // Display team1 abbreviation
                                     onClick={(e) => handleWinMatchOddsClick(e, 'team1')} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `team1_${odds.team1.toFixed(2)}`} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_team1_${team1Odd}`} 
                                 /> 
                                 {/* Removed the draw button */}
                                 <NewOddsButton 
-                                    value={odds.team2} 
+                                    value={primaryQuestion.odds.team2 || 0} 
                                     label={team2.abbreviation} // Display team2 abbreviation
                                     onClick={(e) => handleWinMatchOddsClick(e, 'team2')} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `team2_${odds.team2.toFixed(2)}`} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_team2_${team2Odd}`} 
                                 />
                             </>
                         ) : (
                             <>
                                 <OddsButton 
-                                    value={odds.team1} // Assuming odds.team1 is for 'Yes'
+                                    value={primaryQuestion.odds.yes || 0} 
                                     label="Yes"
-                                    onClick={(e) => handleQuestionOddsClick(e, 'yes', currentQuestionId, odds.team1)} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${currentQuestionId}_yes_${odds.team1.toFixed(2)}`} 
+                                    onClick={(e) => handleQuestionOddsClick(e, 'yes', primaryQuestion.odds.yes || 0)} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_yes_${yesOdd}`} 
                                 /> 
                                 <OddsButton 
-                                    value={odds.team2} // Assuming odds.team2 is for 'No'
+                                    value={primaryQuestion.odds.no || 0} 
                                     label="No"
-                                    onClick={(e) => handleQuestionOddsClick(e, 'no', currentQuestionId, odds.team2)} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${currentQuestionId}_no_${odds.team2.toFixed(2)}`} 
+                                    onClick={(e) => handleQuestionOddsClick(e, 'no', primaryQuestion.odds.no || 0)} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_no_${noOdd}`} 
                                 />
                             </>
                         )}
@@ -165,10 +163,10 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                             LIVE
                         </span>
                     ) : (
-                        <span>{time}</span> 
+                        <span>{game.time}</span> 
                     )}
                     <span className="text-gray-500 text-xs">|</span>
-                    <span>{date}</span>
+                    <span>{game.date}</span>
                 </div>
                 <div className="text-gray-300 font-medium text-xs"> {/* Right side: League - Reduced font size to text-xs */}
                     <span>{league}</span>
