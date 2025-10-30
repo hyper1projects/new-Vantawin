@@ -1,21 +1,23 @@
 "use client";
 
 import React from 'react';
-import { cn } from '../lib/utils'; // Import cn for conditional class merging
+import { cn } from '@/lib/utils';
 
 interface OddsButtonProps {
-    value: number; // Keep value for internal logic/context, but not displayed
-    label: string; // New prop for the button's display text
-    onClick: (e: React.MouseEvent) => void; // Add onClick handler
-    isSelected: boolean; // Add isSelected prop for styling
+  value: number; // Still needed for logic, but not displayed
+  label: string; // Will be "Yes" or "No"
+  onClick: (e: React.MouseEvent) => void;
+  isSelected: boolean;
+  className?: string;
 }
 
-const OddsButton: React.FC<OddsButtonProps> = ({ value, label, onClick, isSelected }) => (
+const OddsButton: React.FC<OddsButtonProps> = ({ label, onClick, isSelected, className }) => (
     <button
         onClick={onClick}
         className={cn(
             "bg-[#0B295B] text-white border border-gray-600 h-8 px-3 text-sm rounded-md transition-colors shadow-inner font-semibold",
-            isSelected ? "bg-vanta-neon-blue text-vanta-blue-dark" : "hover:bg-gray-700"
+            isSelected ? "bg-vanta-neon-blue border-vanta-neon-blue text-vanta-blue-dark" : "hover:bg-vanta-blue-dark hover:border-vanta-accent-dark-blue",
+            className
         )}
     >
         {label}

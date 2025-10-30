@@ -62,15 +62,15 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game }) => {
             <h3 className="text-xl font-bold text-white text-center">{question.questionText}</h3>
             <div className="flex items-center justify-center space-x-6 w-full">
               <OddsButton
-                value={question.yesOdd}
-                label={`Yes (${question.yesOdd.toFixed(2)})`}
+                value={question.yesOdd} // Value is still passed for logic
+                label="Yes" // Only "Yes" is displayed
                 onClick={(e) => handleOddsClick(e, question.id, 'yes', question.yesOdd)}
                 isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_yes_${question.yesOdd.toFixed(2)}`}
                 className="rounded-[12px] px-6 py-2 mt-2"
               />
               <OddsButton
-                value={question.noOdd}
-                label={`No (${question.noOdd.toFixed(2)})`}
+                value={question.noOdd} // Value is still passed for logic
+                label="No" // Only "No" is displayed
                 onClick={(e) => handleOddsClick(e, question.id, 'no', question.noOdd)}
                 isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_no_${question.noOdd.toFixed(2)}`}
                 className="rounded-[12px] px-6 py-2 mt-2"
