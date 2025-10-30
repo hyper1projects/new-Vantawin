@@ -20,9 +20,19 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
         <span className="text-xl font-bold text-vanta-text-light">{game.team1.name}</span>
       </div>
 
-      {/* Center Info (Time only) */}
+      {/* Center Info (Time/Live) */}
       <div className="flex flex-col items-center text-center w-1/3">
-        <span className="text-2xl font-bold text-vanta-text-light mb-2">{game.time}</span>
+        {game.isLive ? (
+          <span className="flex items-center text-red-400 font-bold tracking-wider text-lg"> {/* Adjusted font size to text-lg */}
+            <span className="relative flex h-3 w-3 mr-2"> {/* Slightly larger dot for header */}
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            LIVE
+          </span>
+        ) : (
+          <span className="text-lg font-bold text-vanta-text-light mb-2">{game.time}</span> {/* Adjusted font size to text-lg */}
+        )}
         {/* Removed league logo and name */}
       </div>
 
