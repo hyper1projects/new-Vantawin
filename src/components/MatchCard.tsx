@@ -12,7 +12,7 @@ interface MatchCardProps {
 
 const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
   return (
-    <Link to={`/games/${game.id}`} className="relative p-[2px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-[230px] h-[280px] flex-shrink-0 cursor-pointer hover:scale-[1.02] transition-transform duration-200">
+    <Link to={`/games/${game.id}`} className="relative p-[3px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-[230px] h-[280px] flex-shrink-0 cursor-pointer hover:scale-[1.02] transition-transform duration-200">
       <div className="bg-[#011B47] rounded-[27px] h-full w-full p-4 flex flex-col justify-between text-white">
         
         {/* Date/Time Row */}
