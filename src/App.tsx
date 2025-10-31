@@ -15,18 +15,25 @@ import Contact from './pages/Contact';
 import Users from './pages/Users';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
-import GameDetails from './pages/GameDetails'; // Import GameDetails
-import { MatchSelectionProvider } from './context/MatchSelectionContext'; // Import the provider
+import GameDetails from './pages/GameDetails';
+import SignUp from './pages/SignUp'; // Import SignUp component
+import Login from './pages/Login'; // Import Login component
+import { MatchSelectionProvider } from './context/MatchSelectionContext';
 
 function App() {
   return (
     <Router>
-      <MatchSelectionProvider> {/* Wrap the entire app with the provider */}
+      <MatchSelectionProvider>
         <Routes>
+          {/* Routes without the main layout */}
+          <Route path="/register" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Routes with the main layout */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Index />} />
             <Route path="games" element={<Games />} />
-            <Route path="games/:gameId" element={<GameDetails />} /> {/* New route for game details */}
+            <Route path="games/:gameId" element={<GameDetails />} />
             <Route path="pools" element={<Pools />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="wallet" element={<Wallet />} />
