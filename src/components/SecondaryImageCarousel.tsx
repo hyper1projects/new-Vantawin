@@ -35,7 +35,7 @@ const SecondaryImageCarousel: React.FC<SecondaryImageCarouselProps> = ({ classNa
   }, [goToNext]);
 
   return (
-    <div className={`relative w-full max-w-sm mx-auto overflow-hidden rounded-lg shadow-lg bg-transparent ${className || ''}`}>
+    <div className={`relative w-full max-w-xl mx-auto overflow-hidden rounded-lg shadow-lg bg-transparent ${className || ''}`}>
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
