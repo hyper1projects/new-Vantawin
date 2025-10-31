@@ -15,9 +15,6 @@ const Index = () => {
       <PointsMultiplierSection className="mb-6" />
       <TopGamesSection className="mb-6" />
       <SecondaryImageCarousel className="mb-6" />
-      <div className="mt-4 text-center text-vanta-text-light text-sm">
-        <p>Explore the features of your new VantaWin application!</p>
-      </div>
       <FooterSection /> {/* Render the FooterSection here */}
     </div>
   );
