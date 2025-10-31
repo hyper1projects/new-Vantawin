@@ -7,6 +7,7 @@ import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { allGamesData } from '../data/games'; // Import centralized game data
+import CollapsibleSection from './CollapsibleSection'; // Import the new CollapsibleSection
 
 type GameFilter = 'All' | 'Live' | 'Upcoming';
 
@@ -25,7 +26,7 @@ const TopGamesSection: React.FC = () => {
       return !game.isLive; // Assuming 'Upcoming' means not live
     }
     return false;
-  }).slice(0, 3); // Display only the first 3 filtered games for "Top Games"
+  }).slice(0, 10); // Display the first 10 filtered games for "Top Games"
 
   const getButtonClasses = (filter: GameFilter) => {
     const isSelected = selectedFilter === filter;
@@ -71,14 +72,6 @@ const TopGamesSection: React.FC = () => {
           <div className="w-full" key={game.id}>
             <Oddscard
               key={game.id}
-              time={game.time}
-              date={game.date}
-              team1={game.team1}
-              team2={game.team2}
-              odds={game.odds}
-              league={game.league}
-              isLive={game.isLive}
-              gameView={game.gameView}
               game={game} // Pass the full game object
             />
           </div>
