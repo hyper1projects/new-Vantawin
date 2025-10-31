@@ -43,7 +43,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
           </div>
         </div>
         
-        {/* Prediction Buttons Row */}
+        /* Prediction Buttons Row */}
         <div className="flex justify-center space-x-2 w-full mb-2">
           <Button
             className={cn(
@@ -77,7 +77,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
             onClick={() => handleSelectOutcome('team2')}
           >
             {team2Odd}
-          </Button>
+          </Button>{
         </div>
       </div>
     </div>
