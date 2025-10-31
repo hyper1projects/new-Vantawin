@@ -32,7 +32,7 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card click from triggering
         setIsFavorited(!isFavorited);
-        console.log(Game ${isFavorited ? 'unfavorited' : 'favorited'}!);
+        console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
     };
 
     // Handler for 'win_match' type questions (using NewOddsButton)
@@ -44,18 +44,18 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         else oddValue = primaryQuestion.odds.team2;
 
         if (oddValue !== undefined) {
-            setSelectedMatch(game, ${primaryQuestion.id}_${outcome}_${oddValue.toFixed(2)});
+            setSelectedMatch(game, `${primaryQuestion.id}_${outcome}_${oddValue.toFixed(2)}`);
         }
     };
 
     // Handler for other question types (using OddsButton for Yes/No)
     const handleQuestionOddsClick = (e: React.MouseEvent, choice: 'yes' | 'no', oddValue: number) => {
         e.stopPropagation(); // Prevent card click from triggering
-        setSelectedMatch(game, ${primaryQuestion.id}_${choice}_${oddValue.toFixed(2)});
+        setSelectedMatch(game, `${primaryQuestion.id}_${choice}_${oddValue.toFixed(2)}`);
     };
 
     const handleCardClick = () => {
-        navigate(/games/${game.id}); // Navigate to game details when the card is clicked
+        navigate(`/games/${game.id}`); // Navigate to game details when the card is clicked
     };
 
     const renderTeam = (team: Team) => (
@@ -95,11 +95,11 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                         className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
                     >
                         <Star
-                            className={w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}}
+                            className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
                             fill={isFavorited ? 'currentColor' : 'none'}
                         />
                     </button>
-                    <a href={/games/${game.id}} className="text-gray-300 text-sm hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{gameView} &gt;</a>
+                    <a href={`/games/${game.id}`} className="text-gray-300 text-sm hover:underline font-medium" onClick={(e) => e.stopPropagation()}>{gameView} &gt;</a>
                 </div>
             </div>
 
@@ -120,14 +120,14 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                                     value={primaryQuestion.odds.team1 || 0} 
                                     label={team1.abbreviation} // Display team1 abbreviation
                                     onClick={(e) => handleWinMatchOddsClick(e, 'team1')} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === ${primaryQuestion.id}_team1_${team1Odd}} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_team1_${team1Odd}`} 
                                 /> 
                                 {/* Removed the draw button */}
                                 <NewOddsButton 
                                     value={primaryQuestion.odds.team2 || 0} 
                                     label={team2.abbreviation} // Display team2 abbreviation
                                     onClick={(e) => handleWinMatchOddsClick(e, 'team2')} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === ${primaryQuestion.id}_team2_${team2Odd}} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_team2_${team2Odd}`} 
                                 />
                             </>
                         ) : (
@@ -136,13 +136,13 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                                     value={primaryQuestion.odds.yes || 0} 
                                     label="Yes"
                                     onClick={(e) => handleQuestionOddsClick(e, 'yes', primaryQuestion.odds.yes || 0)} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === ${primaryQuestion.id}_yes_${yesOdd}} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_yes_${yesOdd}`} 
                                 /> 
                                 <OddsButton 
                                     value={primaryQuestion.odds.no || 0} 
                                     label="No"
                                     onClick={(e) => handleQuestionOddsClick(e, 'no', primaryQuestion.odds.no || 0)} 
-                                    isSelected={selectedGame?.id === game.id && selectedOutcome === ${primaryQuestion.id}_no_${noOdd}} 
+                                    isSelected={selectedGame?.id === game.id && selectedOutcome === `${primaryQuestion.id}_no_${noOdd}`} 
                                 />
                             </>
                         )}
@@ -176,4 +176,4 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     );
 };
 
-export default Oddscard;
+export default Oddscard;
