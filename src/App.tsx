@@ -16,8 +16,9 @@ import Users from './pages/Users';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
 import GameDetails from './pages/GameDetails';
-import SignUp from './pages/SignUp'; // Import SignUp component
-import Login from './pages/Login'; // Import Login component
+import SignUp from './pages/SignUp';
+import Login from './pages/Login';
+import AllTopGames from './pages/AllTopGames'; // Import the new AllTopGames component
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
             <Route index element={<Index />} />
             <Route path="games" element={<Games />} />
             <Route path="games/:gameId" element={<GameDetails />} />
+            <Route path="games/top-games" element={<AllTopGames />} /> {/* New route for all top games */}
             <Route path="pools" element={<Pools />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="wallet" element={<Wallet />} />

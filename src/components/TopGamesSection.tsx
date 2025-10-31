@@ -8,11 +8,13 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { allGamesData } from '../data/games'; // Import centralized game data
 import CollapsibleSection from './CollapsibleSection'; // Import the new CollapsibleSection
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 type GameFilter = 'All' | 'Live' | 'Upcoming';
 
 const TopGamesSection: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Filter games based on the selectedFilter from allGamesData
   const filteredGames = allGamesData.filter(game => {
@@ -36,6 +38,10 @@ const TopGamesSection: React.FC = () => {
         ? "bg-[#00EEEE] text-[#081028]"
         : "bg-[#0B295B] text-white hover:text-[#00EEEE] hover:bg-[#0B295B]"
     );
+  };
+
+  const handleShowMoreClick = () => {
+    navigate('/games/top-games'); // Navigate to the new AllTopGames page
   };
 
   return (
@@ -82,7 +88,7 @@ const TopGamesSection: React.FC = () => {
       <div className="w-full flex justify-end px-1 pt-1">
         <Button 
           className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[8px] px-2 py-0.5 text-xs"
-          onClick={() => console.log('Show More clicked')} // Placeholder for future functionality
+          onClick={handleShowMoreClick} // Updated onClick handler
         >
           Show More
         </Button>
