@@ -11,17 +11,22 @@ const SignUp: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // New state for confirm password
   const navigate = useNavigate();
 
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     // Basic validation
-    if (!phoneNumber || !username || !password) {
+    if (!phoneNumber || !username || !password || !confirmPassword) {
       toast.error('Please fill in all fields.');
       return;
     }
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters long.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match.');
       return;
     }
 
@@ -68,6 +73,19 @@ const SignUp: React.FC = () => {
               placeholder="Create your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12"
+              required
+            />
+          </div>
+          {/* New Confirm Password field */}
+          <div>
+            <Label htmlFor="confirmPassword" className="text-vanta-text-light text-base font-semibold mb-2 block">Confirm Password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
