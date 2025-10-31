@@ -1,19 +1,15 @@
-"use client";
-
-import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link for navigation
-import { cn } from '../lib/utils'; // Assuming cn utility for tailwind-merge
-import { Game } from '../types/game'; // Import Game type
-import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
-
-interface MatchCardProps {
-  game: Game; // Pass the full game object
-}
-
 const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
   return (
-    <Link to={`/games/${game.id}`} className="relative p-[3px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-[230px] h-[280px] flex-shrink-0 cursor-pointer hover:scale-[1.02] transition-transform duration-200">
-      <div className="bg-[#011B47] rounded-[27px] h-full w-full p-4 flex flex-col justify-between text-white">
+    // Outer Link: Has the gradient background and the "border" padding
+    <Link 
+      to={`/games/${game.id}`} 
+      className="relative p-[3px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-[230px] h-[280px] flex-shrink-0 cursor-pointer hover:scale-[1.02] transition-transform duration-200"
+    >
+      {/* Inner Div: Has the solid background that "masks" the gradient into a border */}
+      {/* The key change: rounded-[25px] is slightly smaller than rounded-[27px] 
+        on the parent Link to ensure the gradient shows on the corners.
+      */}
+      <div className="bg-[#011B47] rounded-[25px] h-full w-full p-4 flex flex-col justify-between text-white">
         
         {/* Date/Time Row */}
         <p className="text-base font-semibold text-center mt-2">{game.date} - {game.time}</p> 
@@ -31,11 +27,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
           </div>
         </div>
         
-        {/* The odds display section (including the gradient border) has been completely removed */}
-        
       </div>
     </Link>
   );
 };
-
-export default MatchCard;
