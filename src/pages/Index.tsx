@@ -4,7 +4,8 @@ import React from 'react';
 import ImageCarousel from '../components/ImageCarousel';
 import PointsMultiplierSection from '../components/PointsMultiplierSection';
 import TopGamesSection from '../components/TopGamesSection';
-import SecondaryImageCarousel from '../components/SecondaryImageCarousel'; // Import the new carousel
+import SecondaryImageCarousel from '../components/SecondaryImageCarousel';
+import FooterSection from '../components/FooterSection'; // Import the new FooterSection
 
 const Index = () => {
   return (
@@ -13,10 +14,11 @@ const Index = () => {
       <ImageCarousel className="mb-6" />
       <PointsMultiplierSection className="mb-6" />
       <TopGamesSection className="mb-6" />
-      <SecondaryImageCarousel className="mb-6" /> {/* Moved the new carousel here */}
+      <SecondaryImageCarousel className="mb-6" />
       <div className="mt-4 text-center text-vanta-text-light text-sm">
         <p>Explore the features of your new VantaWin application!</p>
       </div>
+      <FooterSection /> {/* Render the FooterSection here */}
     </div>
   );
 };
