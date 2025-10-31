@@ -1,31 +1,25 @@
 "use client";
 
 import React from 'react';
-import { Button } from '@/components/ui/button'; 
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import { cn } from '../lib/utils'; // Assuming cn utility for tailwind-merge
 import { Game } from '../types/game'; // Import Game type
 import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
-import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
+// Removed useMatchSelection as it's no longer needed for this component
 
 interface MatchCardProps {
   game: Game; // Pass the full game object
 }
 
 const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
-  const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
-
-  const handleSelectOutcome = (outcome: 'team1' | 'draw' | 'team2') => {
-    setSelectedMatch(game, outcome);
-  };
-
-  // Defensive checks for odds values
-  const team1Odd = game.odds?.team1 !== undefined ? game.odds.team1.toFixed(2) : '-';
-  const drawOdd = game.odds?.draw !== undefined ? game.odds.draw.toFixed(2) : '-';
-  const team2Odd = game.odds?.team2 !== undefined ? game.odds.team2.toFixed(2) : '-';
+  // Removed selectedGame, selectedOutcome, setSelectedMatch as they are no longer used
+  // Removed handleSelectOutcome as it's no longer needed
+  // Removed team1Odd, drawOdd, team2Odd as they are no longer needed
 
   return (
     <div className="relative p-[2px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-[230px] h-[230px] flex-shrink-0">
-      <div className="bg-[#011B47] rounded-[27px] h-full w-full p-4 flex flex-col justify-between text-white">
+      {/* Wrap the inner content with Link to navigate to game details */}
+      <Link to={`/games/${game.id}`} className="bg-[#011B47] rounded-[27px] h-full w-full p-4 flex flex-col justify-between text-white">
         
         {/* Date/Time Row */}
         <p className="text-base font-semibold text-center mt-2">{game.date} - {game.time}</p> 
@@ -48,7 +42,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
         
         {/* Prediction Buttons Row - This section has been removed */}
         
-      </div>
+      </Link>
     </div>
   );
 };
