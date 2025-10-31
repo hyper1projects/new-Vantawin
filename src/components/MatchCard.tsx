@@ -11,6 +11,11 @@ interface MatchCardProps {
 }
 
 const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
+  // Defensive checks for odds values
+  const team1Odd = game.questions[0]?.odds?.team1 !== undefined ? game.questions[0].odds.team1.toFixed(2) : '-';
+  const drawOdd = game.questions[0]?.odds?.draw !== undefined ? game.questions[0].odds.draw.toFixed(2) : '-';
+  const team2Odd = game.questions[0]?.odds?.team2 !== undefined ? game.questions[0].odds.team2.toFixed(2) : '-';
+
   return (
     <Link to={`/games/${game.id}`} className="relative p-[2px] rounded-[27px] bg-gradient-to-t from-[#9A3FFE] to-[#00EEEE] w-[230px] h-[230px] flex-shrink-0 cursor-pointer hover:scale-[1.02] transition-transform duration-200">
       <div className="bg-[#011B47] rounded-[27px] h-full w-full p-4 flex flex-col justify-between text-white">
@@ -34,13 +39,13 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
         {/* Odds Display (without buttons) */}
         <div className="flex justify-center space-x-2 w-full mb-2">
           <div className="flex-1 py-1.5 px-3 rounded-md bg-[#01112D] text-gray-300 text-xs font-semibold text-center">
-            {game.odds?.team1 !== undefined ? game.odds.team1.toFixed(2) : '-'}
+            {team1Odd}
           </div>
           <div className="flex-1 py-1.5 px-3 rounded-md bg-[#01112D] text-gray-300 text-xs font-semibold text-center">
-            {game.odds?.draw !== undefined ? game.odds.draw.toFixed(2) : '-'}
+            {drawOdd}
           </div>
           <div className="flex-1 py-1.5 px-3 rounded-md bg-[#01112D] text-gray-300 text-xs font-semibold text-center">
-            {game.odds?.team2 !== undefined ? game.odds.team2.toFixed(2) : '-'}
+            {team2Odd}
           </div>
         </div>
       </div>
