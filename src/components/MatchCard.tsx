@@ -43,42 +43,8 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
           </div>
         </div>
         
-        {/* Prediction Buttons Row */}
-        <div className="flex justify-center space-x-2 w-full mb-2">
-          <Button
-            className={cn(
-              `flex-1 py-1.5 px-3 rounded-md transition-colors duration-300 text-xs font-semibold`,
-              selectedGame?.id === game.id && selectedOutcome === 'team1'
-                ? "bg-vanta-neon-blue text-vanta-blue-dark"
-                : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
-            )}
-            onClick={() => handleSelectOutcome('team1')}
-          >
-            {team1Odd}
-          </Button>
-          <Button
-            className={cn(
-              `flex-1 py-1.5 px-3 rounded-md transition-colors duration-300 text-xs font-semibold`,
-              selectedGame?.id === game.id && selectedOutcome === 'draw'
-                ? "bg-vanta-neon-blue text-vanta-blue-dark"
-                : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
-            )}
-            onClick={() => handleSelectOutcome('draw')}
-          >
-            {drawOdd}
-          </Button>
-          <Button
-            className={cn(
-              `flex-1 py-1.5 px-3 rounded-md transition-colors duration-300 text-xs font-semibold`,
-              selectedGame?.id === game.id && selectedOutcome === 'team2'
-                ? "bg-vanta-neon-blue text-vanta-blue-dark"
-                : "bg-[#01112D] text-gray-300 hover:bg-[#012A5E]"
-            )}
-            onClick={() => handleSelectOutcome('team2')}
-          >
-            {team2Odd}
-          </Button>
-        </div>
+        {/* Prediction Buttons Row - This section has been removed */}
+        
       </div>
     </div>
   );
