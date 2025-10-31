@@ -32,7 +32,7 @@ const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ class
   return (
     <div className={`flex flex-col items-center space-y-6 ${className || ''}`}> {/* Apply className here */}
       <div className="w-full"> 
-        <SectionHeader title="Points Multiplier" className="w-full" textColor="text-white" />
+        <SectionHeader title="Hot Today" className="w-full" textColor="text-white" />
       </div>
       {/* Container for cards that allows wrapping */}
       <div className="w-full">
