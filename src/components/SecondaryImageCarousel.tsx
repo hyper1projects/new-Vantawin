@@ -35,14 +35,14 @@ const SecondaryImageCarousel: React.FC<SecondaryImageCarouselProps> = ({ classNa
   }, [goToNext]);
 
   return (
-    <div className={`relative w-full max-w-2xl mx-auto overflow-hidden rounded-lg shadow-lg ${className || ''}`}>
+    <div className={`relative w-full max-w-sm mx-auto overflow-hidden rounded-lg shadow-lg ${className || ''}`}>
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {images.map((image, index) => (
           <div key={index} className="w-full flex-shrink-0">
-            <img src={image} alt={`Carousel slide ${index + 1}`} className="w-full h-64 object-cover" />
+            <img src={image} alt={`Carousel slide ${index + 1}`} className="w-full h-48 object-contain" />
           </div>
         ))}
       </div>
