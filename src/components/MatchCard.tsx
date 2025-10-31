@@ -31,7 +31,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
           </div>
         </div>
         
-        {/* The odds display section has been completely removed */}
+        {/* The odds display section (including the gradient border) has been completely removed */}
         
       </div>
     </Link>
