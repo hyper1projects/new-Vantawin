@@ -1,12 +1,17 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import LoginDialog from './LoginDialog';
+import SignUpDialog from './SignUpDialog';
 
 const MainHeader: React.FC = () => {
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signUpOpen, setSignUpOpen] = useState(false);
+  
   const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
   const location = useLocation();
   const currentPath = location.pathname;
@@ -66,17 +71,31 @@ const MainHeader: React.FC = () => {
 
       {/* Rightmost: Login, Register */}
       <div className="flex items-center space-x-4">
-        <Link to="/login">
-          <Button className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10">
-            Login
-          </Button>
-        </Link>
-        <Link to="/register">
-          <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80">
-            Sign up
-          </Button>
-        </Link>
+        <Button 
+          onClick={() => setLoginOpen(true)}
+          className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
+        >
+          Login
+        </Button>
+        <Button 
+          onClick={() => setSignUpOpen(true)}
+          className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
+        >
+          Sign up
+        </Button>
       </div>
+
+      {/* Login and SignUp Dialogs */}
+      <LoginDialog 
+        open={loginOpen} 
+        onOpenChange={setLoginOpen}
+        onSwitchToSignUp={() => setSignUpOpen(true)}
+      />
+      <SignUpDialog 
+        open={signUpOpen} 
+        onOpenChange={setSignUpOpen}
+        onSwitchToLogin={() => setLoginOpen(true)}
+      />
     </div>
   );
 };
