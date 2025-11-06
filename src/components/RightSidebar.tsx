@@ -9,11 +9,11 @@ import { useMatchSelection } from '../context/MatchSelectionContext'; // Import 
 
 const RightSidebar = () => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
-  const [predictionAmount, setPredictionAmount] = useState(0);
+  const [predictionAmount, setPredictionAmount] = useState<number | ''>('');
 
   // Reset prediction amount when a new game is selected
   useEffect(() => {
-    setPredictionAmount(0);
+    setPredictionAmount('');
   }, [selectedGame]);
 
   const handlePredict = () => {
@@ -96,7 +96,7 @@ const RightSidebar = () => {
       else if (selectedOutcome === 'team2') currentSelectedOdd = selectedGame.odds.team2;
     }
   }
-  const potentialWinXP = predictionAmount > 0 ? (predictionAmount * currentSelectedOdd) : 0;
+  const potentialWinXP = (typeof predictionAmount === 'number' && predictionAmount > 0) ? (predictionAmount * currentSelectedOdd) : 0;
 
 
   // Helper to determine if a specific outcome is selected for a given question type
@@ -171,13 +171,13 @@ const RightSidebar = () => {
               <img
                 src={getLogoSrc(selectedGame.team1.logoIdentifier)}
                 alt={`${selectedGame.team1.name} Logo`}
-                className="w-10 h-10  object-cover mr-5"
+                className="w-16 h-16 object-contain mr-6"
               />
-              <span className="text-xs font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0,2).toUpperCase()} vs {selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
+              <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0,2).toUpperCase()} vs {selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
               <img
                 src={getLogoSrc(selectedGame.team2.logoIdentifier)}
                 alt={`${selectedGame.team2.name} Logo`}
-                className="w-10 h-10  object-cover ml-5"
+                className="w-16 h-16 object-contain ml-6"
               />
             </div>
             <div className="flex items-center">
@@ -198,18 +198,33 @@ const RightSidebar = () => {
 
             {/* Amount Selection */}
             <div className="mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <h4 className="text-sm font-semibold">Amount</h4>
-                <div className="flex items-center bg-vanta-blue-dark rounded-md px-2 py-1">
-                  <span className="text-gray-400 text-lg font-bold mr-1">₦</span>
+              <div className="flex flex-col mb-2">
+                <h4 className="text-sm font-semibold text-white mb-1">Amount</h4>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-[#00EEEE]">Enter an amount</span>
+                  <button 
+                    onClick={() => setPredictionAmount('')}
+                    className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="flex items-center bg-[#0B1E3D] rounded-lg px-4 py-3 border border-[#1a3a5c]">
+                  <span className="text-[#00EEEE] text-2xl font-bold mr-2">₦</span>
                   <Input
                     type="number"
                     value={predictionAmount}
                     onChange={(e) => {
-                      const newValue = Number(e.target.value);
-                      setPredictionAmount(newValue < 0 ? 0 : newValue); // Ensure amount doesn't go below 0
+                      const value = e.target.value;
+                      if (value === '') {
+                        setPredictionAmount('');
+                      } else {
+                        const newValue = Number(value);
+                        setPredictionAmount(newValue < 0 ? 0 : newValue);
+                      }
                     }}
-                    className="w-16 text-right bg-transparent border-none text-gray-400 text-lg font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="flex-1 text-right bg-transparent border-none text-[#00EEEE] text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    placeholder="0"
                   />
                 </div>
               </div>
@@ -219,7 +234,10 @@ const RightSidebar = () => {
                     key={amount}
                     variant="outline"
                     className="bg-vanta-blue-dark border-vanta-accent-dark-blue text-vanta-text-light text-[0.6rem] px-1.5 py-0.5 h-8 flex-1 min-w-[0]"
-                    onClick={() => setPredictionAmount(prevAmount => prevAmount + amount)}
+                    onClick={() => setPredictionAmount(prevAmount => {
+                      const currentAmount = typeof prevAmount === 'number' ? prevAmount : 0;
+                      return currentAmount + amount;
+                    })}
                   >
                     +{amount}
                   </Button>

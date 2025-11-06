@@ -85,9 +85,9 @@ const TopGamesSection: React.FC = () => {
       </div>
 
       {/* Show More Button positioned to bottom right */}
-      <div className="w-full flex justify-end px-1 pt-1">
+      <div className="w-full flex justify-end px-2 pt-2 pb-1">
         <Button 
-          className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[8px] px-2 py-0.5 text-xs"
+          className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[8px] px-4 py-1.5 text-sm"
           onClick={handleShowMoreClick} // Updated onClick handler
         >
           Show More
