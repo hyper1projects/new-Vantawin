@@ -24,20 +24,20 @@ const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ class
     return 0; // Return 0 if no win_match question or odds are found
   };
 
-  // Sort games by the highest odd in descending order and take only the top 3 from allGamesData
+  // Sort games by the highest odd in descending order and take more games for horizontal scroll
   const gamesWithBestOdds = [...allGamesData]
     .sort((a, b) => getMaxOdd(b) - getMaxOdd(a))
-    .slice(0, 3);
+    .slice(0, 6);
 
   return (
-    <div className={`flex flex-col items-center space-y-6 ${className || ''}`}> {/* Apply className here */}
+    <div className={`flex flex-col items-start space-y-6 ${className || ''}`}> {/* Apply className here */}
       <div className="w-full"> 
         <SectionHeader title="Hot Today" className="w-full" textColor="text-white" />
       </div>
-      {/* Container for cards that allows wrapping */}
-      <div className="w-full">
-        {/* Cards arranged with proper spacing */}
-        <div className="flex flex-wrap gap-6 justify-center items-start">
+      {/* Container for cards with horizontal scroll */}
+      <div className="w-full overflow-x-auto [-webkit-scrollbar:none] [scrollbar-width:none]">
+        {/* Cards arranged horizontally with proper spacing */}
+        <div className="flex gap-4 pb-2">
           {gamesWithBestOdds.map((game) => (
             <div key={game.id} className="flex-shrink-0">
               <MatchCard
