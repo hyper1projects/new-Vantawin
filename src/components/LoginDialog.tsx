@@ -38,7 +38,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue max-w-md">
+      <DialogContent className="bg-vanta-blue-medium text-vanta-text-light border-0 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-center text-vanta-neon-blue">Login</DialogTitle>
         </DialogHeader>
