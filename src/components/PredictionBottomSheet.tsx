@@ -4,24 +4,34 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
-import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
-import { useIsMobile } from '../hooks/use-mobile'; // Import useIsMobile
+import { getLogoSrc } from '../utils/logoMap';
+import { useMatchSelection } from '../context/MatchSelectionContext';
+import { useIsMobile } from '../hooks/use-mobile'; // Import the useIsMobile hook
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+} from '@/components/ui/drawer'; // Using shadcn/ui drawer
 
-const RightSidebar = () => {
+interface PredictionBottomSheetProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, onOpenChange }) => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
   const [predictionAmount, setPredictionAmount] = useState<number | ''>('');
-  const isMobile = useIsMobile(); // Check if it's a mobile screen
 
-  // If on mobile, this component should not render its content
-  if (isMobile) {
-    return null;
-  }
-
-  // Reset prediction amount when a new game is selected
+  // Reset prediction amount when a new game is selected or drawer opens/closes
   useEffect(() => {
-    setPredictionAmount('');
-  }, [selectedGame]);
+    if (!isOpen || !selectedGame) {
+      setPredictionAmount('');
+    }
+  }, [selectedGame, isOpen]);
 
   const handlePredict = () => {
     if (!selectedGame) {
@@ -40,15 +50,13 @@ const RightSidebar = () => {
     let outcomeDisplay = '';
     let selectedOdd = 0;
 
-    // Parse the selectedOutcome string
     if (selectedOutcome) {
       const parts = selectedOutcome.split('_');
-      if (parts.length === 3) { // Format: questionId_choice_oddValue (e.g., 'over_2_5_goals_yes_1.85')
+      if (parts.length === 3) {
         const questionId = parts[0];
         const choice = parts[1];
         selectedOdd = parseFloat(parts[2]);
 
-        // Map questionId to a more readable text
         let questionText = '';
         switch (questionId) {
           case 'full_time_result':
@@ -73,28 +81,24 @@ const RightSidebar = () => {
           default: questionText = questionId;
         }
         outcomeDisplay = `${questionText}: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`;
-      } else if (parts.length === 1) { // Old format: 'team1', 'draw', 'team2'
+      } else if (parts.length === 1) {
         if (selectedOutcome === 'team1') outcomeDisplay = selectedGame.team1.name;
         else if (selectedOutcome === 'team2') outcomeDisplay = selectedGame.team2.name;
         else if (selectedOutcome === 'draw') outcomeDisplay = 'Draw';
         
-        // Get the odd for the old format
-        const winMatchQuestion = selectedGame.questions.find(q => q.type === 'win_match');
-        if (winMatchQuestion && winMatchQuestion.odds) {
-          if (selectedOutcome === 'team1') selectedOdd = winMatchQuestion.odds.team1 || 0;
-          else if (selectedOutcome === 'draw') selectedOdd = winMatchQuestion.odds.draw || 0;
-          else if (selectedOutcome === 'team2') selectedOdd = winMatchQuestion.odds.team2 || 0;
-        }
+        if (selectedOutcome === 'team1') selectedOdd = selectedGame.questions.find(q => q.type === 'win_match')?.odds.team1 || 0;
+        else if (selectedOutcome === 'draw') selectedOdd = selectedGame.questions.find(q => q.type === 'win_match')?.odds.draw || 0;
+        else if (selectedOutcome === 'team2') selectedOdd = selectedGame.questions.find(q => q.type === 'win_match')?.odds.team2 || 0;
       }
     }
 
     toast.success(`Predicted ${predictionAmount} on ${outcomeDisplay} for ${selectedGame.team1.name} vs ${selectedGame.team2.name}`);
-    // Here you would typically send the prediction to a backend
+    onOpenChange(false); // Close the drawer after prediction
+    setSelectedMatch(null, null); // Clear selected match
   };
 
   const quickAddAmountButtons = [100, 200, 500, 1000];
 
-  // Calculate potential win (simple example, could be more complex with actual odds)
   let currentSelectedOdd = 0;
   if (selectedOutcome) {
     const parts = selectedOutcome.split('_');
@@ -111,8 +115,6 @@ const RightSidebar = () => {
   }
   const potentialWinXP = (typeof predictionAmount === 'number' && predictionAmount > 0) ? (predictionAmount * currentSelectedOdd) : 0;
 
-
-  // Helper to get the display text for the selected outcome in the sidebar
   const getSelectedOutcomeDisplayText = () => {
     if (!selectedOutcome || !selectedGame) return '';
 
@@ -153,32 +155,39 @@ const RightSidebar = () => {
   };
 
   return (
-    <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
-      {selectedGame ? (
-        <>
-          {/* Logo and Match Code */}
-          <div className="flex flex-col items-center mb-4">
-            <div className="flex items-center mb-1">
-              <img
-                src={getLogoSrc(selectedGame.team1.logoIdentifier)}
-                alt={`${selectedGame.team1.name} Logo`}
-                className="w-16 h-16 object-contain mr-6"
-              />
-              <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0,2).toUpperCase()} vs {selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
-              <img
-                src={getLogoSrc(selectedGame.team2.logoIdentifier)}
-                alt={`${selectedGame.team2.name} Logo`}
-                className="w-16 h-16 object-contain ml-6"
-              />
+    <Drawer open={isOpen} onOpenChange={onOpenChange}>
+      <DrawerContent className="bg-vanta-blue-medium text-vanta-text-light border-t border-gray-700 rounded-t-[27px] h-auto max-h-[90vh] flex flex-col">
+        <DrawerHeader className="text-center pt-4 pb-2">
+          <DrawerTitle className="text-2xl font-bold text-vanta-neon-blue">Make Your Prediction</DrawerTitle>
+          <DrawerDescription className="text-gray-400 text-sm">
+            {selectedGame ? `${selectedGame.team1.name} vs ${selectedGame.team2.name}` : 'Select a game and outcome'}
+          </DrawerDescription>
+        </DrawerHeader>
+        
+        {selectedGame ? (
+          <div className="flex flex-col flex-grow p-4 overflow-y-auto">
+            {/* Logo and Match Code */}
+            <div className="flex flex-col items-center mb-4">
+              <div className="flex items-center mb-1">
+                <img
+                  src={getLogoSrc(selectedGame.team1.logoIdentifier)}
+                  alt={`${selectedGame.team1.name} Logo`}
+                  className="w-12 h-12 object-contain mr-4"
+                />
+                <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0,2).toUpperCase()} vs {selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
+                <img
+                  src={getLogoSrc(selectedGame.team2.logoIdentifier)}
+                  alt={`${selectedGame.team2.name} Logo`}
+                  className="w-12 h-12 object-contain ml-4"
+                />
+              </div>
+              <div className="flex items-center">
+                <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team1.name.substring(0,2).toUpperCase()}</span>
+                <span className="bg-vanta-blue-dark text-vanta-text-dark text-[0.6rem] px-1.5 py-0.5 rounded-sm mx-1">{selectedGame.isLive ? 'Live' : 'FT'}</span>
+                <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
+              </div>
             </div>
-            <div className="flex items-center">
-              <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team1.name.substring(0,2).toUpperCase()}</span>
-              <span className="bg-vanta-blue-dark text-vanta-text-dark text-[0.6rem] px-1.5 py-0.5 rounded-sm mx-1">{selectedGame.isLive ? 'Live' : 'FT'}</span>
-              <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
-            </div>
-          </div>
 
-          <div className="flex flex-col flex-grow">
             {/* Selected Outcome Display */}
             <div className="mb-4 text-center">
               <h4 className="text-lg font-semibold text-vanta-neon-blue">{getSelectedOutcomeDisplayText()}</h4>
@@ -236,30 +245,36 @@ const RightSidebar = () => {
               </div>
             </div>
 
-            {/* Potential Win Section */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-3">
-                <h4 className="text-base font-semibold">Potential Win</h4>
-                <span className="text-yellow-400 text-xl font-bold">{potentialWinXP.toFixed(2)} XP</span>
-              </div>
+            {/* Points Multiplier Section */}
+            <div className="mb-3 flex justify-between items-center">
+              <h4 className="text-base font-semibold">Points Multiplier</h4>
+              <span className="text-vanta-neon-blue text-base font-bold">1.2x</span> {/* Placeholder value */}
             </div>
 
-            <Button
-              className="w-full py-3 text-lg font-bold bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] rounded-[12px] mt-auto"
-              onClick={handlePredict}
-            >
-              Predict Now
-            </Button>
+            {/* Potential Win Section */}
+            <div className="mb-6 flex justify-between items-center">
+              <h4 className="text-base font-semibold">Potential Win</h4>
+              <span className="text-yellow-400 text-xl font-bold">{potentialWinXP.toFixed(2)} XP</span>
+            </div>
+
+            <DrawerFooter className="p-0 mt-auto">
+              <Button
+                className="w-full py-3 text-lg font-bold bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] rounded-[12px]"
+                onClick={handlePredict}
+              >
+                Predict Now
+              </Button>
+            </DrawerFooter>
           </div>
-        </>
-      ) : (
-        <div className="flex flex-col items-center justify-center h-full text-center text-gray-400 p-6">
-          <p className="text-lg font-semibold mb-2">No game selected</p>
-          <p className="text-sm">Click on any game to start predicting!</p>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-48 text-center text-gray-400 p-6">
+            <p className="text-lg font-semibold mb-2">No game selected</p>
+            <p className="text-sm">Click on any game to start predicting!</p>
+          </div>
+        )}
+      </DrawerContent>
+    </Drawer>
   );
 };
 
-export default RightSidebar;
+export default PredictionBottomSheet;
