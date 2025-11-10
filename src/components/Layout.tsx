@@ -1,15 +1,16 @@
 "use client";
 
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom'; // Import useLocation
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { Outlet, useLocation } from 'react-router-dom';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import Sidebar from './Sidebar';
 import MainHeader from './MainHeader';
 import RightSidebar from './RightSidebar';
+import BottomNavbar from './BottomNavbar'; // Import the new BottomNavbar
 
 const Layout = () => {
   const location = useLocation();
-  const excludedPaths = ['/pools', '/leaderboard', '/wallet']; // Paths where RightSidebar should not appear
+  const excludedPaths = ['/pools', '/leaderboard', '/wallet'];
   const showRightSidebar = !excludedPaths.includes(location.pathname);
 
   return (
@@ -20,8 +21,8 @@ const Layout = () => {
           <div className="hidden md:block h-full flex-shrink-0">
             <Sidebar />
           </div>
-          <div className="flex-1 h-full overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] overflow-x-hidden min-w-0">
-            <Outlet /> {/* This is where your route components will be rendered */}
+          <div className="flex-1 h-full overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] overflow-x-hidden min-w-0 pb-16 md:pb-0"> {/* Added pb-16 for mobile */}
+            <Outlet />
           </div>
           {showRightSidebar && (
             <div className="hidden lg:block h-full w-72 flex-shrink-0">
@@ -29,6 +30,7 @@ const Layout = () => {
             </div>
           )}
         </div>
+        <BottomNavbar /> {/* Render the BottomNavbar */}
       </div>
     </SidebarProvider>
   );
