@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, LogOut } from 'lucide-react'; // LogOut is still imported but will be replaced
+import { Search, AlertCircle } from 'lucide-react'; // Removed LogOut icon
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
@@ -20,7 +20,7 @@ const MainHeader: React.FC = () => {
   const [signUpOpen, setSignUp] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   
-  const { user, username, signOut, isLoading } = useAuth(); // Use the auth context
+  const { user, username, isLoading } = useAuth(); // Removed signOut from useAuth
   const isMobile = useIsMobile();
 
   const location = useLocation();
@@ -39,14 +39,7 @@ const MainHeader: React.FC = () => {
     window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
 
-  const handleLogout = async () => {
-    const { error } = await signOut();
-    if (!error) {
-      toast.info('Logged out successfully.');
-    } else {
-      toast.error('Failed to log out.');
-    }
-  };
+  // Removed handleLogout function
 
   if (isLoading) {
     return null; // Or a loading spinner
@@ -105,13 +98,7 @@ const MainHeader: React.FC = () => {
               <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors">
                 <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span> {/* Placeholder balance */}
               </Link>
-              <Button 
-                onClick={handleLogout}
-                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-3 py-2 font-bold text-sm hover:bg-[#00EEEE]/10 flex items-center gap-2"
-              >
-                <img src="/placeholder.svg" alt="User Avatar" className="w-6 h-6 rounded-full" /> {/* Image placeholder */}
-                Logout
-              </Button>
+              {/* Removed Logout Button */}
             </>
           ) : (
             <>
