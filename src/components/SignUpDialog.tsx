@@ -29,21 +29,26 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Attempting sign up...'); // Added log
     if (!email || !username || !password || !confirmPassword) {
       toast.error('Please fill in all fields.');
+      console.log('Validation failed: Missing fields.'); // Added log
       return;
     }
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters long.');
+      console.log('Validation failed: Password too short.'); // Added log
       return;
     }
     if (password !== confirmPassword) {
       toast.error('Passwords do not match.');
+      console.log('Validation failed: Passwords do not match.'); // Added log
       return;
     }
 
     // Call signUp with email instead of phone number
-    const { error } = await signUp(email, username, password);
+    const { data, error } = await signUp(email, username, password);
+    console.log('Supabase signUp response:', { data, error }); // Added log
 
     if (!error) {
       toast.success('Sign up successful! Please check your email for a verification link.');
