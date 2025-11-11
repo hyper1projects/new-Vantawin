@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
+import RewardsHistory from './RewardsHistory'; // Re-import the RewardsHistory component
 
-type MainTab = 'transactions'; // Only 'transactions' remains
+type MainTab = 'transactions' | 'rewards'; // Re-added 'rewards'
 type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'refunds';
 
 interface WalletTabsProps {
@@ -12,7 +13,7 @@ interface WalletTabsProps {
 }
 
 const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
-  const [activeMainTab, setActiveMainTab] = useState<MainTab>('transactions'); // Default to 'transactions'
+  const [activeMainTab, setActiveMainTab] = useState<MainTab>('transactions');
   const [activeTransactionFilter, setActiveTransactionFilter] = useState<TransactionFilter>('all');
 
   const getMainTabButtonClasses = (tab: MainTab) => {
@@ -68,6 +69,10 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
             </div>
           </div>
         );
+      case 'rewards': // Re-added rewards case
+        return (
+          <RewardsHistory />
+        );
       default:
         return null;
     }
@@ -76,12 +81,17 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
   return (
     <div className={cn("flex flex-col space-y-6", className)}>
       <div className="bg-vanta-blue-dark p-2 rounded-[27px] flex space-x-2 w-full md:w-fit">
-        {/* Removed the 'Wallet' button */}
         <Button
           className={getMainTabButtonClasses('transactions')}
           onClick={() => setActiveMainTab('transactions')}
         >
           Transactions
+        </Button>
+        <Button // Re-added Rewards button
+          className={getMainTabButtonClasses('rewards')}
+          onClick={() => setActiveMainTab('rewards')}
+        >
+          Rewards
         </Button>
       </div>
       {renderTabContent()}
