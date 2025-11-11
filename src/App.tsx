@@ -18,7 +18,10 @@ import Support from './pages/Support';
 import GameDetails from './pages/GameDetails';
 import AllTopGames from './pages/AllTopGames';
 import EmailConfirmation from './pages/EmailConfirmation';
-import Insights from './pages/Insights'; // Import the new Insights page
+import Insights from './pages/Insights';
+import Login from './pages/Login'; // Import the standalone Login page
+import SignUp from './pages/SignUp'; // Import the standalone SignUp page
+import ProtectedRoute from './components/ProtectedRoute'; // Import the new ProtectedRoute component
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
 
@@ -36,9 +39,8 @@ function App() {
               <Route path="games/top-games" element={<AllTopGames />} />
               <Route path="pools" element={<Pools />} />
               <Route path="leaderboard" element={<Leaderboard />} />
-              <Route path="wallet" element={<Wallet />} />
               <Route path="users" element={<Users />} />
-              <Route path="users/insights" element={<Insights />} /> {/* New route for Insights */}
+              <Route path="users/insights" element={<Insights />} />
               <Route path="terms-of-use" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="help" element={<Help />} />
@@ -47,7 +49,13 @@ function App() {
               <Route path="how-it-works" element={<div>How It Works Page</div>} />
               <Route path="*" element={<NotFound />} />
             </Route>
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="wallet" element={<Wallet />} />
+            </Route>
             {/* Standalone routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<SignUp />} />
             <Route path="/email-confirmation" element={<EmailConfirmation />} />
             <Route path="/update-password" element={<div>Update Password Page</div>} />
           </Routes>
