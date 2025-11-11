@@ -9,18 +9,12 @@ import FooterSection from '@/components/FooterSection';
 import { useAuth } from '../context/AuthContext'; // Corrected import path
 
 const Index = () => {
-  const { user, username, firstName } = useAuth();
+  const { user, username } = useAuth(); // Only need user and username
 
   // Determine the welcome message
   let welcomeMessage = 'Welcome to VantaWin!';
-  if (user) {
-    if (firstName) {
-      welcomeMessage = `Welcome, ${firstName}!`;
-    } else if (username) {
-      welcomeMessage = `Welcome, ${username}!`;
-    } else if (user.email) {
-      welcomeMessage = `Welcome, ${user.email}!`;
-    }
+  if (user && username) { // Check if user and username exist
+    welcomeMessage = `Welcome, ${username}!`;
   }
 
   return (
