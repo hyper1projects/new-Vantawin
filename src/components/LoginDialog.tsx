@@ -11,32 +11,37 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-// Removed Link import as it's no longer needed for navigation
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToSignUp: () => void;
   onSwitchToForgotPassword: () => void;
-  onLoginSuccess: () => void; // New prop
 }
 
-const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp, onSwitchToForgotPassword, onLoginSuccess }) => {
-  const [identifier, setIdentifier] = useState('');
+const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp, onSwitchToForgotPassword }) => {
+  const [email, setEmail] = useState(''); // Changed to email for Supabase signInWithPassword
   const [password, setPassword] = useState('');
+  const { signIn } = useAuth(); // Use signIn from AuthContext
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!identifier || !password) {
-      toast.error('Please enter your username/phone number and password.');
+    if (!email || !password) {
+      toast.error('Please enter your email and password.');
       return;
     }
 
-    console.log('Logging in with:', { identifier, password });
-    // Simulate successful login
-    onLoginSuccess(); // Call the success handler
-    setIdentifier('');
-    setPassword('');
+    const { error } = await signIn(email, password);
+
+    if (!error) {
+      toast.success('Login successful!');
+      onOpenChange(false); // Close dialog on success
+      setEmail('');
+      setPassword('');
+    } else {
+      toast.error(error.message || 'Login failed. Please check your credentials.');
+    }
   };
 
   return (
@@ -47,15 +52,15 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
         </DialogHeader>
         <form onSubmit={handleLogin} className="space-y-6 mt-4">
           <div>
-            <Label htmlFor="identifier" className="text-vanta-text-light text-base font-semibold mb-2 block">
-              Username or Phone Number
+            <Label htmlFor="email" className="text-vanta-text-light text-base font-semibold mb-2 block">
+              Email
             </Label>
             <Input
-              id="identifier"
-              type="text"
-              placeholder="Enter your username or phone number"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              id="email"
+              type="email" // Changed type to email
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />

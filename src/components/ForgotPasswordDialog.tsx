@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 interface ForgotPasswordDialogProps {
   open: boolean;
@@ -19,20 +20,26 @@ interface ForgotPasswordDialogProps {
 }
 
 const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({ open, onOpenChange, onSwitchToLogin }) => {
-  const [identifier, setIdentifier] = useState(''); // Can be email or phone number
+  const [email, setEmail] = useState(''); // Changed to email for Supabase resetPasswordForEmail
+  const { resetPasswordForEmail } = useAuth(); // Use resetPasswordForEmail from AuthContext
 
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!identifier) {
-      toast.error('Please enter your email or phone number.');
+    if (!email) {
+      toast.error('Please enter your email address.');
       return;
     }
 
-    console.log('Password reset requested for:', { identifier });
-    toast.success('If an account exists, a reset link/code has been sent.');
-    onOpenChange(false); // Close the dialog after submission
-    setIdentifier(''); // Clear the input
-    onSwitchToLogin(); // Optionally switch back to login
+    const { error } = await resetPasswordForEmail(email);
+
+    if (!error) {
+      toast.success('If an account exists, a password reset link has been sent to your email.');
+      onOpenChange(false); // Close the dialog after submission
+      setEmail(''); // Clear the input
+      onSwitchToLogin(); // Optionally switch back to login
+    } else {
+      toast.error(error.message || 'Failed to send reset link. Please try again.');
+    }
   };
 
   return (
@@ -42,19 +49,19 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({ open, onOpe
           <DialogTitle className="text-3xl font-bold text-center text-vanta-neon-blue">Forgot Password</DialogTitle>
         </DialogHeader>
         <p className="text-center text-gray-400 mb-6">
-          Enter your registered email address or phone number to receive a password reset link or code.
+          Enter your registered email address to receive a password reset link.
         </p>
         <form onSubmit={handleResetPassword} className="space-y-6 mt-4">
           <div>
-            <Label htmlFor="identifier" className="text-vanta-text-light text-base font-semibold mb-2 block">
-              Email or Phone Number
+            <Label htmlFor="email" className="text-vanta-text-light text-base font-semibold mb-2 block">
+              Email
             </Label>
             <Input
-              id="identifier"
-              type="text"
-              placeholder="Enter your email or phone number"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              id="email"
+              type="email" // Changed type to email
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />

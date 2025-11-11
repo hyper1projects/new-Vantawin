@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle } from 'lucide-react';
+import { Search, AlertCircle, LogOut } from 'lucide-react'; // Import LogOut icon
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
@@ -12,6 +12,7 @@ import VerifyPhoneDialog from './VerifyPhoneDialog';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
@@ -21,7 +22,8 @@ const MainHeader: React.FC = () => {
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [verifyPhoneOpen, setVerifyPhoneOpen] = useState(false);
   const [phoneToVerify, setPhoneToVerify] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulate login state
+  
+  const { user, username, signOut, isLoading } = useAuth(); // Use the auth context
   const isMobile = useIsMobile();
 
   const location = useLocation();
@@ -48,20 +50,22 @@ const MainHeader: React.FC = () => {
   const handleVerificationSuccess = () => {
     setVerifyPhoneOpen(false);
     setPhoneToVerify('');
-    setLoginOpen(true);
+    setLoginOpen(true); // After verification, prompt user to log in
     toast.success('Your account has been successfully verified! Please log in.');
   };
 
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
-    setLoginOpen(false);
-    toast.success('Login successful!');
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (!error) {
+      toast.info('Logged out successfully.');
+    } else {
+      toast.error('Failed to log out.');
+    }
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    toast.info('Logged out successfully.');
-  };
+  if (isLoading) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <>
@@ -89,7 +93,7 @@ const MainHeader: React.FC = () => {
             </Link>
           ))}
           {/* How to play link */}
-          <Link to="/how-to-play" className="flex items-center space-x-1 ml-4">
+          <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
             <AlertCircle size={18} className="text-[#00EEEE]" />
             <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
               How to play
@@ -108,20 +112,36 @@ const MainHeader: React.FC = () => {
           />
         </div>
 
-        {/* Right Section: Login, Register */}
+        {/* Right Section: Login, Register or Welcome User */}
         <div className="flex items-center space-x-4">
-          <Button 
-            onClick={() => setLoginOpen(true)} // Directly open Login dialog
-            className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
-          >
-            Login
-          </Button>
-          <Button 
-            onClick={() => setSignUpOpen(true)} // Directly open Sign Up dialog
-            className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
-          >
-            Sign up
-          </Button>
+          {user ? (
+            <>
+              <span className="text-vanta-text-light text-base font-semibold">
+                Welcome, {username || user.email || 'User'}!
+              </span>
+              <Button 
+                onClick={handleLogout}
+                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10 flex items-center gap-2"
+              >
+                <LogOut size={18} /> Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                onClick={() => setLoginOpen(true)} // Directly open Login dialog
+                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
+              >
+                Login
+              </Button>
+              <Button 
+                onClick={() => setSignUpOpen(true)} // Directly open Sign Up dialog
+                className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
+              >
+                Sign up
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -137,7 +157,6 @@ const MainHeader: React.FC = () => {
           setLoginOpen(false);
           setForgotPasswordOpen(true);
         }}
-        onLoginSuccess={handleLoginSuccess}
       />
       <SignUpDialog 
         open={signUpOpen} 

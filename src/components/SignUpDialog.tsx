@@ -11,12 +11,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToLogin: () => void;
-  onVerificationNeeded: (phoneNumber: string) => void; // New prop for verification flow
+  onVerificationNeeded: (phoneNumber: string) => void;
 }
 
 const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitchToLogin, onVerificationNeeded }) => {
@@ -24,8 +25,9 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const { signUp } = useAuth(); // Use signUp from AuthContext
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneNumber || !username || !password || !confirmPassword) {
       toast.error('Please fill in all fields.');
@@ -40,14 +42,25 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
       return;
     }
 
-    console.log('Signing up with:', { phoneNumber, username, password });
-    toast.success('Sign up successful! Please verify your phone number.');
-    onOpenChange(false); // Close sign-up dialog
-    onVerificationNeeded(phoneNumber); // Open verification dialog
-    setPhoneNumber('');
-    setUsername('');
-    setPassword('');
-    setConfirmPassword('');
+    const { data, error } = await signUp(phoneNumber, username, password);
+
+    if (!error) {
+      if (data?.user?.identities?.length === 0) { // User needs to verify phone
+        toast.success('Sign up successful! Please verify your phone number.');
+        onOpenChange(false); // Close sign-up dialog
+        onVerificationNeeded(phoneNumber); // Open verification dialog
+      } else {
+        toast.success('Sign up successful! Please check your email for a verification link.');
+        onOpenChange(false); // Close sign-up dialog
+        onSwitchToLogin(); // Redirect to login
+      }
+      setPhoneNumber('');
+      setUsername('');
+      setPassword('');
+      setConfirmPassword('');
+    } else {
+      toast.error(error.message || 'Sign up failed. Please try again.');
+    }
   };
 
   return (
