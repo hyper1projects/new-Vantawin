@@ -7,12 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
 import SignUpDialog from './SignUpDialog';
-import ForgotPasswordDialog from './ForgotPasswordDialog'; // Import the new dialog
+import ForgotPasswordDialog from './ForgotPasswordDialog';
+import VerifyPhoneDialog from './VerifyPhoneDialog'; // Import the new dialog
 
 const MainHeader: React.FC = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false);
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false); // New state for forgot password dialog
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [verifyPhoneOpen, setVerifyPhoneOpen] = useState(false); // New state for verify phone dialog
+  const [phoneToVerify, setPhoneToVerify] = useState(''); // State to hold phone number for verification
   
   const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
   const location = useLocation();
@@ -24,6 +27,18 @@ const MainHeader: React.FC = () => {
   const isActive = (category: string) => {
     const categorySlug = category.toLowerCase().replace('.', '');
     return currentPath === '/games' && activeCategoryParam === categorySlug;
+  };
+
+  const handleVerificationNeeded = (phoneNumber: string) => {
+    setPhoneToVerify(phoneNumber);
+    setVerifyPhoneOpen(true);
+  };
+
+  const handleVerificationSuccess = () => {
+    setVerifyPhoneOpen(false);
+    setPhoneToVerify('');
+    setLoginOpen(true); // After successful verification, direct to login
+    toast.success('Your account has been successfully verified! Please log in.');
   };
 
   return (
@@ -87,7 +102,7 @@ const MainHeader: React.FC = () => {
         </Button>
       </div>
 
-      {/* Login, SignUp, and ForgotPassword Dialogs */}
+      {/* Login, SignUp, ForgotPassword, and VerifyPhone Dialogs */}
       <LoginDialog 
         open={loginOpen} 
         onOpenChange={setLoginOpen}
@@ -95,7 +110,7 @@ const MainHeader: React.FC = () => {
           setLoginOpen(false);
           setSignUpOpen(true);
         }}
-        onSwitchToForgotPassword={() => { // New prop to handle switching to forgot password
+        onSwitchToForgotPassword={() => {
           setLoginOpen(false);
           setForgotPasswordOpen(true);
         }}
@@ -107,6 +122,7 @@ const MainHeader: React.FC = () => {
           setSignUpOpen(false);
           setLoginOpen(true);
         }}
+        onVerificationNeeded={handleVerificationNeeded} // Pass the new handler
       />
       <ForgotPasswordDialog
         open={forgotPasswordOpen}
@@ -115,6 +131,12 @@ const MainHeader: React.FC = () => {
           setForgotPasswordOpen(false);
           setLoginOpen(true);
         }}
+      />
+      <VerifyPhoneDialog
+        open={verifyPhoneOpen}
+        onOpenChange={setVerifyPhoneOpen}
+        phoneNumber={phoneToVerify}
+        onVerificationSuccess={handleVerificationSuccess}
       />
     </div>
   );

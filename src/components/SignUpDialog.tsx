@@ -16,9 +16,10 @@ interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToLogin: () => void;
+  onVerificationNeeded: (phoneNumber: string) => void; // New prop for verification flow
 }
 
-const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitchToLogin }) => {
+const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitchToLogin, onVerificationNeeded }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -40,13 +41,13 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
     }
 
     console.log('Signing up with:', { phoneNumber, username, password });
-    toast.success('Sign up successful! You can now log in.');
-    onOpenChange(false);
+    toast.success('Sign up successful! Please verify your phone number.');
+    onOpenChange(false); // Close sign-up dialog
+    onVerificationNeeded(phoneNumber); // Open verification dialog
     setPhoneNumber('');
     setUsername('');
     setPassword('');
     setConfirmPassword('');
-    onSwitchToLogin();
   };
 
   return (
