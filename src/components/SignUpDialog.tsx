@@ -17,43 +17,36 @@ interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToLogin: () => void;
-  // Removed onVerificationNeeded as phone verification is no longer used
 }
 
 const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitchToLogin }) => {
-  const [email, setEmail] = useState(''); // Changed to email
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { signUp } = useAuth(); // Use signUp from AuthContext
+  const { signUp } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Attempting sign up...'); // Added log
     if (!email || !username || !password || !confirmPassword) {
       toast.error('Please fill in all fields.');
-      console.log('Validation failed: Missing fields.'); // Added log
       return;
     }
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters long.');
-      console.log('Validation failed: Password too short.'); // Added log
       return;
     }
     if (password !== confirmPassword) {
       toast.error('Passwords do not match.');
-      console.log('Validation failed: Passwords do not match.'); // Added log
       return;
     }
 
-    // Call signUp with email instead of phone number
     const { data, error } = await signUp(email, username, password);
-    console.log('Supabase signUp response:', { data, error }); // Added log
 
     if (!error) {
-      toast.success('Sign up successful! Please check your email for a verification link.');
-      onOpenChange(false); // Close sign-up dialog
-      onSwitchToLogin(); // Redirect to login
+      // The AuthContext now handles the navigation to /email-confirmation
+      // We just need to close the dialog and clear the form
+      onOpenChange(false); 
       setEmail('');
       setUsername('');
       setPassword('');
@@ -76,7 +69,7 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
             </Label>
             <Input
               id="email"
-              type="email" // Changed type to email
+              type="email"
               placeholder="e.g., your@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

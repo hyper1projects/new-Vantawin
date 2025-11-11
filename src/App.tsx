@@ -17,13 +17,14 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
 import GameDetails from './pages/GameDetails';
 import AllTopGames from './pages/AllTopGames';
+import EmailConfirmation from './pages/EmailConfirmation'; // Import the new page
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
-import { AuthContextProvider } from './context/AuthContext'; // Import AuthContextProvider
+import { AuthContextProvider } from './context/AuthContext';
 
 function App() {
   return (
     <Router>
-      <AuthContextProvider> {/* Wrap the entire app with AuthContextProvider */}
+      <AuthContextProvider>
         <MatchSelectionProvider>
           <Routes>
             {/* Routes with the main layout */}
@@ -44,7 +45,8 @@ function App() {
               <Route path="how-it-works" element={<div>How It Works Page</div>} />
               <Route path="*" element={<NotFound />} />
             </Route>
-            {/* Add a route for password update if needed */}
+            {/* Standalone routes */}
+            <Route path="/email-confirmation" element={<EmailConfirmation />} /> {/* New route */}
             <Route path="/update-password" element={<div>Update Password Page</div>} />
           </Routes>
         </MatchSelectionProvider>

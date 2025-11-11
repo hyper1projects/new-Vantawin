@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../integrations/supabase/client'; // Import your Supabase client
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 interface AuthContextType {
   session: Session | null;
@@ -10,9 +11,8 @@ interface AuthContextType {
   username: string | null;
   isLoading: boolean;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>; // Changed phoneNumber to email
+  signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
-  // Removed verifyOtp and resendOtp as they are no longer used for email sign-up
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
   fetchUserProfile: (userId: string) => Promise<string | null>;
 }
@@ -24,6 +24,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -74,8 +75,6 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   const signIn = async (identifier: string, password: string) => {
-    // Supabase signInWithPassword expects email and password
-    // Assuming identifier is email for signInWithPassword
     const { data, error } = await supabase.auth.signInWithPassword({
       email: identifier,
       password: password,
@@ -89,8 +88,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     return { error };
   };
 
-  const signUp = async (email: string, username: string, password: string) => { // Changed phoneNumber to email
-    // Supabase signUp with email
+  const signUp = async (email: string, username: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -102,6 +100,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     });
     if (error) {
       console.error('Sign Up Error:', error);
+    } else if (data.user && !data.user.confirmed_at) {
+      // If user is created but not confirmed (email verification is pending)
+      navigate('/email-confirmation'); // Redirect to the new confirmation page
     }
     return { data, error };
   };
@@ -118,11 +119,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     return { error };
   };
 
-  // Removed verifyOtp and resendOtp functions
-
   const resetPasswordForEmail = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/update-password`, // You might need a dedicated page for password reset
+      redirectTo: `${window.location.origin}/update-password`,
     });
     if (error) {
       console.error('Reset Password Error:', error);
@@ -140,7 +139,6 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         signIn,
         signUp,
         signOut,
-        // Removed verifyOtp and resendOtp from context value
         resetPasswordForEmail,
         fetchUserProfile,
       }}
