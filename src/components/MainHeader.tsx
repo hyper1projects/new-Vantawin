@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
 import SignUpDialog from './SignUpDialog';
 import ForgotPasswordDialog from './ForgotPasswordDialog';
-// Removed VerifyPhoneDialog import
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -18,10 +17,8 @@ const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
   const [loginOpen, setLoginOpen] = useState(false);
-  const [signUpOpen, setSignUpOpen] = useState(false);
+  const [signUpOpen, setSignUp] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-  // Removed verifyPhoneOpen state
-  // Removed phoneToVerify state
   
   const { user, username, signOut, isLoading } = useAuth(); // Use the auth context
   const isMobile = useIsMobile();
@@ -41,9 +38,6 @@ const MainHeader: React.FC = () => {
     // Update URL with the new category query parameter
     window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
-
-  // Removed handleVerificationNeeded function
-  // Removed handleVerificationSuccess function
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -107,10 +101,10 @@ const MainHeader: React.FC = () => {
         <div className="flex items-center space-x-4">
           {user ? (
             <>
-              {/* Display user balance */}
-              <div className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2">
+              {/* Display user balance as a clickable link */}
+              <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors">
                 <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span> {/* Placeholder balance */}
-              </div>
+              </Link>
               <Button 
                 onClick={handleLogout}
                 className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10 flex items-center gap-2"
@@ -143,7 +137,7 @@ const MainHeader: React.FC = () => {
         onOpenChange={setLoginOpen}
         onSwitchToSignUp={() => {
           setLoginOpen(false);
-          setSignUpOpen(true);
+          setSignUp(true);
         }}
         onSwitchToForgotPassword={() => {
           setLoginOpen(false);
@@ -152,12 +146,11 @@ const MainHeader: React.FC = () => {
       />
       <SignUpDialog 
         open={signUpOpen} 
-        onOpenChange={setSignUpOpen}
+        onOpenChange={setSignUp}
         onSwitchToLogin={() => {
-          setSignUpOpen(false);
+          setSignUp(false);
           setLoginOpen(true);
         }}
-        // Removed onVerificationNeeded prop
       />
       <ForgotPasswordDialog
         open={forgotPasswordOpen}
@@ -167,7 +160,6 @@ const MainHeader: React.FC = () => {
           setLoginOpen(true);
         }}
       />
-      {/* Removed VerifyPhoneDialog */}
     </>
   );
 };
