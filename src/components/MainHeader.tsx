@@ -108,6 +108,13 @@ const MainHeader: React.FC = () => {
         <div className="flex items-center space-x-4">
           {user ? (
             <>
+              {/* New Deposit Button */}
+              <Link to="/wallet">
+                <Button className="bg-vanta-neon-blue text-vanta-blue-dark rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-vanta-neon-blue/80">
+                  Deposit
+                </Button>
+              </Link>
+
               <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors">
                 <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span>
               </Link>
