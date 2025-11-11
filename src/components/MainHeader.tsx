@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, UserCircle, Bell, ChevronDown } from 'lucide-react'; // Added Bell and ChevronDown
+import { Search, AlertCircle, UserCircle, Bell, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
@@ -79,7 +79,7 @@ const MainHeader: React.FC = () => {
           <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
         </Link>
 
-        {/* Middle Section (Desktop Only): Sports Categories, How it works, Search Input */}
+        {/* Middle Section (Desktop Only): Sports Categories & How to Play */}
         {!isMobile && (
           <div className="flex items-center space-x-6 mx-auto flex-grow justify-center">
             {/* Sports Categories */}
@@ -108,17 +108,31 @@ const MainHeader: React.FC = () => {
                 How it works
               </Button>
             </Link>
-
-            {/* Search Input */}
-            <div className="relative bg-[#053256] rounded-[14px] h-10 flex items-center w-64 ml-6">
-              <Search className="absolute left-3 text-[#00EEEE]" size={18} />
-              <Input
-                type="text"
-                placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0 text-sm"
-              />
-            </div>
           </div>
+        )}
+
+        {/* Search Component (Conditional Rendering) */}
+        {!isMobile ? (
+          // Desktop Search Input
+          <div className="relative bg-[#053256] rounded-[14px] h-10 flex items-center w-64 mx-6">
+            <Search className="absolute left-3 text-[#00EEEE]" size={18} />
+            <Input
+              type="text"
+              placeholder="Search..."
+              className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0 text-sm"
+            />
+          </div>
+        ) : (
+          // Mobile Search Icon Button
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative w-10 h-10 rounded-full border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 transition-colors flex items-center justify-center"
+            aria-label="Search"
+            onClick={() => console.log('Search clicked')}
+          >
+            <Search size={20} />
+          </Button>
         )}
 
         {/* Right Section: Auth/User UI */}
@@ -126,77 +140,29 @@ const MainHeader: React.FC = () => {
           {isLoggedIn ? (
             // Logged-in UI
             <>
-              {isMobile ? (
-                // Mobile Logged-in
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative w-10 h-10 rounded-full border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 transition-colors flex items-center justify-center"
-                    aria-label="Search"
-                    onClick={() => console.log('Search clicked')}
-                  >
-                    <Search size={20} />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white" aria-label="Notifications">
-                    <Bell size={20} />
-                  </Button>
-                  <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-3 py-1.5 text-xs font-bold hover:bg-[#00EEEE]/80">
-                    Deposit
-                  </Button>
-                  <Button variant="outline" className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue rounded-[14px] px-3 py-1.5 text-xs font-bold hover:bg-vanta-neon-blue/10">
-                    ₦ 0.00
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-200 transition-colors flex items-center justify-center"
-                    aria-label="User Profile"
-                    onClick={handleLogout}
-                  >
-                    <UserCircle size={20} />
-                    <ChevronDown size={16} className="absolute bottom-0 right-0 bg-vanta-blue-dark rounded-full text-white" />
-                  </Button>
-                </>
-              ) : (
-                // Desktop Logged-in
-                <>
-                  <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white" aria-label="Notifications">
-                    <Bell size={20} />
-                  </Button>
-                  <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 text-sm font-bold hover:bg-[#00EEEE]/80">
-                    Deposit
-                  </Button>
-                  <Button variant="outline" className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue rounded-[14px] px-6 py-2 text-sm font-bold hover:bg-vanta-neon-blue/10">
-                    ₦ 0.00
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-200 transition-colors flex items-center justify-center"
-                    aria-label="User Profile"
-                    onClick={handleLogout}
-                  >
-                    <UserCircle size={20} />
-                    <ChevronDown size={16} className="absolute bottom-0 right-0 bg-vanta-blue-dark rounded-full text-white" />
-                  </Button>
-                </>
-              )}
+              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white" aria-label="Notifications">
+                <Bell size={20} />
+              </Button>
+              <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-[#00EEEE]/80">
+                Deposit
+              </Button>
+              <Button variant="outline" className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-vanta-neon-blue/10">
+                ₦ 0.00
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-200 transition-colors flex items-center justify-center"
+                aria-label="User Profile"
+                onClick={handleLogout}
+              >
+                <UserCircle size={20} />
+                <ChevronDown size={16} className="absolute bottom-0 right-0 bg-vanta-blue-dark rounded-full text-white" />
+              </Button>
             </>
           ) : (
-            // Logged-out UI
+            // Logged-out UI (Login/Sign up buttons)
             <>
-              {isMobile && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative w-10 h-10 rounded-full border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 transition-colors flex items-center justify-center"
-                  aria-label="Search"
-                  onClick={() => console.log('Search clicked')}
-                >
-                  <Search size={20} />
-                </Button>
-              )}
               <Button 
                 onClick={() => setLoginOpen(true)}
                 className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-[#00EEEE]/10"
