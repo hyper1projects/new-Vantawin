@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
+import { ExternalLink } from 'lucide-react'; // Import ExternalLink icon
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 type TimeFilter = '1D' | '1W' | '1M' | 'ALL';
 
@@ -29,7 +31,7 @@ const ProfitLossCard: React.FC = () => {
   };
 
   return (
-    <div className="bg-vanta-blue-medium p-6 shadow-lg text-vanta-text-light w-full rounded-[16px]">
+    <div className="bg-vanta-blue-medium p-6 shadow-lg text-vanta-text-light w-full rounded-[27px]"> {/* Changed rounded-[16px] to rounded-[27px] */}
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <span className="text-lg font-semibold text-gray-400">PROFIT/LOSS</span>
@@ -42,9 +44,18 @@ const ProfitLossCard: React.FC = () => {
       </div>
 
       {/* Profit/Loss Display Section */}
-      <div className="text-left">
+      <div className="text-left mb-6"> {/* Added mb-6 for spacing */}
         <p className="text-5xl font-bold text-white mb-2">{formattedProfitLoss}</p>
         <p className="text-base text-gray-400">All - Time</p>
+      </div>
+
+      {/* View Wallet Button */}
+      <div className="w-full">
+        <Button asChild className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] py-3 text-lg font-bold">
+          <Link to="/wallet">
+            View Wallet <ExternalLink size={20} className="ml-2" />
+          </Link>
+        </Button>
       </div>
     </div>
   );

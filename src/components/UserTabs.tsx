@@ -1,0 +1,117 @@
+"use client";
+
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '../lib/utils';
+
+type MainTab = 'transactions' | 'gamesHistory' | 'rankHistory';
+type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'refunds';
+
+const UserTabs: React.FC = () => {
+  const [activeMainTab, setActiveMainTab] = useState<MainTab>('transactions');
+  const [activeTransactionFilter, setActiveTransactionFilter] = useState<TransactionFilter>('all');
+
+  const getMainTabButtonClasses = (tab: MainTab) => {
+    const isActive = activeMainTab === tab;
+    return cn(
+      "flex-1 py-2 px-4 rounded-[14px] text-base font-semibold transition-colors duration-200",
+      isActive
+        ? "bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90"
+        : "bg-transparent text-gray-400 hover:text-white"
+    );
+  };
+
+  const getTransactionFilterButtonClasses = (filter: TransactionFilter) => {
+    const isActive = activeTransactionFilter === filter;
+    return cn(
+      "relative text-base font-semibold pb-2",
+      isActive
+        ? "text-vanta-neon-blue after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-vanta-neon-blue"
+        : "text-gray-400 hover:text-white"
+    );
+  };
+
+  const renderTabContent = () => {
+    switch (activeMainTab) {
+      case 'transactions':
+        return (
+          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full">
+            <div className="flex space-x-6 mb-6 border-b border-gray-700 pb-4">
+              <Button variant="ghost" className={getTransactionFilterButtonClasses('all')} onClick={() => setActiveTransactionFilter('all')}>
+                All Transactions
+              </Button>
+              <Button variant="ghost" className={getTransactionFilterButtonClasses('deposits')} onClick={() => setActiveTransactionFilter('deposits')}>
+                Deposits
+              </Button>
+              <Button variant="ghost" className={getTransactionFilterButtonClasses('withdrawals')} onClick={() => setActiveTransactionFilter('withdrawals')}>
+                Withdrawals
+              </Button>
+              <Button variant="ghost" className={getTransactionFilterButtonClasses('refunds')} onClick={() => setActiveTransactionFilter('refunds')}>
+                Refunds
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-5 gap-4 text-sm font-semibold text-gray-400 mb-4">
+              <span>Time</span>
+              <span>Type</span>
+              <span>Amount</span>
+              <span>Status</span>
+              <span className="text-right">After Balance</span>
+            </div>
+
+            <div className="text-center text-gray-400 text-lg mt-12">
+              Nothing to show yet
+            </div>
+          </div>
+        );
+      case 'gamesHistory':
+        return (
+          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full">
+            <h3 className="text-xl font-bold text-white mb-4">Games History</h3>
+            <div className="text-center text-gray-400 text-lg mt-12">
+              No game history to display yet.
+            </div>
+          </div>
+        );
+      case 'rankHistory':
+        return (
+          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full">
+            <h3 className="text-xl font-bold text-white mb-4">Rank History</h3>
+            <div className="text-center text-gray-400 text-lg mt-12">
+              No rank history to display yet.
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex flex-col space-y-6">
+      <div className="bg-vanta-blue-dark p-2 rounded-[27px] flex space-x-2 w-full md:w-fit"> {/* Adjusted width for responsiveness */}
+        <Button
+          className={getMainTabButtonClasses('transactions')}
+          onClick={() => setActiveMainTab('transactions')}
+        >
+          Transactions
+        </Button>
+        <Button
+          className={getMainTabButtonClasses('gamesHistory')}
+          onClick={() => setActiveMainTab('gamesHistory')}
+        >
+          Games History
+        </Button>
+        <Button
+          className={getMainTabButtonClasses('rankHistory')}
+          onClick={() => setActiveMainTab('rankHistory')}
+        >
+          Rank History
+        </Button>
+      </div>
+      {renderTabContent()}
+    </div>
+  );
+};
+
+export default UserTabs;
