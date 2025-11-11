@@ -69,7 +69,8 @@ const MainHeader: React.FC = () => {
             <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
             <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
           </Link>
-          <div className="flex items-center space-x-6">
+          {/* Hide sports categories and "How to play" on mobile */}
+          <div className="hidden md:flex items-center space-x-6">
           {sportsCategories.map((category) => (
             <Link 
               key={category} 
@@ -98,9 +99,9 @@ const MainHeader: React.FC = () => {
         </div>
 
         {/* Right-aligned group: Search Bar + Auth/User Section */}
-        <div className="flex items-center ml-auto space-x-4"> {/* ml-auto pushes this entire group to the right */}
-          {/* Search Bar */}
-          <div className="relative bg-[#053256] rounded-[14px] h-10 flex items-center w-64"> {/* Fixed width for search bar */}
+        <div className="flex items-center ml-auto space-x-4">
+          {/* Hide Search Bar on mobile */}
+          <div className="hidden md:flex relative bg-[#053256] rounded-[14px] h-10 items-center w-64">
             <Search className="absolute left-3 text-[#00EEEE]" size={18} />
             <Input
               type="text"
@@ -109,34 +110,34 @@ const MainHeader: React.FC = () => {
             />
           </div>
 
-          {/* Auth/User Section */}
-          <div className="flex items-center space-x-4"> {/* This div already has space-x-4 for its children */}
+          {/* Auth/User Section - always visible, but adjust spacing for mobile */}
+          <div className="flex items-center space-x-2 sm:space-x-4"> {/* Reduced space-x for smaller screens */}
             {user ? (
               <>
-                {/* Deposit Button */}
+                {/* Deposit Button - always visible */}
                 <Link to="/wallet">
-                  <Button className="bg-vanta-neon-blue text-vanta-blue-dark rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-vanta-neon-blue/80">
+                  <Button className="bg-vanta-neon-blue text-vanta-blue-dark rounded-[14px] px-4 py-2 font-bold text-sm hover:bg-vanta-neon-blue/80 h-auto"> {/* Adjusted padding for mobile */}
                     Deposit
                   </Button>
                 </Link>
 
-                {/* Wallet Balance */}
-                <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors">
-                  <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span>
+                {/* Wallet Balance - always visible */}
+                <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-3 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors h-auto"> {/* Adjusted padding for mobile */}
+                  <span className="text-vanta-text-light text-sm font-semibold">₦ 0.00</span> {/* Reduced font size for mobile */}
                 </Link>
 
-                {/* Avatar and Dropdown Trigger */}
+                {/* Avatar and Dropdown Trigger - always visible */}
                 <div className="flex items-center space-x-1">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="h-8 w-8"> {/* Reduced size for mobile */}
                     <AvatarImage src="/placeholder.svg" alt={username || "User"} />
-                    <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark">
+                    <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-xs"> {/* Reduced font size for mobile */}
                       {username ? username.substring(0, 2).toUpperCase() : 'UN'}
                     </AvatarFallback>
                   </Avatar>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-10 w-10 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-white">
-                        <ChevronDown size={16} />
+                      <Button variant="ghost" className="h-8 w-8 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-white"> {/* Reduced size for mobile */}
+                        <ChevronDown size={14} /> {/* Reduced size for mobile */}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue" align="end" forceMount>
@@ -188,13 +189,13 @@ const MainHeader: React.FC = () => {
               <>
                 <Button 
                   onClick={() => setLoginOpen(true)}
-                  className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
+                  className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/10 h-auto" // Adjusted padding/font size for mobile
                 >
                   Login
                 </Button>
                 <Button 
                   onClick={() => setSignUpOpen(true)}
-                  className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
+                  className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/80 h-auto" // Adjusted padding/font size for mobile
                 >
                   Sign up
                 </Button>
