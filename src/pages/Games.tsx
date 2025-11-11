@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import SectionHeader from '../components/SectionHeader';
-import SportCategoryButtons from '../components/SportCategoryButtons';
+// Removed SportCategoryButtons import
 import LiveGamesSection from '../components/LiveGamesSection';
 import PremierLeagueSection from '../components/PremierLeagueSection';
 import LaLigaSection from '../components/LaLigaSection';
-// Removed SimpleQuestionCard import
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Game } from '../types/game'; // Import Game type for the dummy data
+import { Game } from '../types/game';
 
 const Games = () => {
   const navigate = useNavigate();
@@ -18,44 +17,29 @@ const Games = () => {
   const queryParams = new URLSearchParams(location.search);
   const urlCategory = queryParams.get('category') || 'football';
   
-  const [selectedSport, setSelectedSport] = useState<string>(urlCategory);
+  // Removed selectedSport state and handleSelectCategory function as they are now handled by SportsSubNavbar
+  // const [selectedSport, setSelectedSport] = useState<string>(urlCategory);
 
-  useEffect(() => {
-    // Update selectedSport state if URL category changes
-    setSelectedSport(urlCategory);
-  }, [urlCategory]);
+  // useEffect(() => {
+  //   setSelectedSport(urlCategory);
+  // }, [urlCategory]);
 
-  const handleSelectCategory = (category: string) => {
-    // Update URL with the new category query parameter
-    navigate(`/games?category=${category.toLowerCase()}`);
-  };
-
-  const formattedSelectedSport = selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
-
-  // Dummy game data for the new SimpleQuestionCard - Removed as it's moved
-  // const dummyQuestionGame: Game = {
-  //   id: 'question-game-1',
-  //   time: 'N/A',
-  //   date: 'N/A',
-  //   team1: { name: 'Manchester City', logoIdentifier: 'MCI' }, // Using existing logo identifiers
-  //   team2: { name: 'Arsenal', logoIdentifier: 'ARS' },
-  //   odds: { team1: 1.0, draw: 1.0, team2: 1.0 }, // Placeholder odds, not displayed by SimpleQuestionCard
-  //   league: 'Premier League',
-  //   isLive: false,
-  //   gameView: 'N/A',
-  //   questionType: 'win_match', // Ensures the question is "Will team1 win this game?"
+  // const handleSelectCategory = (category: string) => {
+  //   navigate(`/games?category=${category.toLowerCase()}`);
   // };
+
+  const formattedSelectedSport = urlCategory.charAt(0).toUpperCase() + urlCategory.slice(1); // Use urlCategory directly
 
   return (
     <div className="p-4">
-      {/* Sport Category Buttons Section */}
-      <SportCategoryButtons 
+      {/* Sport Category Buttons Section - Removed as it's replaced by SportsSubNavbar */}
+      {/* <SportCategoryButtons 
         onSelectCategory={handleSelectCategory} 
         selectedCategory={formattedSelectedSport} 
-      />
+      /> */}
 
       {/* Conditionally render content based on selectedSport */}
-      {selectedSport === 'football' ? (
+      {urlCategory === 'football' ? (
         <>
           <div className="mt-8">
             <LiveGamesSection />
@@ -70,11 +54,6 @@ const Games = () => {
           <div className="mt-8">
             <LaLigaSection />
           </div>
-
-          {/* New Simple Question Card - Removed */}
-          {/* <div className="mt-8">
-            <SimpleQuestionCard game={dummyQuestionGame} />
-          </div> */}
         </>
       ) : (
         <div className="mt-8">
