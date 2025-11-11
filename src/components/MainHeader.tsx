@@ -103,13 +103,14 @@ const MainHeader: React.FC = () => {
           />
         </div>
 
-        {/* Right Section: Login, Register or Welcome User */}
+        {/* Right Section: Login, Register or User Balance */}
         <div className="flex items-center space-x-4">
           {user ? (
             <>
-              <span className="text-vanta-text-light text-base font-semibold">
-                Welcome, {username || user.email || 'User'}!
-              </span>
+              {/* Display user balance */}
+              <div className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-md px-3 py-1">
+                <span className="text-vanta-text-light text-sm font-semibold">₦ 0.00</span> {/* Placeholder balance */}
+              </div>
               <Button 
                 onClick={handleLogout}
                 className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10 flex items-center gap-2"
