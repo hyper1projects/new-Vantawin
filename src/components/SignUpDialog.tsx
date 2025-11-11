@@ -11,13 +11,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { sendOtpFunction } from '../integrations/supabase/functions'; // Import the new function
+import { sendOtpFunction } from '../integrations/supabase/functions';
+import { supabase } from '../integrations/supabase/client'; // Import Supabase client
 
 interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToLogin: () => void;
-  onVerificationNeeded: (phoneNumber: string, pinId: string) => void; // Updated prop to include pinId
+  onVerificationNeeded: (phoneNumber: string, pinId: string, username: string, password: string) => void; // Added username and password
 }
 
 const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitchToLogin, onVerificationNeeded }) => {
@@ -25,7 +26,7 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // New loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,19 +43,16 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
       return;
     }
 
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
     try {
-      // In a real application, you would first create the user in your auth system (e.g., Supabase auth)
-      // For now, we'll simulate user creation and then send OTP.
-      console.log('Simulating user creation with:', { phoneNumber, username, password });
-
-      // Call the send-otp Edge Function
+      // First, send OTP for phone number verification
       const result = await sendOtpFunction(phoneNumber);
       
       if (result && result.pinId) {
-        toast.success('Sign up successful! Please verify your phone number.');
+        toast.success('Verification code sent! Please verify your phone number.');
         onOpenChange(false); // Close sign-up dialog
-        onVerificationNeeded(phoneNumber, result.pinId); // Open verification dialog with pinId
+        // Pass all necessary data to the verification dialog
+        onVerificationNeeded(phoneNumber, result.pinId, username, password); 
         setPhoneNumber('');
         setUsername('');
         setPassword('');
@@ -66,7 +64,7 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
       console.error('Sign up error:', error);
       toast.error(error.message || 'An unexpected error occurred during sign up.');
     } finally {
-      setIsLoading(false); // End loading
+      setIsLoading(false);
     }
   };
 
@@ -142,7 +140,7 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
             className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] py-3 text-lg font-bold"
             disabled={isLoading}
           >
-            {isLoading ? 'Signing Up...' : 'Sign Up'}
+            {isLoading ? 'Sending Code...' : 'Sign Up'}
           </Button>
         </form>
         <p className="text-center text-sm text-gray-400 mt-4">

@@ -21,36 +21,40 @@ const MainHeader: React.FC = () => {
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [verifyPhoneOpen, setVerifyPhoneOpen] = useState(false);
   const [phoneToVerify, setPhoneToVerify] = useState('');
-  const [pinIdForVerification, setPinIdForVerification] = useState(''); // New state for pinId
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulate login state
+  const [pinIdForVerification, setPinIdForVerification] = useState('');
+  const [usernameForVerification, setUsernameForVerification] = useState(''); // New state for username
+  const [passwordForVerification, setPasswordForVerification] = useState(''); // New state for password
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isMobile = useIsMobile();
 
   const location = useLocation();
   const currentPath = location.pathname;
   const queryParams = new URLSearchParams(location.search);
-  const activeCategoryParam = queryParams.get('category') || 'football'; // Default to 'football' if no param
+  const activeCategoryParam = queryParams.get('category') || 'football';
 
-  // Function to determine if a category is active
   const isActive = (category: string) => {
     const categorySlug = category.toLowerCase().replace('.', '');
     return currentPath === '/games' && activeCategoryParam === categorySlug;
   };
 
   const handleCategoryClick = (category: string) => {
-    // Update URL with the new category query parameter
     window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
 
-  const handleVerificationNeeded = (phoneNumber: string, pinId: string) => {
+  const handleVerificationNeeded = (phoneNumber: string, pinId: string, username: string, password: string) => {
     setPhoneToVerify(phoneNumber);
-    setPinIdForVerification(pinId); // Store the pinId
+    setPinIdForVerification(pinId);
+    setUsernameForVerification(username); // Store username
+    setPasswordForVerification(password); // Store password
     setVerifyPhoneOpen(true);
   };
 
   const handleVerificationSuccess = () => {
     setVerifyPhoneOpen(false);
     setPhoneToVerify('');
-    setPinIdForVerification(''); // Clear pinId after successful verification
+    setPinIdForVerification('');
+    setUsernameForVerification(''); // Clear username
+    setPasswordForVerification(''); // Clear password
     setLoginOpen(true);
     toast.success('Your account has been successfully verified! Please log in.');
   };
@@ -81,7 +85,7 @@ const MainHeader: React.FC = () => {
           {sportsCategories.map((category) => (
             <Link 
               key={category} 
-              to={`/games?category=${category.toLowerCase().replace('.', '')}`} // All categories route to /games with a query param
+              to={`/games?category=${category.toLowerCase().replace('.', '')}`}
             >
               <Button
                 variant="ghost"
@@ -114,13 +118,13 @@ const MainHeader: React.FC = () => {
         {/* Right Section: Login, Register */}
         <div className="flex items-center space-x-4">
           <Button 
-            onClick={() => setLoginOpen(true)} // Directly open Login dialog
+            onClick={() => setLoginOpen(true)}
             className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
           >
             Login
           </Button>
           <Button 
-            onClick={() => setSignUpOpen(true)} // Directly open Sign Up dialog
+            onClick={() => setSignUpOpen(true)}
             className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
           >
             Sign up
@@ -163,7 +167,9 @@ const MainHeader: React.FC = () => {
         open={verifyPhoneOpen}
         onOpenChange={setVerifyPhoneOpen}
         phoneNumber={phoneToVerify}
-        initialPinId={pinIdForVerification} // Pass the pinId here
+        initialPinId={pinIdForVerification}
+        username={usernameForVerification} // Pass username
+        password={passwordForVerification} // Pass password
         onVerificationSuccess={handleVerificationSuccess}
       />
     </>
