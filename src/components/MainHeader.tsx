@@ -1,173 +1,143 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, LogOut } from 'lucide-react'; // Import LogOut icon
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useAuth } from '../context/AuthContext';
 import LoginDialog from './LoginDialog';
 import SignUpDialog from './SignUpDialog';
 import ForgotPasswordDialog from './ForgotPasswordDialog';
-// Removed VerifyPhoneDialog import
 import { toast } from 'sonner';
-import { cn } from '../lib/utils';
-import { useIsMobile } from '../hooks/use-mobile';
-import { useAuth } from '../context/AuthContext'; // Import useAuth
-
-const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [signUpOpen, setSignUpOpen] = useState(false);
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-  // Removed verifyPhoneOpen state
-  // Removed phoneToVerify state
-  
-  const { user, username, signOut, isLoading } = useAuth(); // Use the auth context
-  const isMobile = useIsMobile();
-
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const queryParams = new URLSearchParams(location.search);
-  const activeCategoryParam = queryParams.get('category') || 'football'; // Default to 'football' if no param
-
-  // Function to determine if a category is active
-  const isActive = (category: string) => {
-    const categorySlug = category.toLowerCase().replace('.', '');
-    return currentPath === '/games' && activeCategoryParam === categorySlug;
-  };
-
-  const handleCategoryClick = (category: string) => {
-    // Update URL with the new category query parameter
-    window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
-  };
-
-  // Removed handleVerificationNeeded function
-  // Removed handleVerificationSuccess function
+  const { user, username, signOut } = useAuth();
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+  const [isSignUpDialogOpen, setIsSignUpDialogOpen] = useState(false);
+  const [isForgotPasswordDialogOpen, setIsForgotPasswordDialogOpen] = useState(false);
 
   const handleLogout = async () => {
     const { error } = await signOut();
     if (!error) {
-      toast.info('Logged out successfully.');
+      toast.success('Logged out successfully!');
     } else {
       toast.error('Failed to log out.');
     }
   };
 
-  if (isLoading) {
-    return null; // Or a loading spinner
-  }
+  const handleSwitchToLogin = () => {
+    setIsSignUpDialogOpen(false);
+    setIsForgotPasswordDialogOpen(false);
+    setIsLoginDialogOpen(true);
+  };
+
+  const handleSwitchToSignUp = () => {
+    setIsLoginDialogOpen(false);
+    setIsForgotPasswordDialogOpen(false);
+    setIsSignUpDialogOpen(true);
+  };
+
+  const handleSwitchToForgotPassword = () => {
+    setIsLoginDialogOpen(false);
+    setIsSignUpDialogOpen(false);
+    setIsForgotPasswordDialogOpen(true);
+  };
 
   return (
-    <>
-      {/* Main Header Row */}
-      <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 pr-20 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
-        {/* Left Section: Logo, Sports Categories and How to play */}
-        <div className="flex items-center space-x-8">
-          {/* VantaWin Logo */}
-          <div className="flex items-center">
-            <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
-            <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
-          </div>
-          <div className="flex items-center space-x-6">
-          {sportsCategories.map((category) => (
-            <Link 
-              key={category} 
-              to={`/games?category=${category.toLowerCase().replace('.', '')}`} // All categories route to /games with a query param
-            >
-              <Button
-                variant="ghost"
-                className={`font-medium text-sm ${isActive(category) ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
-              >
-                {category}
-              </Button>
-            </Link>
-          ))}
-          {/* How to play link */}
-          <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
-            <AlertCircle size={18} className="text-[#00EEEE]" />
-            <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
-              How to play
-            </Button>
+    <header className="bg-vanta-blue-dark text-vanta-text-light p-4 flex justify-between items-center shadow-md">
+      <div className="flex items-center space-x-4">
+        <Link to="/" className="text-2xl font-bold text-vanta-neon-blue">
+          Vantawin
+        </Link>
+        <nav className="hidden md:flex space-x-6">
+          <Link to="/games" className="hover:text-vanta-neon-blue transition-colors">
+            Games
           </Link>
-        </div>
-        </div>
-
-        {/* Middle Section: Search Bar */}
-        <div className="flex-grow max-w-lg mx-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
-          <Search className="absolute left-3 text-[#00EEEE]" size={18} />
-          <Input
-            type="text"
-            placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0"
-          />
-        </div>
-
-        {/* Right Section: Login, Register or Welcome User */}
-        <div className="flex items-center space-x-4">
-          {user ? (
-            <>
-              <span className="text-vanta-text-light text-base font-semibold">
-                Welcome, {username || user.email || 'User'}!
-              </span>
-              <Button 
-                onClick={handleLogout}
-                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10 flex items-center gap-2"
-              >
-                <LogOut size={18} /> Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button 
-                onClick={() => setLoginOpen(true)} // Directly open Login dialog
-                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
-              >
-                Login
-              </Button>
-              <Button 
-                onClick={() => setSignUpOpen(true)} // Directly open Sign Up dialog
-                className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
-              >
-                Sign up
-              </Button>
-            </>
-          )}
-        </div>
+          <Link to="/pools" className="hover:text-vanta-neon-blue transition-colors">
+            Pools
+          </Link>
+          <Link to="/leaderboard" className="hover:text-vanta-neon-blue transition-colors">
+            Leaderboard
+          </Link>
+        </nav>
       </div>
 
-      {/* Dialogs */}
-      <LoginDialog 
-        open={loginOpen} 
-        onOpenChange={setLoginOpen}
-        onSwitchToSignUp={() => {
-          setLoginOpen(false);
-          setSignUpOpen(true);
-        }}
-        onSwitchToForgotPassword={() => {
-          setLoginOpen(false);
-          setForgotPasswordOpen(true);
-        }}
+      <div className="flex items-center space-x-4">
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={user.user_metadata?.avatar_url || "https://github.com/shadcn.png"} alt="@username" />
+                  <AvatarFallback>{username ? username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{username || user.email}</p>
+                  <p className="text-xs leading-none text-gray-400">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
+              <DropdownMenuItem className="focus:bg-vanta-accent-dark-blue focus:text-vanta-neon-blue">
+                <Link to="/wallet" className="w-full">Wallet</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="focus:bg-vanta-accent-dark-blue focus:text-vanta-neon-blue">
+                <Link to="/profile" className="w-full">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
+              <DropdownMenuItem onClick={handleLogout} className="focus:bg-vanta-accent-dark-blue focus:text-vanta-neon-blue cursor-pointer">
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <>
+            <Button
+              onClick={() => setIsLoginDialogOpen(true)}
+              className="bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] px-6 py-2 font-bold"
+            >
+              Login
+            </Button>
+            <Button
+              onClick={() => setIsSignUpDialogOpen(true)}
+              className="bg-transparent border border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 font-bold"
+            >
+              Sign Up
+            </Button>
+          </>
+        )}
+      </div>
+
+      <LoginDialog
+        open={isLoginDialogOpen}
+        onOpenChange={setIsLoginDialogOpen}
+        onSwitchToSignUp={handleSwitchToSignUp}
+        onSwitchToForgotPassword={handleSwitchToForgotPassword}
       />
-      <SignUpDialog 
-        open={signUpOpen} 
-        onOpenChange={setSignUpOpen}
-        onSwitchToLogin={() => {
-          setSignUpOpen(false);
-          setLoginOpen(true);
-        }}
-        // Removed onVerificationNeeded prop
+      <SignUpDialog
+        open={isSignUpDialogOpen}
+        onOpenChange={setIsSignUpDialogOpen}
+        onSwitchToLogin={handleSwitchToLogin}
       />
       <ForgotPasswordDialog
-        open={forgotPasswordOpen}
-        onOpenChange={setForgotPasswordOpen}
-        onSwitchToLogin={() => {
-          setForgotPasswordOpen(false);
-          setLoginOpen(true);
-        }}
+        open={isForgotPasswordDialogOpen}
+        onOpenChange={setIsForgotPasswordDialogOpen}
+        onSwitchToLogin={handleSwitchToLogin}
       />
-      {/* Removed VerifyPhoneDialog */}
-    </>
+    </header>
   );
 };
 
