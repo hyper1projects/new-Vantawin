@@ -11,14 +11,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+// Removed Link import as it's no longer needed for navigation
 
 interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToSignUp: () => void;
+  onSwitchToForgotPassword: () => void;
+  onLoginSuccess: () => void; // New prop
 }
 
-const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp }) => {
+const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp, onSwitchToForgotPassword, onLoginSuccess }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
 
@@ -30,8 +33,8 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
     }
 
     console.log('Logging in with:', { identifier, password });
-    toast.success('Login successful!');
-    onOpenChange(false);
+    // Simulate successful login
+    onLoginSuccess(); // Call the success handler
     setIdentifier('');
     setPassword('');
   };
@@ -70,6 +73,15 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
+            <div className="text-right mt-2">
+              <button 
+                type="button"
+                onClick={onSwitchToForgotPassword}
+                className="text-vanta-neon-blue text-sm hover:underline"
+              >
+                Forgot Password?
+              </button>
+            </div>
           </div>
           <Button
             type="submit"

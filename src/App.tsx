@@ -16,7 +16,8 @@ import Users from './pages/Users';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
 import GameDetails from './pages/GameDetails';
-import AllTopGames from './pages/AllTopGames'; // Import the new AllTopGames component
+import AllTopGames from './pages/AllTopGames';
+// Removed Login and SignUp page imports as they are now dialogs
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
             <Route index element={<Index />} />
             <Route path="games" element={<Games />} />
             <Route path="games/:gameId" element={<GameDetails />} />
-            <Route path="games/top-games" element={<AllTopGames />} /> {/* New route for all top games */}
+            <Route path="games/top-games" element={<AllTopGames />} />
             <Route path="pools" element={<Pools />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="wallet" element={<Wallet />} />
@@ -42,6 +43,10 @@ function App() {
             <Route path="how-it-works" element={<div>How It Works Page</div>} />
             <Route path="*" element={<NotFound />} />
           </Route>
+          {/* Full-page routes without the main layout (Login, SignUp, ForgotPassword are now dialogs) */}
+          {/* <Route path="/login" element={<Login />} /> */}
+          {/* <Route path="/register" element={<SignUp />} /> */}
+          {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
         </Routes>
       </MatchSelectionProvider>
     </Router>
