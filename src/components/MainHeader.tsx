@@ -110,16 +110,18 @@ const MainHeader: React.FC = () => {
 
         {/* Right Section: Login, Register */}
         <div className="flex items-center space-x-4">
-          <Link to="/login">
-            <Button className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10">
-              Login
-            </Button>
-          </Link>
-          <Link to="/register">
-            <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80">
-              Sign up
-            </Button>
-          </Link>
+          <Button 
+            onClick={() => setLoginOpen(true)} // Directly open Login dialog
+            className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
+          >
+            Login
+          </Button>
+          <Button 
+            onClick={() => setSignUpOpen(true)} // Directly open Sign Up dialog
+            className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
+          >
+            Sign up
+          </Button>
         </div>
       </div>
 
