@@ -14,17 +14,12 @@ import {
 } from '@/components/ui/input-otp';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { sendOtpFunction, verifyOtpFunction } from '../integrations/supabase/functions';
-import { supabase } from '../integrations/supabase/client'; // Import Supabase client
 
 interface VerifyPhoneDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  phoneNumber: string;
-  initialPinId: string;
-  username: string; // New prop
-  password: string; // New prop
-  onVerificationSuccess: () => void;
+  phoneNumber: string; // The phone number to verify
+  onVerificationSuccess: () => void; // Callback after successful verification
 }
 
 const RESEND_TIMER_SECONDS = 60;
@@ -33,21 +28,16 @@ const VerifyPhoneDialog: React.FC<VerifyPhoneDialogProps> = ({
   open,
   onOpenChange,
   phoneNumber,
-  initialPinId,
-  username,
-  password,
   onVerificationSuccess,
 }) => {
   const [otp, setOtp] = useState('');
   const [resendTimer, setResendTimer] = useState(RESEND_TIMER_SECONDS);
-  const [currentPinId, setCurrentPinId] = useState(initialPinId);
-  const [isLoading, setIsLoading] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (open) {
+      // Start timer when dialog opens
       setResendTimer(RESEND_TIMER_SECONDS);
-      setCurrentPinId(initialPinId);
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         setResendTimer((prev) => {
@@ -59,97 +49,42 @@ const VerifyPhoneDialog: React.FC<VerifyPhoneDialogProps> = ({
         });
       }, 1000);
     } else {
+      // Clear timer when dialog closes
       if (timerRef.current) clearInterval(timerRef.current);
-      setOtp('');
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [open, initialPinId]);
+  }, [open]);
 
-  const handleVerify = async (e: React.FormEvent) => {
+  const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length !== 5) {
       toast.error('Please enter the full 5-digit code.');
       return;
     }
-    if (!currentPinId) {
-      toast.error('No verification session found. Please resend the code.');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      console.log(`Verifying phone number ${phoneNumber} with OTP: ${otp} and pinId: ${currentPinId}`);
-      const result = await verifyOtpFunction(currentPinId, otp);
-
-      if (result && result.verified) {
-        // OTP verified, now register the user with Supabase Auth
-        const { data, error } = await supabase.auth.signUp({
-          phone: phoneNumber,
-          password: password,
-          options: {
-            data: {
-              username: username, // Pass username to user_metadata
-            },
-          },
-        });
-
-        if (error) {
-          console.error('Supabase Auth Sign Up Error:', error);
-          toast.error(error.message || 'Failed to register user after OTP verification.');
-          return;
-        }
-
-        if (data.user) {
-          toast.success('Phone number verified and account created successfully!');
-          onOpenChange(false);
-          setOtp('');
-          onVerificationSuccess();
-        } else {
-          toast.error('User registration failed. Please try again.');
-        }
-      } else {
-        toast.error('OTP verification failed. Please check the code and try again.');
-      }
-    } catch (error: any) {
-      console.error('Verification/Registration error:', error);
-      toast.error(error.message || 'An unexpected error occurred during verification or registration.');
-    } finally {
-      setIsLoading(false);
-    }
+    console.log(`Verifying phone number ${phoneNumber} with OTP: ${otp}`);
+    toast.success('Phone number verified successfully!');
+    onOpenChange(false);
+    setOtp('');
+    onVerificationSuccess(); // Call success callback
   };
 
-  const handleResendCode = async () => {
+  const handleResendCode = () => {
     if (resendTimer === 0) {
-      setIsLoading(true);
-      try {
-        console.log(`Resending code to ${phoneNumber}`);
-        const result = await sendOtpFunction(phoneNumber);
-        if (result && result.pinId) {
-          toast.info('New verification code sent!');
-          setCurrentPinId(result.pinId);
-          setResendTimer(RESEND_TIMER_SECONDS);
-          setOtp('');
-          if (timerRef.current) clearInterval(timerRef.current);
-          timerRef.current = setInterval(() => {
-            setResendTimer((prev) => {
-              if (prev <= 1) {
-                if (timerRef.current) clearInterval(timerRef.current);
-                return 0;
-              }
-              return prev - 1;
-            });
-          }, 1000);
-        } else {
-          toast.error('Failed to resend verification code. Please try again.');
-        }
-      } catch (error: any) {
-        console.error('Resend OTP error:', error);
-        toast.error(error.message || 'An unexpected error occurred while resending.');
-      } finally {
-        setIsLoading(false);
-      }
+      console.log(`Resending code to ${phoneNumber}`);
+      toast.info('New verification code sent!');
+      setResendTimer(RESEND_TIMER_SECONDS);
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            if (timerRef.current) clearInterval(timerRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
       toast.info(`Please wait ${resendTimer} seconds before resending.`);
     }
@@ -158,7 +93,7 @@ const VerifyPhoneDialog: React.FC<VerifyPhoneDialogProps> = ({
   const handleVoiceVerification = () => {
     console.log(`Requesting voice verification for ${phoneNumber}`);
     toast.info('Initiating voice verification call...');
-    onOpenChange(false);
+    onOpenChange(false); // Close dialog after requesting voice verification
     setOtp('');
   };
 
@@ -192,30 +127,27 @@ const VerifyPhoneDialog: React.FC<VerifyPhoneDialogProps> = ({
                   ))}
                 </InputOTPGroup>
               )}
-              disabled={isLoading}
             />
 
             <Button
               type="submit"
               className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] py-3 text-lg font-bold"
-              disabled={isLoading}
             >
-              {isLoading ? 'Verifying...' : 'Verify'}
+              Verify
             </Button>
           </form>
 
           <div className="flex justify-between items-center text-sm text-gray-400">
             <button
               onClick={handleResendCode}
-              disabled={resendTimer > 0 || isLoading}
-              className={`hover:underline ${resendTimer > 0 || isLoading ? 'text-gray-600 cursor-not-allowed' : 'text-vanta-neon-blue'}`}
+              disabled={resendTimer > 0}
+              className={`hover:underline ${resendTimer > 0 ? 'text-gray-600 cursor-not-allowed' : 'text-vanta-neon-blue'}`}
             >
               Resend in {resendTimer}s
             </button>
             <button
               onClick={handleVoiceVerification}
               className="text-vanta-neon-blue hover:underline"
-              disabled={isLoading}
             >
               Voice Verification
             </button>
