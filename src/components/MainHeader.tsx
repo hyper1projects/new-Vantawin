@@ -21,6 +21,7 @@ const MainHeader: React.FC = () => {
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [verifyPhoneOpen, setVerifyPhoneOpen] = useState(false);
   const [phoneToVerify, setPhoneToVerify] = useState('');
+  const [pinIdForVerification, setPinIdForVerification] = useState(''); // New state for pinId
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulate login state
   const isMobile = useIsMobile();
 
@@ -40,14 +41,16 @@ const MainHeader: React.FC = () => {
     window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
 
-  const handleVerificationNeeded = (phoneNumber: string) => {
+  const handleVerificationNeeded = (phoneNumber: string, pinId: string) => {
     setPhoneToVerify(phoneNumber);
+    setPinIdForVerification(pinId); // Store the pinId
     setVerifyPhoneOpen(true);
   };
 
   const handleVerificationSuccess = () => {
     setVerifyPhoneOpen(false);
     setPhoneToVerify('');
+    setPinIdForVerification(''); // Clear pinId after successful verification
     setLoginOpen(true);
     toast.success('Your account has been successfully verified! Please log in.');
   };
@@ -160,6 +163,7 @@ const MainHeader: React.FC = () => {
         open={verifyPhoneOpen}
         onOpenChange={setVerifyPhoneOpen}
         phoneNumber={phoneToVerify}
+        initialPinId={pinIdForVerification} // Pass the pinId here
         onVerificationSuccess={handleVerificationSuccess}
       />
     </>
