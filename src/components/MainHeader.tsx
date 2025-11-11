@@ -76,7 +76,12 @@ const MainHeader: React.FC = () => {
             >
               <Button
                 variant="ghost"
-                className={`font-medium text-sm ${isActive(category) ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
+                className={cn(
+                  `font-medium text-sm p-0 h-auto`,
+                  isActive(category) 
+                    ? 'bg-vanta-neon-blue text-vanta-blue-dark' // Active state: neon blue background, dark blue text
+                    : 'text-[#B4B2C0] hover:bg-vanta-accent-dark-blue hover:text-white' // Inactive hover state: dark accent blue background, white text
+                )}
               >
                 {category}
               </Button>
