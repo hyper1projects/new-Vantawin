@@ -9,12 +9,14 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   username: string | null;
+  firstName: string | null; // Added firstName
+  lastName: string | null;  // Added lastName
   isLoading: boolean;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
-  fetchUserProfile: (userId: string) => Promise<string | null>;
+  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +25,8 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null); // Added state
+  const [lastName, setLastName] = useState<string | null>(null);   // Added state
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -32,24 +36,29 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         setSession(currentSession);
         setUser(currentSession?.user || null);
         if (currentSession?.user) {
-          const fetchedUsername = await fetchUserProfile(currentSession.user.id);
+          const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(currentSession.user.id);
           setUsername(fetchedUsername);
+          setFirstName(fetchedFirstName);
+          setLastName(fetchedLastName);
         } else {
           setUsername(null);
+          setFirstName(null);
+          setLastName(null);
         }
         setIsLoading(false);
       }
     );
 
     // Fetch initial session
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
       setSession(initialSession);
       setUser(initialSession?.user || null);
       if (initialSession?.user) {
-        fetchUserProfile(initialSession.user.id).then(fetchedUsername => {
-          setUsername(fetchedUsername);
-          setIsLoading(false);
-        });
+        const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(initialSession.user.id);
+        setUsername(fetchedUsername);
+        setFirstName(fetchedFirstName);
+        setLastName(fetchedLastName);
+        setIsLoading(false);
       } else {
         setIsLoading(false);
       }
@@ -60,18 +69,22 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
   }, []);
 
-  const fetchUserProfile = async (userId: string): Promise<string | null> => {
+  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null }> => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('username')
+      .select('username, first_name, last_name')
       .eq('id', userId)
       .single();
 
     if (error) {
       console.error('Error fetching user profile:', error);
-      return null;
+      return { username: null, firstName: null, lastName: null };
     }
-    return data?.username || null;
+    return {
+      username: data?.username || null,
+      firstName: data?.first_name || null,
+      lastName: data?.last_name || null,
+    };
   };
 
   const signIn = async (identifier: string, password: string) => {
@@ -82,8 +95,10 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (error) {
       console.error('Sign In Error:', error);
     } else if (data.user) {
-      const fetchedUsername = await fetchUserProfile(data.user.id);
+      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(data.user.id);
       setUsername(fetchedUsername);
+      setFirstName(fetchedFirstName);
+      setLastName(fetchedLastName);
     }
     return { error };
   };
@@ -115,6 +130,8 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       setSession(null);
       setUser(null);
       setUsername(null);
+      setFirstName(null); // Clear state on sign out
+      setLastName(null);  // Clear state on sign out
     }
     return { error };
   };
@@ -135,6 +152,8 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         session,
         user,
         username,
+        firstName,
+        lastName,
         isLoading,
         signIn,
         signUp,
