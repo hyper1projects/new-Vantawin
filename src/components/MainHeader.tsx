@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, UserCircle, Bell, ChevronDown } from 'lucide-react';
+import { Search, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
 
-const sportsCategories = ['All', 'Football', 'Basketball', 'Tennis', 'A.Football', 'Golf'];
+const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
   const [loginOpen, setLoginOpen] = useState(false);
@@ -27,23 +27,17 @@ const MainHeader: React.FC = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const queryParams = new URLSearchParams(location.search);
-  const activeCategoryParam = queryParams.get('category') || 'all';
+  const activeCategoryParam = queryParams.get('category') || 'football'; // Default to 'football' if no param
 
+  // Function to determine if a category is active
   const isActive = (category: string) => {
     const categorySlug = category.toLowerCase().replace('.', '');
-    if (currentPath === '/games') {
-      return activeCategoryParam === categorySlug;
-    }
-    return categorySlug === 'all' && currentPath === '/';
+    return currentPath === '/games' && activeCategoryParam === categorySlug;
   };
 
   const handleCategoryClick = (category: string) => {
-    const categorySlug = category.toLowerCase().replace('.', '');
-    if (categorySlug === 'all') {
-      window.location.href = '/';
-    } else {
-      window.location.href = `/games?category=${categorySlug}`;
-    }
+    // Update URL with the new category query parameter
+    window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
 
   const handleVerificationNeeded = (phoneNumber: string) => {
@@ -72,111 +66,60 @@ const MainHeader: React.FC = () => {
   return (
     <>
       {/* Main Header Row */}
-      <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 md:px-8 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
-        {/* Left Section: VantaWin Logo */}
-        <Link to="/" className="flex items-center cursor-pointer flex-shrink-0">
-          <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
-          <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
-        </Link>
-
-        {/* Middle Section (Desktop Only): Sports Categories & How to Play */}
-        {!isMobile && (
-          <div className="flex items-center space-x-6 mx-auto flex-grow justify-center">
-            {/* Sports Categories */}
-            <div className="flex items-center space-x-4">
-              {sportsCategories.map((category) => (
-                <Button
-                  key={category}
-                  variant="ghost"
-                  onClick={() => handleCategoryClick(category)}
-                  className={cn(
-                    `relative font-medium text-sm px-0 py-1 h-auto`,
-                    isActive(category)
-                      ? 'text-vanta-neon-blue after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-vanta-neon-blue'
-                      : 'text-[#B4B2C0] hover:bg-transparent hover:text-white'
-                  )}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-
-            {/* How it works link */}
-            <Link to="/how-it-works" className="flex items-center space-x-1 ml-6 flex-shrink-0">
-              <AlertCircle size={18} className="text-[#00EEEE]" />
-              <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
-                How it works
-              </Button>
-            </Link>
+      <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 pr-20 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
+        {/* Left Section: Logo, Sports Categories and How to play */}
+        <div className="flex items-center space-x-8">
+          {/* VantaWin Logo */}
+          <div className="flex items-center">
+            <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
+            <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
           </div>
-        )}
-
-        {/* Search Component (Conditional Rendering) */}
-        {!isMobile ? (
-          // Desktop Search Input
-          <div className="relative bg-[#053256] rounded-[14px] h-10 flex items-center w-64 mx-6">
-            <Search className="absolute left-3 text-[#00EEEE]" size={18} />
-            <Input
-              type="text"
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0 text-sm"
-            />
-          </div>
-        ) : (
-          // Mobile Search Icon Button
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative w-10 h-10 rounded-full border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 transition-colors flex items-center justify-center"
-            aria-label="Search"
-            onClick={() => console.log('Search clicked')}
-          >
-            <Search size={20} />
-          </Button>
-        )}
-
-        {/* Right Section: Auth/User UI */}
-        <div className="flex items-center space-x-2 md:space-x-4 ml-auto flex-shrink-0">
-          {isLoggedIn ? (
-            // Logged-in UI
-            <>
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white" aria-label="Notifications">
-                <Bell size={20} />
-              </Button>
-              <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-[#00EEEE]/80">
-                Deposit
-              </Button>
-              <Button variant="outline" className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-vanta-neon-blue/10">
-                ₦ 0.00
-              </Button>
+          <div className="flex items-center space-x-6">
+          {sportsCategories.map((category) => (
+            <Link 
+              key={category} 
+              to={`/games?category=${category.toLowerCase().replace('.', '')}`} // All categories route to /games with a query param
+            >
               <Button
                 variant="ghost"
-                size="icon"
-                className="relative w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-200 transition-colors flex items-center justify-center"
-                aria-label="User Profile"
-                onClick={handleLogout}
+                className={`font-medium text-sm ${isActive(category) ? 'text-[#00EEEE]' : 'text-[#B4B2C0]'} hover:bg-transparent p-0 h-auto`}
               >
-                <UserCircle size={20} />
-                <ChevronDown size={16} className="absolute bottom-0 right-0 bg-vanta-blue-dark rounded-full text-white" />
+                {category}
               </Button>
-            </>
-          ) : (
-            // Logged-out UI (Login/Sign up buttons)
-            <>
-              <Button 
-                onClick={() => setLoginOpen(true)}
-                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-[#00EEEE]/10"
-              >
-                Login
-              </Button>
-              <Button 
-                onClick={() => setSignUpOpen(true)}
-                className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-[#00EEEE]/80"
-              >
-                Sign up
-              </Button>
-            </>
-          )}
+            </Link>
+          ))}
+          {/* How to play link */}
+          <Link to="/how-to-play" className="flex items-center space-x-1 ml-4">
+            <AlertCircle size={18} className="text-[#00EEEE]" />
+            <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
+              How to play
+            </Button>
+          </Link>
+        </div>
+        </div>
+
+        {/* Middle Section: Search Bar */}
+        <div className="flex-grow max-w-lg mx-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
+          <Search className="absolute left-3 text-[#00EEEE]" size={18} />
+          <Input
+            type="text"
+            placeholder="Search..."
+            className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0"
+          />
+        </div>
+
+        {/* Right Section: Login, Register */}
+        <div className="flex items-center space-x-4">
+          <Link to="/login">
+            <Button className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10">
+              Login
+            </Button>
+          </Link>
+          <Link to="/register">
+            <Button className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80">
+              Sign up
+            </Button>
+          </Link>
         </div>
       </div>
 
