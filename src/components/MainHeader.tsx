@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, LogOut, ArrowDownToLine, ArrowUpToLine, Gift, User } from 'lucide-react'; // Added new icons
+import { Search, AlertCircle, LogOut, ArrowDownToLine, ArrowUpToLine, Gift, User, ChevronDown } from 'lucide-react'; // Added ChevronDown icon
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,15 +13,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'; // Added DropdownMenu components
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Added Avatar components
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import LoginDialog from './LoginDialog';
 import SignUpDialog from './SignUpDialog';
 import ForgotPasswordDialog from './ForgotPasswordDialog';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
-import { useAuth } from '../context/AuthContext'; // Import useAuth
+import { useAuth } from '../context/AuthContext';
 
 const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
@@ -30,22 +30,20 @@ const MainHeader: React.FC = () => {
   const [signUpOpen, setSignUp] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   
-  const { user, username, signOut, isLoading } = useAuth(); // Re-added signOut from useAuth
+  const { user, username, signOut, isLoading } = useAuth();
   const isMobile = useIsMobile();
 
   const location = useLocation();
   const currentPath = location.pathname;
   const queryParams = new URLSearchParams(location.search);
-  const activeCategoryParam = queryParams.get('category') || 'football'; // Default to 'football' if no param
+  const activeCategoryParam = queryParams.get('category') || 'football';
 
-  // Function to determine if a category is active
   const isActive = (category: string) => {
     const categorySlug = category.toLowerCase().replace('.', '');
     return currentPath === '/games' && activeCategoryParam === categorySlug;
   };
 
   const handleCategoryClick = (category: string) => {
-    // Update URL with the new category query parameter
     window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
 
@@ -59,17 +57,14 @@ const MainHeader: React.FC = () => {
   };
 
   if (isLoading) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   return (
     <>
-      {/* Main Header Row */}
       <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 pr-20 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
-        {/* Left Section: Logo, Sports Categories and How to play */}
         <div className="flex items-center space-x-8">
-          {/* VantaWin Logo */}
-          <Link to="/" className="flex items-center cursor-pointer"> {/* Wrapped logo in Link */}
+          <Link to="/" className="flex items-center cursor-pointer">
             <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
             <span className="text-xl font-bold text-vanta-neon-blue">WIN</span>
           </Link>
@@ -77,7 +72,7 @@ const MainHeader: React.FC = () => {
           {sportsCategories.map((category) => (
             <Link 
               key={category} 
-              to={`/games?category=${category.toLowerCase().replace('.', '')}`} // All categories route to /games with a query param
+              to={`/games?category=${category.toLowerCase().replace('.', '')}`}
             >
               <Button
                 variant="ghost"
@@ -87,7 +82,6 @@ const MainHeader: React.FC = () => {
               </Button>
             </Link>
           ))}
-          {/* How to play link */}
           <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
             <AlertCircle size={18} className="text-[#00EEEE]" />
             <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
@@ -97,7 +91,6 @@ const MainHeader: React.FC = () => {
         </div>
         </div>
 
-        {/* Middle Section: Search Bar */}
         <div className="flex-grow max-w-lg mx-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
           <Search className="absolute left-3 text-[#00EEEE]" size={18} />
           <Input
@@ -107,25 +100,23 @@ const MainHeader: React.FC = () => {
           />
         </div>
 
-        {/* Right Section: Login, Register or User Balance and Profile Dropdown */}
         <div className="flex items-center space-x-4">
           {user ? (
             <>
-              {/* Display user balance as a clickable link */}
               <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors">
-                <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span> {/* Placeholder balance */}
+                <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span>
               </Link>
 
-              {/* Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 flex items-center justify-center group">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src="/placeholder.svg" alt={username || "User"} /> {/* Placeholder avatar */}
+                      <AvatarImage src="/placeholder.svg" alt={username || "User"} />
                       <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark">
                         {username ? username.substring(0, 2).toUpperCase() : 'UN'}
                       </AvatarFallback>
                     </Avatar>
+                    <ChevronDown size={16} className="ml-1 text-gray-400 group-hover:text-white transition-colors" /> {/* Dropdown arrow */}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56 bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue" align="end" forceMount>
@@ -152,7 +143,7 @@ const MainHeader: React.FC = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
-                      <Link to="/wallet?tab=rewards"> {/* Assuming a query param for rewards tab */}
+                      <Link to="/wallet?tab=rewards">
                         <Gift className="mr-2 h-4 w-4" />
                         <span>Rewards</span>
                       </Link>
@@ -175,13 +166,13 @@ const MainHeader: React.FC = () => {
           ) : (
             <>
               <Button 
-                onClick={() => setLoginOpen(true)} // Directly open Login dialog
+                onClick={() => setLoginOpen(true)}
                 className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
               >
                 Login
               </Button>
               <Button 
-                onClick={() => setSignUpOpen(true)} // Directly open Sign Up dialog
+                onClick={() => setSignUpOpen(true)}
                 className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
               >
                 Sign up
@@ -191,7 +182,6 @@ const MainHeader: React.FC = () => {
         </div>
       </div>
 
-      {/* Dialogs */}
       <LoginDialog 
         open={loginOpen} 
         onOpenChange={setLoginOpen}
