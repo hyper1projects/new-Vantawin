@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
 import SignUpDialog from './SignUpDialog';
+import ForgotPasswordDialog from './ForgotPasswordDialog'; // Import the new dialog
 
 const MainHeader: React.FC = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false); // New state for forgot password dialog
   
   const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
   const location = useLocation();
@@ -85,16 +87,34 @@ const MainHeader: React.FC = () => {
         </Button>
       </div>
 
-      {/* Login and SignUp Dialogs */}
+      {/* Login, SignUp, and ForgotPassword Dialogs */}
       <LoginDialog 
         open={loginOpen} 
         onOpenChange={setLoginOpen}
-        onSwitchToSignUp={() => setSignUpOpen(true)}
+        onSwitchToSignUp={() => {
+          setLoginOpen(false);
+          setSignUpOpen(true);
+        }}
+        onSwitchToForgotPassword={() => { // New prop to handle switching to forgot password
+          setLoginOpen(false);
+          setForgotPasswordOpen(true);
+        }}
       />
       <SignUpDialog 
         open={signUpOpen} 
         onOpenChange={setSignUpOpen}
-        onSwitchToLogin={() => setLoginOpen(true)}
+        onSwitchToLogin={() => {
+          setSignUpOpen(false);
+          setLoginOpen(true);
+        }}
+      />
+      <ForgotPasswordDialog
+        open={forgotPasswordOpen}
+        onOpenChange={setForgotPasswordOpen}
+        onSwitchToLogin={() => {
+          setForgotPasswordOpen(false);
+          setLoginOpen(true);
+        }}
       />
     </div>
   );

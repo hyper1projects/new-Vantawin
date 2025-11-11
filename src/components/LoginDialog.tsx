@@ -11,15 +11,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Link } from 'react-router-dom'; // Import Link
+// Removed Link import as it's no longer needed for navigation
 
 interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToSignUp: () => void;
+  onSwitchToForgotPassword: () => void; // New prop
 }
 
-const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp }) => {
+const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp, onSwitchToForgotPassword }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
 
@@ -72,13 +73,13 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
               required
             />
             <div className="text-right mt-2">
-              <Link 
-                to="/forgot-password" 
+              <button 
+                type="button" // Important to prevent form submission
+                onClick={onSwitchToForgotPassword}
                 className="text-vanta-neon-blue text-sm hover:underline"
-                onClick={() => onOpenChange(false)} // Close the dialog when navigating
               >
                 Forgot Password?
-              </Link>
+              </button>
             </div>
           </div>
           <Button
@@ -91,10 +92,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
         <p className="text-center text-sm text-gray-400 mt-4">
           Don't have an account?{' '}
           <button
-            onClick={() => {
-              onOpenChange(false);
-              onSwitchToSignUp();
-            }}
+            onClick={onSwitchToSignUp}
             className="text-vanta-neon-blue hover:underline"
           >
             Sign Up

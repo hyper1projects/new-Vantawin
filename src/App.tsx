@@ -17,9 +17,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
 import GameDetails from './pages/GameDetails';
 import AllTopGames from './pages/AllTopGames';
-import Login from './pages/Login'; // Import Login page
-import SignUp from './pages/SignUp'; // Import SignUp page
-import ForgotPassword from './pages/ForgotPassword'; // Import ForgotPassword page
+// Removed Login and SignUp page imports as they are now dialogs
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 
 function App() {
@@ -45,10 +43,10 @@ function App() {
             <Route path="how-it-works" element={<div>How It Works Page</div>} />
             <Route path="*" element={<NotFound />} />
           </Route>
-          {/* Full-page routes without the main layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} /> {/* New route */}
+          {/* Full-page routes without the main layout (Login, SignUp, ForgotPassword are now dialogs) */}
+          {/* <Route path="/login" element={<Login />} /> */}
+          {/* <Route path="/register" element={<SignUp />} /> */}
+          {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
         </Routes>
       </MatchSelectionProvider>
     </Router>
