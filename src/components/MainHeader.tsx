@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, LogOut } from 'lucide-react'; // Import LogOut icon
+import { Search, AlertCircle, LogOut } from 'lucide-react'; // LogOut is still imported but will be replaced
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
@@ -107,9 +107,10 @@ const MainHeader: React.FC = () => {
               </Link>
               <Button 
                 onClick={handleLogout}
-                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10 flex items-center gap-2"
+                className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-3 py-2 font-bold text-sm hover:bg-[#00EEEE]/10 flex items-center gap-2"
               >
-                <LogOut size={18} /> Logout
+                <img src="/placeholder.svg" alt="User Avatar" className="w-6 h-6 rounded-full" /> {/* Image placeholder */}
+                Logout
               </Button>
             </>
           ) : (
