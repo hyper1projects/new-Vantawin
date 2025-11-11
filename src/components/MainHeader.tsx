@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, LogOut, ArrowDownToLine, ArrowUpToLine, Gift, User, ChevronDown } from 'lucide-react'; // Added ChevronDown icon
+import { Search, AlertCircle, LogOut, ArrowDownToLine, ArrowUpToLine, Gift, User, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -107,61 +107,64 @@ const MainHeader: React.FC = () => {
                 <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span>
               </Link>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 flex items-center justify-center group">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src="/placeholder.svg" alt={username || "User"} />
-                      <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark">
-                        {username ? username.substring(0, 2).toUpperCase() : 'UN'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <ChevronDown size={16} className="ml-1 text-gray-400 group-hover:text-white transition-colors" /> {/* Dropdown arrow */}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{username || 'Guest'}</p>
-                      <p className="text-xs leading-none text-gray-400">
-                        {user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
-                      <Link to="/wallet">
-                        <ArrowDownToLine className="mr-2 h-4 w-4" />
-                        <span>Deposit</span>
-                      </Link>
+              {/* Updated structure for Avatar and Dropdown Trigger */}
+              <div className="flex items-center space-x-1">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src="/placeholder.svg" alt={username || "User"} />
+                  <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark">
+                    {username ? username.substring(0, 2).toUpperCase() : 'UN'}
+                  </AvatarFallback>
+                </Avatar>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-10 w-10 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-white">
+                      <ChevronDown size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{username || 'Guest'}</p>
+                        <p className="text-xs leading-none text-gray-400">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                        <Link to="/wallet">
+                          <ArrowDownToLine className="mr-2 h-4 w-4" />
+                          <span>Deposit</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                        <Link to="/wallet">
+                          <ArrowUpToLine className="mr-2 h-4 w-4" />
+                          <span>Withdraw</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                        <Link to="/wallet?tab=rewards">
+                          <Gift className="mr-2 h-4 w-4" />
+                          <span>Rewards</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                        <Link to="/users">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>My Account</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-vanta-accent-dark-blue text-red-400">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
-                      <Link to="/wallet">
-                        <ArrowUpToLine className="mr-2 h-4 w-4" />
-                        <span>Withdraw</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
-                      <Link to="/wallet?tab=rewards">
-                        <Gift className="mr-2 h-4 w-4" />
-                        <span>Rewards</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
-                      <Link to="/users">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>My Account</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-vanta-accent-dark-blue text-red-400">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </>
           ) : (
             <>
