@@ -10,10 +10,9 @@ interface AuthContextType {
   username: string | null;
   isLoading: boolean;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
-  signUp: (phoneNumber: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
+  signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>; // Changed phoneNumber to email
   signOut: () => Promise<{ error: any }>;
-  verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
-  resendOtp: (phone: string) => Promise<{ error: any }>;
+  // Removed verifyOtp and resendOtp as they are no longer used for email sign-up
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
   fetchUserProfile: (userId: string) => Promise<string | null>;
 }
@@ -76,10 +75,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   const signIn = async (identifier: string, password: string) => {
     // Supabase signInWithPassword expects email and password
-    // Assuming identifier can be email or phone, for simplicity, we'll treat it as email for now.
-    // A more robust solution would check if it's an email or phone number.
+    // Assuming identifier is email for signInWithPassword
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: identifier, // Assuming identifier is email for signInWithPassword
+      email: identifier,
       password: password,
     });
     if (error) {
@@ -91,12 +89,10 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     return { error };
   };
 
-  const signUp = async (phoneNumber: string, username: string, password: string) => {
-    // Supabase signUp with phone number requires OTP verification
-    // This will send an OTP to the phone number.
-    // The username will be passed as user_metadata to be picked up by the trigger.
+  const signUp = async (email: string, username: string, password: string) => { // Changed phoneNumber to email
+    // Supabase signUp with email
     const { data, error } = await supabase.auth.signUp({
-      phone: phoneNumber,
+      email: email,
       password: password,
       options: {
         data: {
@@ -122,27 +118,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     return { error };
   };
 
-  const verifyOtp = async (phone: string, token: string) => {
-    const { error } = await supabase.auth.verifyOtp({
-      phone,
-      token,
-      type: 'sms',
-    });
-    if (error) {
-      console.error('Verify OTP Error:', error);
-    }
-    return { error };
-  };
-
-  const resendOtp = async (phone: string) => {
-    const { error } = await supabase.auth.signInWithOtp({
-      phone,
-    });
-    if (error) {
-      console.error('Resend OTP Error:', error);
-    }
-    return { error };
-  };
+  // Removed verifyOtp and resendOtp functions
 
   const resetPasswordForEmail = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -164,8 +140,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         signIn,
         signUp,
         signOut,
-        verifyOtp,
-        resendOtp,
+        // Removed verifyOtp and resendOtp from context value
         resetPasswordForEmail,
         fetchUserProfile,
       }}

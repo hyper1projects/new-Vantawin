@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import LoginDialog from './LoginDialog';
 import SignUpDialog from './SignUpDialog';
 import ForgotPasswordDialog from './ForgotPasswordDialog';
-import VerifyPhoneDialog from './VerifyPhoneDialog';
+// Removed VerifyPhoneDialog import
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -20,8 +20,8 @@ const MainHeader: React.FC = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-  const [verifyPhoneOpen, setVerifyPhoneOpen] = useState(false);
-  const [phoneToVerify, setPhoneToVerify] = useState('');
+  // Removed verifyPhoneOpen state
+  // Removed phoneToVerify state
   
   const { user, username, signOut, isLoading } = useAuth(); // Use the auth context
   const isMobile = useIsMobile();
@@ -42,17 +42,8 @@ const MainHeader: React.FC = () => {
     window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
 
-  const handleVerificationNeeded = (phoneNumber: string) => {
-    setPhoneToVerify(phoneNumber);
-    setVerifyPhoneOpen(true);
-  };
-
-  const handleVerificationSuccess = () => {
-    setVerifyPhoneOpen(false);
-    setPhoneToVerify('');
-    setLoginOpen(true); // After verification, prompt user to log in
-    toast.success('Your account has been successfully verified! Please log in.');
-  };
+  // Removed handleVerificationNeeded function
+  // Removed handleVerificationSuccess function
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -165,7 +156,7 @@ const MainHeader: React.FC = () => {
           setSignUpOpen(false);
           setLoginOpen(true);
         }}
-        onVerificationNeeded={handleVerificationNeeded}
+        // Removed onVerificationNeeded prop
       />
       <ForgotPasswordDialog
         open={forgotPasswordOpen}
@@ -175,12 +166,7 @@ const MainHeader: React.FC = () => {
           setLoginOpen(true);
         }}
       />
-      <VerifyPhoneDialog
-        open={verifyPhoneOpen}
-        onOpenChange={setVerifyPhoneOpen}
-        phoneNumber={phoneToVerify}
-        onVerificationSuccess={handleVerificationSuccess}
-      />
+      {/* Removed VerifyPhoneDialog */}
     </>
   );
 };

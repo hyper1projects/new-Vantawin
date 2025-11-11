@@ -17,11 +17,11 @@ interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToLogin: () => void;
-  onVerificationNeeded: (phoneNumber: string) => void;
+  // Removed onVerificationNeeded as phone verification is no longer used
 }
 
-const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitchToLogin, onVerificationNeeded }) => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitchToLogin }) => {
+  const [email, setEmail] = useState(''); // Changed to email
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -29,7 +29,7 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phoneNumber || !username || !password || !confirmPassword) {
+    if (!email || !username || !password || !confirmPassword) {
       toast.error('Please fill in all fields.');
       return;
     }
@@ -42,19 +42,14 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
       return;
     }
 
-    const { data, error } = await signUp(phoneNumber, username, password);
+    // Call signUp with email instead of phone number
+    const { error } = await signUp(email, username, password);
 
     if (!error) {
-      if (data?.user?.identities?.length === 0) { // User needs to verify phone
-        toast.success('Sign up successful! Please verify your phone number.');
-        onOpenChange(false); // Close sign-up dialog
-        onVerificationNeeded(phoneNumber); // Open verification dialog
-      } else {
-        toast.success('Sign up successful! Please check your email for a verification link.');
-        onOpenChange(false); // Close sign-up dialog
-        onSwitchToLogin(); // Redirect to login
-      }
-      setPhoneNumber('');
+      toast.success('Sign up successful! Please check your email for a verification link.');
+      onOpenChange(false); // Close sign-up dialog
+      onSwitchToLogin(); // Redirect to login
+      setEmail('');
       setUsername('');
       setPassword('');
       setConfirmPassword('');
@@ -71,15 +66,15 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSwitc
         </DialogHeader>
         <form onSubmit={handleSignUp} className="space-y-6 mt-4">
           <div>
-            <Label htmlFor="phoneNumber" className="text-vanta-text-light text-base font-semibold mb-2 block">
-              Phone Number
+            <Label htmlFor="email" className="text-vanta-text-light text-base font-semibold mb-2 block">
+              Email
             </Label>
             <Input
-              id="phoneNumber"
-              type="tel"
-              placeholder="e.g., +2348012345678"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              id="email"
+              type="email" // Changed type to email
+              placeholder="e.g., your@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
