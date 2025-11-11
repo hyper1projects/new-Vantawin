@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import ProfileCard from '../components/ProfileCard'; // Import the new ProfileCard
-import ProfitLossCard from '../components/ProfitLossCard'; // Import the updated ProfitLossCard
-import UserTabs from '../components/UserTabs'; // Import the new UserTabs
-import { format } from 'date-fns'; // For date formatting
+import ProfileCard from '../components/ProfileCard';
+import WinLossRatioCard from '../components/WinLossRatioCard'; // Import the new WinLossRatioCard
+import UserTabs from '../components/UserTabs';
+import { format } from 'date-fns';
 
 const Users: React.FC = () => {
   const { user, username, isLoading } = useAuth();
@@ -40,7 +40,7 @@ const Users: React.FC = () => {
     gamesPlayed: 21,
     winRate: 80,
     wins: 7,
-    avatarUrl: '/images/profile/Profile.png', // Using the uploaded image
+    avatarUrl: '/images/profile/Profile.png',
   };
 
   // Format joined date
@@ -58,7 +58,7 @@ const Users: React.FC = () => {
           wins={userStats.wins}
           avatarUrl={userStats.avatarUrl}
         />
-        <ProfitLossCard />
+        <WinLossRatioCard /> {/* Use the new WinLossRatioCard */}
       </div>
       <UserTabs />
     </div>

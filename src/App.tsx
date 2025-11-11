@@ -17,7 +17,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
 import GameDetails from './pages/GameDetails';
 import AllTopGames from './pages/AllTopGames';
-import EmailConfirmation from './pages/EmailConfirmation'; // Import the new page
+import EmailConfirmation from './pages/EmailConfirmation';
+import Insights from './pages/Insights'; // Import the new Insights page
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
 
@@ -37,6 +38,7 @@ function App() {
               <Route path="leaderboard" element={<Leaderboard />} />
               <Route path="wallet" element={<Wallet />} />
               <Route path="users" element={<Users />} />
+              <Route path="users/insights" element={<Insights />} /> {/* New route for Insights */}
               <Route path="terms-of-use" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="help" element={<Help />} />
@@ -46,7 +48,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Route>
             {/* Standalone routes */}
-            <Route path="/email-confirmation" element={<EmailConfirmation />} /> {/* New route */}
+            <Route path="/email-confirmation" element={<EmailConfirmation />} />
             <Route path="/update-password" element={<div>Update Password Page</div>} />
           </Routes>
         </MatchSelectionProvider>
