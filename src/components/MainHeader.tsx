@@ -2,9 +2,19 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, AlertCircle } from 'lucide-react'; // Removed LogOut icon
+import { Search, AlertCircle, LogOut, ArrowDownToLine, ArrowUpToLine, Gift, User } from 'lucide-react'; // Added new icons
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'; // Added DropdownMenu components
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Added Avatar components
 import LoginDialog from './LoginDialog';
 import SignUpDialog from './SignUpDialog';
 import ForgotPasswordDialog from './ForgotPasswordDialog';
@@ -20,7 +30,7 @@ const MainHeader: React.FC = () => {
   const [signUpOpen, setSignUp] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   
-  const { user, username, isLoading } = useAuth(); // Removed signOut from useAuth
+  const { user, username, signOut, isLoading } = useAuth(); // Re-added signOut from useAuth
   const isMobile = useIsMobile();
 
   const location = useLocation();
@@ -39,7 +49,14 @@ const MainHeader: React.FC = () => {
     window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
   };
 
-  // Removed handleLogout function
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (!error) {
+      toast.info('Logged out successfully.');
+    } else {
+      toast.error('Failed to log out.');
+    }
+  };
 
   if (isLoading) {
     return null; // Or a loading spinner
@@ -90,7 +107,7 @@ const MainHeader: React.FC = () => {
           />
         </div>
 
-        {/* Right Section: Login, Register or User Balance */}
+        {/* Right Section: Login, Register or User Balance and Profile Dropdown */}
         <div className="flex items-center space-x-4">
           {user ? (
             <>
@@ -98,7 +115,62 @@ const MainHeader: React.FC = () => {
               <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors">
                 <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span> {/* Placeholder balance */}
               </Link>
-              {/* Removed Logout Button */}
+
+              {/* Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src="/placeholder.svg" alt={username || "User"} /> {/* Placeholder avatar */}
+                      <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark">
+                        {username ? username.substring(0, 2).toUpperCase() : 'UN'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{username || 'Guest'}</p>
+                      <p className="text-xs leading-none text-gray-400">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                      <Link to="/wallet">
+                        <ArrowDownToLine className="mr-2 h-4 w-4" />
+                        <span>Deposit</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                      <Link to="/wallet">
+                        <ArrowUpToLine className="mr-2 h-4 w-4" />
+                        <span>Withdraw</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                      <Link to="/wallet?tab=rewards"> {/* Assuming a query param for rewards tab */}
+                        <Gift className="mr-2 h-4 w-4" />
+                        <span>Rewards</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                      <Link to="/users">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>My Account</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-vanta-accent-dark-blue text-red-400">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
