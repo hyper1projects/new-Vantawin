@@ -42,7 +42,7 @@ const MainHeader: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 pr-20 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
+    <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 md:px-8 md:pr-20 border-b border-gray-700 z-50 font-outfit bg-vanta-blue-dark">
       {/* Leftmost: VantaWin Logo */}
       <Link to="/" className="flex items-center cursor-pointer">
         <span className="text-xl font-bold text-vanta-text-light">VANTA</span>
@@ -50,9 +50,9 @@ const MainHeader: React.FC = () => {
       </Link>
 
       {/* Middle Group: Sports Categories, How to play, Search Bar */}
-      <div className="flex items-center space-x-8"> {/* This div groups the middle elements */}
-        {/* Sports Categories and How to play */}
-        <div className="flex items-center space-x-6">
+      <div className="flex items-center space-x-4 md:space-x-8 flex-grow justify-end md:justify-start"> {/* Adjusted spacing and justification */}
+        {/* Sports Categories and How to play - Hidden on small screens */}
+        <div className="hidden md:flex items-center space-x-6">
           {sportsCategories.map((category) => (
             <Link 
               key={category} 
@@ -75,28 +75,28 @@ const MainHeader: React.FC = () => {
           </Link>
         </div>
 
-        {/* Search Bar */}
-        <div className="max-w-sm ml-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
+        {/* Search Bar - Responsive width and margin */}
+        <div className="max-w-[150px] md:max-w-sm ml-auto md:ml-8 relative bg-[#053256] rounded-[14px] h-10 flex items-center">
           <Search className="absolute left-3 text-[#00EEEE]" size={18} />
           <Input
             type="text"
             placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0"
+            className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0 text-sm"
           />
         </div>
       </div>
 
-      {/* Rightmost: Login, Register */}
-      <div className="flex items-center space-x-4">
+      {/* Rightmost: Login, Register - Compact on small screens */}
+      <div className="flex items-center space-x-2 md:space-x-4 ml-4 md:ml-0"> {/* Adjusted spacing and margin */}
         <Button 
           onClick={() => setLoginOpen(true)}
-          className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/10"
+          className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-[#00EEEE]/10"
         >
           Login
         </Button>
         <Button 
           onClick={() => setSignUpOpen(true)}
-          className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-6 py-2 font-bold text-sm hover:bg-[#00EEEE]/80"
+          className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-3 py-1.5 text-xs md:px-6 md:py-2 md:text-sm font-bold hover:bg-[#00EEEE]/80"
         >
           Sign up
         </Button>
