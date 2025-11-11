@@ -10,7 +10,7 @@ import BottomNavbar from './BottomNavbar';
 import PredictionBottomSheet from './PredictionBottomSheet';
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { useIsMobile } from '../hooks/use-mobile';
-import SportsSubNavbar from './SportsSubNavbar'; // Import the new SportsSubNavbar
+// Removed SportsSubNavbar import
 
 const Layout = () => {
   const location = useLocation();
@@ -41,8 +41,8 @@ const Layout = () => {
     <SidebarProvider>
       <div className="relative min-h-screen bg-vanta-blue-dark text-vanta-text-light overflow-x-hidden w-full">
         <MainHeader />
-        <SportsSubNavbar /> {/* Render the new SportsSubNavbar here */}
-        <div className="flex h-[calc(100vh-4rem-3rem)] mt-16 pt-12 w-full"> {/* Adjusted height and added pt-12 for sub-navbar */}
+        {/* Removed SportsSubNavbar rendering */}
+        <div className="flex h-[calc(100vh-4rem)] mt-16 w-full"> {/* Reverted height and mt */}
           <div className="hidden md:block h-full flex-shrink-0">
             <Sidebar />
           </div>

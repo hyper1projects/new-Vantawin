@@ -17,10 +17,11 @@ interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToSignUp: () => void;
-  onSwitchToForgotPassword: () => void; // New prop
+  onSwitchToForgotPassword: () => void;
+  onLoginSuccess: () => void; // New prop
 }
 
-const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp, onSwitchToForgotPassword }) => {
+const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchToSignUp, onSwitchToForgotPassword, onLoginSuccess }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
 
@@ -32,8 +33,8 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
     }
 
     console.log('Logging in with:', { identifier, password });
-    toast.success('Login successful!');
-    onOpenChange(false);
+    // Simulate successful login
+    onLoginSuccess(); // Call the success handler
     setIdentifier('');
     setPassword('');
   };
@@ -74,7 +75,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
             />
             <div className="text-right mt-2">
               <button 
-                type="button" // Important to prevent form submission
+                type="button"
                 onClick={onSwitchToForgotPassword}
                 className="text-vanta-neon-blue text-sm hover:underline"
               >
@@ -92,7 +93,10 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
         <p className="text-center text-sm text-gray-400 mt-4">
           Don't have an account?{' '}
           <button
-            onClick={onSwitchToSignUp}
+            onClick={() => {
+              onOpenChange(false);
+              onSwitchToSignUp();
+            }}
             className="text-vanta-neon-blue hover:underline"
           >
             Sign Up
