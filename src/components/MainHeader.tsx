@@ -128,12 +128,14 @@ const MainHeader: React.FC = () => {
 
                 {/* Avatar and Dropdown Trigger - always visible */}
                 <div className="flex items-center space-x-1">
-                  <Avatar className="h-8 w-8"> {/* Reduced size for mobile */}
-                    <AvatarImage src="/placeholder.svg" alt={username || "User"} />
-                    <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-xs"> {/* Reduced font size for mobile */}
-                      {username ? username.substring(0, 2).toUpperCase() : 'UN'}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Link to="/users"> {/* Wrap Avatar with Link */}
+                    <Avatar className="h-8 w-8"> {/* Reduced size for mobile */}
+                      <AvatarImage src="/placeholder.svg" alt={username || "User"} />
+                      <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-xs"> {/* Reduced font size for mobile */}
+                        {username ? username.substring(0, 2).toUpperCase() : 'UN'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-white"> {/* Reduced size for mobile */}
