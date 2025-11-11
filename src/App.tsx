@@ -19,9 +19,9 @@ import GameDetails from './pages/GameDetails';
 import AllTopGames from './pages/AllTopGames';
 import EmailConfirmation from './pages/EmailConfirmation';
 import Insights from './pages/Insights';
-import Login from './pages/Login'; // Import the standalone Login page
-import SignUp from './pages/SignUp'; // Import the standalone SignUp page
-import ProtectedRoute from './components/ProtectedRoute'; // Import the new ProtectedRoute component
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
 
@@ -38,7 +38,6 @@ function App() {
               <Route path="games/:gameId" element={<GameDetails />} />
               <Route path="games/top-games" element={<AllTopGames />} />
               <Route path="pools" element={<Pools />} />
-              <Route path="leaderboard" element={<Leaderboard />} />
               <Route path="users" element={<Users />} />
               <Route path="users/insights" element={<Insights />} />
               <Route path="terms-of-use" element={<Terms />} />
@@ -52,6 +51,7 @@ function App() {
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="wallet" element={<Wallet />} />
+              <Route path="leaderboard" element={<Leaderboard />} /> {/* Added Leaderboard to protected routes */}
             </Route>
             {/* Standalone routes */}
             <Route path="/login" element={<Login />} />
