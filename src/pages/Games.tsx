@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import SectionHeader from '../components/SectionHeader';
-// Removed SportCategoryButtons import
 import LiveGamesSection from '../components/LiveGamesSection';
 import PremierLeagueSection from '../components/PremierLeagueSection';
 import LaLigaSection from '../components/LaLigaSection';
@@ -13,31 +12,13 @@ const Games = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get category from URL query parameter, default to 'football'
   const queryParams = new URLSearchParams(location.search);
   const urlCategory = queryParams.get('category') || 'football';
   
-  // Removed selectedSport state and handleSelectCategory function as they are now handled by SportsSubNavbar
-  // const [selectedSport, setSelectedSport] = useState<string>(urlCategory);
-
-  // useEffect(() => {
-  //   setSelectedSport(urlCategory);
-  // }, [urlCategory]);
-
-  // const handleSelectCategory = (category: string) => {
-  //   navigate(`/games?category=${category.toLowerCase()}`);
-  // };
-
-  const formattedSelectedSport = urlCategory.charAt(0).toUpperCase() + urlCategory.slice(1); // Use urlCategory directly
+  const formattedSelectedSport = urlCategory.charAt(0).toUpperCase() + urlCategory.slice(1);
 
   return (
     <div className="p-4">
-      {/* Sport Category Buttons Section - Removed as it's replaced by SportsSubNavbar */}
-      {/* <SportCategoryButtons 
-        onSelectCategory={handleSelectCategory} 
-        selectedCategory={formattedSelectedSport} 
-      /> */}
-
       {/* Conditionally render content based on selectedSport */}
       {urlCategory === 'football' ? (
         <>
