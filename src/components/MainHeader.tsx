@@ -108,7 +108,7 @@ const MainHeader: React.FC = () => {
           {user ? (
             <>
               {/* Display user balance */}
-              <div className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-lg px-4 py-2">
+              <div className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-4 py-2">
                 <span className="text-vanta-text-light text-base font-semibold">₦ 0.00</span> {/* Placeholder balance */}
               </div>
               <Button 
