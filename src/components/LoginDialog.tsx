@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom'; // Import Link
 
 interface LoginDialogProps {
   open: boolean;
@@ -70,6 +71,15 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onOpenChange, onSwitchT
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
+            <div className="text-right mt-2">
+              <Link 
+                to="/forgot-password" 
+                className="text-vanta-neon-blue text-sm hover:underline"
+                onClick={() => onOpenChange(false)} // Close the dialog when navigating
+              >
+                Forgot Password?
+              </Link>
+            </div>
           </div>
           <Button
             type="submit"
