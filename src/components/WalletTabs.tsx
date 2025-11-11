@@ -4,15 +4,15 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
 
-type MainTab = 'wallet' | 'transactions';
+type MainTab = 'transactions'; // Only 'transactions' remains
 type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'refunds';
 
 interface WalletTabsProps {
-  className?: string; // Add className prop
+  className?: string;
 }
 
 const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
-  const [activeMainTab, setActiveMainTab] = useState<MainTab>('wallet');
+  const [activeMainTab, setActiveMainTab] = useState<MainTab>('transactions'); // Default to 'transactions'
   const [activeTransactionFilter, setActiveTransactionFilter] = useState<TransactionFilter>('all');
 
   const getMainTabButtonClasses = (tab: MainTab) => {
@@ -37,18 +37,9 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
 
   const renderTabContent = () => {
     switch (activeMainTab) {
-      case 'wallet':
-        return (
-          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full flex-grow flex flex-col"> {/* Added flex-grow and flex-col */}
-            <h3 className="text-xl font-bold text-white mb-4">Wallet Details</h3>
-            <div className="text-center text-gray-400 text-lg mt-12 flex-grow flex items-center justify-center"> {/* Added flex-grow to center content vertically */}
-              Your wallet balance and details will appear here.
-            </div>
-          </div>
-        );
       case 'transactions':
         return (
-          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full flex-grow flex flex-col"> {/* Added flex-grow and flex-col */}
+          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full flex-grow flex flex-col">
             <div className="flex space-x-6 mb-6 border-b border-gray-700 pb-4">
               <Button variant="ghost" className={getTransactionFilterButtonClasses('all')} onClick={() => setActiveTransactionFilter('all')}>
                 All Transactions
@@ -72,7 +63,7 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
               <span className="text-right">After Balance</span>
             </div>
 
-            <div className="text-center text-gray-400 text-lg mt-12 flex-grow flex items-center justify-center"> {/* Added flex-grow to center content vertically */}
+            <div className="text-center text-gray-400 text-lg mt-12 flex-grow flex items-center justify-center">
               Nothing to show yet
             </div>
           </div>
@@ -83,14 +74,9 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
   };
 
   return (
-    <div className={cn("flex flex-col space-y-6", className)}> {/* Apply className here */}
+    <div className={cn("flex flex-col space-y-6", className)}>
       <div className="bg-vanta-blue-dark p-2 rounded-[27px] flex space-x-2 w-full md:w-fit">
-        <Button
-          className={getMainTabButtonClasses('wallet')}
-          onClick={() => setActiveMainTab('wallet')}
-        >
-          Wallet
-        </Button>
+        {/* Removed the 'Wallet' button */}
         <Button
           className={getMainTabButtonClasses('transactions')}
           onClick={() => setActiveMainTab('transactions')}
