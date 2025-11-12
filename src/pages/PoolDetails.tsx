@@ -105,8 +105,8 @@ const PoolDetails: React.FC = () => {
 
         {/* Right Column (for Prizes and Pool Stats) */}
         <div className="lg:w-1/3 flex flex-col space-y-6">
-          <PoolPrizesSection pool={pool} />
           <PoolStatsCard players={pool.participants} slotsLeft={slotsLeft} />
+          <PoolPrizesSection pool={pool} />
         </div>
       </div>
     </div>
