@@ -16,7 +16,7 @@ const UserTabs: React.FC = () => {
     return cn(
       "px-6 py-3 rounded-[20px] text-lg font-semibold transition-colors duration-200",
       activeMainTab === tabValue
-        ? "bg-vanta-neon-blue text-white"
+        ? "bg-vanta-neon-blue text-vanta-text-light" // Changed text-white to text-vanta-text-light
         : "bg-transparent text-vanta-text-light hover:bg-vanta-blue-light"
     );
   };
