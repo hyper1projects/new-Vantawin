@@ -26,7 +26,7 @@ import EditProfile from './pages/EditProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
-import AllPools from './pages/AllPools'; // Import the new AllPools page
+import PoolDetails from './pages/PoolDetails'; // Import the new PoolDetails page
 
 function App() {
   return (
@@ -48,7 +48,7 @@ function App() {
               <Route path="games/:gameId" element={<GameDetails />} />
               <Route path="games/top-games" element={<AllTopGames />} />
               <Route path="pools" element={<Pools />} />
-              <Route path="pools/all" element={<AllPools />} /> {/* New route for AllPools */}
+              <Route path="pools/:poolId" element={<PoolDetails />} /> {/* New route for PoolDetails */}
               <Route path="terms-of-use" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="help" element={<Help />} />

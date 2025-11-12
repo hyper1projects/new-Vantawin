@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '../lib/utils';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom'; // Import Link
 
 interface PoolCardProps {
   pool: Pool;
@@ -49,7 +50,7 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
   };
 
   return (
-    <div className="relative bg-[#011B47] rounded-[27px] p-4 shadow-sm flex flex-col text-vanta-text-light w-[300px] h-full flex-shrink-0"> {/* Added w-[300px] and flex-shrink-0 */}
+    <Link to={`/pools/${pool.id}`} className="relative bg-[#011B47] rounded-[27px] p-4 shadow-sm flex flex-col text-vanta-text-light w-[300px] h-full flex-shrink-0 cursor-pointer hover:scale-[1.02] transition-transform duration-200">
       <img
         src={pool.image}
         alt={pool.name}
@@ -83,10 +84,8 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
         </div>
       </div>
 
-      <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] py-2 text-sm font-semibold mt-auto">
-        {pool.status === 'ongoing' ? 'Join Pool' : pool.status === 'upcoming' ? 'View Details' : 'View Results'}
-      </Button>
-    </div>
+      {/* Removed the Button component as the entire card is now clickable */}
+    </Link>
   );
 };
 

@@ -11,4 +11,5 @@ export interface Pool {
   description: string;
   image?: string; // Optional image for the pool
   tier: 'Bronze' | 'Silver' | 'Gold'; // New tier property
+  rules: string; // Added rules property
 }

@@ -103,6 +103,12 @@ const PoolDetailCard: React.FC<PoolDetailCardProps> = ({ pool }) => {
         </div>
       )}
 
+      {/* New section for Rules and Regulations */}
+      <div className="mb-6">
+        <h4 className="text-lg font-bold text-white mb-2">Rules & Regulations</h4>
+        <p className="text-gray-300 text-sm leading-relaxed">{pool.rules}</p>
+      </div>
+
       <Button className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] py-3 text-lg font-bold mt-auto">
         {pool.status === 'ongoing' ? 'Join Pool' : pool.status === 'upcoming' ? 'View Details' : 'View Results'}
       </Button>
