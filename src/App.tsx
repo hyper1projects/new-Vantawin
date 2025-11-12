@@ -31,6 +31,12 @@ function App() {
       <AuthContextProvider>
         <MatchSelectionProvider>
           <Routes>
+            {/* Standalone routes (no layout) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<SignUp />} />
+            <Route path="/email-confirmation" element={<EmailConfirmation />} />
+            <Route path="/update-password" element={<div>Update Password Page</div>} />
+
             {/* Routes with the main layout */}
             <Route path="/" element={<Layout />}>
               <Route index element={<Index />} />
@@ -46,18 +52,15 @@ function App() {
               <Route path="contact" element={<Contact />} />
               <Route path="support" element={<Support />} />
               <Route path="how-it-works" element={<div>How It Works Page</div>} />
+              
+              {/* Protected routes, now nested within the Layout route */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="wallet" element={<Wallet />} />
+                <Route path="leaderboard" element={<Leaderboard />} />
+              </Route>
+
               <Route path="*" element={<NotFound />} />
             </Route>
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="wallet" element={<Wallet />} />
-              <Route path="leaderboard" element={<Leaderboard />} /> {/* Added Leaderboard to protected routes */}
-            </Route>
-            {/* Standalone routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<SignUp />} />
-            <Route path="/email-confirmation" element={<EmailConfirmation />} />
-            <Route path="/update-password" element={<div>Update Password Page</div>} />
           </Routes>
         </MatchSelectionProvider>
       </AuthContextProvider>
