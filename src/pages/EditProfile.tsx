@@ -25,7 +25,7 @@ const EditProfile: React.FC = () => {
       <h1 className="text-4xl font-bold mb-8 text-center">Edit Profile</h1>
 
       <Tabs defaultValue="profile" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 bg-vanta-blue-medium rounded-xl p-1 mb-8">
+        <TabsList className="grid w-full grid-cols-3 p-0 pb-4 mb-8 border-b border-gray-700/50">
           <TabsTrigger value="profile" className={getTabTriggerClasses('profile')}>
             Profile
           </TabsTrigger>
