@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail, ChevronRight } from 'lucide-react';
+import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail, ChevronRight, User } from 'lucide-react'; // Import User icon
 import { 
   Sidebar as ShadcnSidebar, 
   SidebarContent, 
@@ -23,7 +23,7 @@ const Sidebar = () => {
     { name: "Games", icon: Gamepad2, path: "/games" },
     { name: "Pools", icon: Trophy, path: "/pools" },
     { name: "Leaderboard", icon: Users, path: "/leaderboard" },
-    { name: "Wallet", icon: Wallet, path: "/wallet" },
+    { name: "Profile", icon: User, path: "/users" }, // Changed from Wallet to Profile, and path to /users
   ];
 
   const secondaryNavItems = [
@@ -48,7 +48,7 @@ const Sidebar = () => {
                       isActive={isActive}
                       className={isActive ? 'bg-vanta-accent-dark-blue text-white relative before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-vanta-neon-blue' : 'text-white'}
                     >
-                      <Link to={item.path} className="flex items-center gap-2">
+                      <Link to={item.path}>
                         <item.icon size={24} />
                         <span className="text-lg">{item.name}</span>
                       </Link>
