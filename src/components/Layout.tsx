@@ -17,9 +17,9 @@ const Layout = () => {
   const { selectedGame, setSelectedMatch } = useMatchSelection();
   const isMobile = useIsMobile();
 
-  // Added '/users' to the excludedPaths array
-  const excludedPaths = ['/pools', '/leaderboard', '/wallet', '/users'];
-  const showRightSidebar = !excludedPaths.includes(location.pathname);
+  // Updated logic: hide RightSidebar if path starts with /pools or is in the excludedPaths array
+  const excludedPaths = ['/leaderboard', '/wallet', '/users']; // Paths where RightSidebar should not appear
+  const showRightSidebar = !location.pathname.startsWith('/pools') && !excludedPaths.includes(location.pathname);
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = React.useState(false);
 
