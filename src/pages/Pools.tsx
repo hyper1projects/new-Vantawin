@@ -4,8 +4,12 @@ import React from 'react';
 import SectionHeader from '../components/SectionHeader';
 import PoolCard from '../components/PoolCard';
 import { Pool } from '../types/pool';
+import { Button } from '@/components/ui/button'; // Import Button
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Pools = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
   // Dummy data for pools
   const allPools: Pool[] = [
     {
@@ -126,6 +130,10 @@ const Pools = () => {
   const upcomingPools = allPools.filter(pool => pool.status === 'upcoming');
   const endedPools = allPools.filter(pool => pool.status === 'ended');
 
+  const handleShowMoreClick = () => {
+    navigate('/pools/all'); // Navigate to the new AllPools page
+  };
+
   return (
     <div className="p-4">
       {/* Ongoing Pools Section */}
@@ -139,6 +147,14 @@ const Pools = () => {
             ) : (
               <p className="text-vanta-text-medium text-center w-full">No ongoing pools at the moment.</p>
             )}
+          </div>
+          <div className="w-full flex justify-end px-4 pt-4">
+            <Button 
+              className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2"
+              onClick={handleShowMoreClick}
+            >
+              Show More
+            </Button>
           </div>
         </div>
       </div>
@@ -155,6 +171,14 @@ const Pools = () => {
               <p className="text-vanta-text-medium text-center w-full">No upcoming pools planned yet.</p>
             )}
           </div>
+          <div className="w-full flex justify-end px-4 pt-4">
+            <Button 
+              className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2"
+              onClick={handleShowMoreClick}
+            >
+              Show More
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -169,6 +193,14 @@ const Pools = () => {
             ) : (
               <p className="text-vanta-text-medium text-center w-full">No pools have ended recently.</p>
             )}
+          </div>
+          <div className="w-full flex justify-end px-4 pt-4">
+            <Button 
+              className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2"
+              onClick={handleShowMoreClick}
+            >
+              Show More
+            </Button>
           </div>
         </div>
       </div>
