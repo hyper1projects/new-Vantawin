@@ -6,19 +6,26 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useAuth } from '../context/AuthContext';
 
 const SignUp: React.FC = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState(''); // Changed from phoneNumber to email
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // New state for confirm password
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+  const { signUp } = useAuth(); // Use signUp from AuthContext
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     // Basic validation
-    if (!phoneNumber || !username || !password || !confirmPassword) {
+    if (!email || !username || !password || !confirmPassword) {
       toast.error('Please fill in all fields.');
+      return;
+    }
+    // Simple email format validation
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      toast.error('Please enter a valid email address.');
       return;
     }
     if (password.length < 6) {
@@ -30,10 +37,21 @@ const SignUp: React.FC = () => {
       return;
     }
 
-    // In a real application, you would send this data to a backend for registration.
-    console.log('Signing up with:', { phoneNumber, username, password });
-    toast.success('Sign up successful! Redirecting to login...');
-    navigate('/login'); // Redirect to login after successful sign-up
+    const { data, error } = await signUp(email, username, password);
+
+    if (!error) {
+      if (data?.user && !data.user.confirmed_at) {
+        // User created, but email verification is pending
+        toast.success('Sign up successful! Please check your email for a verification link.');
+        navigate('/email-confirmation'); // Redirect to the new confirmation page
+      } else {
+        // User created and confirmed (e.g., if email verification is off in Supabase, though it should be on)
+        toast.success('Sign up successful! Redirecting to login...');
+        navigate('/login');
+      }
+    } else {
+      toast.error(error.message || 'Sign up failed. Please try again.');
+    }
   };
 
   return (
@@ -42,13 +60,13 @@ const SignUp: React.FC = () => {
         <h1 className="text-3xl font-bold text-center text-vanta-neon-blue mb-6">Sign Up</h1>
         <form onSubmit={handleSignUp} className="space-y-6">
           <div>
-            <Label htmlFor="phoneNumber" className="text-vanta-text-light text-base font-semibold mb-2 block">Phone Number</Label>
+            <Label htmlFor="email" className="text-vanta-text-light text-base font-semibold mb-2 block">Email</Label> {/* Changed label */}
             <Input
-              id="phoneNumber"
-              type="tel"
-              placeholder="e.g., +2348012345678"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              id="email"
+              type="email" // Changed type to email
+              placeholder="e.g., user@example.com" // Updated placeholder
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
@@ -77,7 +95,6 @@ const SignUp: React.FC = () => {
               required
             />
           </div>
-          {/* New Confirm Password field */}
           <div>
             <Label htmlFor="confirmPassword" className="text-vanta-text-light text-base font-semibold mb-2 block">Confirm Password</Label>
             <Input
