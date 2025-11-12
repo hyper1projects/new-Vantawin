@@ -76,10 +76,13 @@
     margin: 0;
     padding: 0;
     width: 100%;
+    height: 100%; /* Added to ensure full height */
     overflow-x: hidden;
+    overflow-y: hidden; /* Added to prevent native vertical scrollbar */
   }
   #root {
     width: 100%;
+    height: 100%; /* Added to ensure full height */
     overflow-x: hidden;
   }
 }
