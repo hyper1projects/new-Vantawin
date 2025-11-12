@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import ProfileSettingsTab from '@/components/ProfileSettingsTab';
 import SecuritySettingsTab from '@/components/SecuritySettingsTab';
-import NotificationsSettingsTab from '@/components/NotificationsSettingsTab';
+import NotificationSettingsTab from '@/components/NotificationSettingsTab'; // Corrected import name
 
 const EditProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -44,7 +44,7 @@ const EditProfile: React.FC = () => {
             <SecuritySettingsTab />
           </TabsContent>
           <TabsContent value="notifications" className="bg-vanta-blue-medium rounded-xl p-0">
-            <NotificationsSettingsTab />
+            <NotificationSettingsTab /> {/* Corrected component name */}
           </TabsContent>
         </Tabs>
       </div>
