@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import toast from 'react-hot-toast';
+import { showSuccess, showError } from '../utils/toast'; // Import from your existing toast utility
 
 const EditProfile = () => {
   const { user, session } = useAuth();
@@ -48,7 +48,7 @@ const EditProfile = () => {
 
     if (error) {
       console.error('Error fetching profile:', error);
-      toast.error('Failed to fetch profile data.');
+      showError('Failed to fetch profile data.');
     } else if (data) {
       setFirstName(data.first_name || '');
       setLastName(data.last_name || '');
@@ -80,20 +80,20 @@ const EditProfile = () => {
 
     if (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile.');
+      showError('Failed to update profile.');
     } else {
-      toast.success('Profile updated successfully!');
+      showSuccess('Profile updated successfully!');
     }
   };
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmNewPassword) {
-      toast.error('New passwords do not match.');
+      showError('New passwords do not match.');
       return;
     }
     if (!newPassword) {
-      toast.error('New password cannot be empty.');
+      showError('New password cannot be empty.');
       return;
     }
 
@@ -106,9 +106,9 @@ const EditProfile = () => {
 
     if (error) {
       console.error('Error updating password:', error);
-      toast.error(`Failed to update password: ${error.message}`);
+      showError(`Failed to update password: ${error.message}`);
     } else {
-      toast.success('Password updated successfully!');
+      showSuccess('Password updated successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
