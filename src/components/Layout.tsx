@@ -46,7 +46,7 @@ const Layout = () => {
 
   return (
     <SidebarProvider>
-      <div className="relative min-h-screen bg-vanta-blue-dark text-vanta-text-light overflow-x-hidden w-full">
+      <div className="relative h-screen bg-vanta-blue-dark text-vanta-text-light overflow-x-hidden w-full">
         <MainHeader />
         {isMobile && <MobileSportsSubNavbar />} {/* Conditionally render MobileSportsSubNavbar */}
         <div className={`flex ${contentHeightClass} ${contentMarginTopClass} w-full`}>
