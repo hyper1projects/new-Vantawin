@@ -13,7 +13,7 @@ const EditProfile: React.FC = () => {
   const getTabTriggerClasses = (tabValue: string) => {
     return cn(
       "relative px-4 py-2 text-lg font-semibold transition-colors duration-200",
-      "text-vanta-text-light hover:text-vanta-neon-blue",
+      "bg-transparent text-vanta-text-light hover:text-vanta-neon-blue", // Added bg-transparent here
       "data-[state=active]:text-vanta-neon-blue data-[state=active]:bg-transparent",
       "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-1/2 data-[state=active]:after:-translate-x-1/2",
       "data-[state=active]:after:h-[3px] data-[state=active]:after:w-full data-[state=active]:after:bg-vanta-neon-blue data-[state=active]:after:rounded-full"
