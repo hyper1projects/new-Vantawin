@@ -17,7 +17,7 @@ const Insights: React.FC = () => {
       >
         <ArrowLeft size={20} /> Back to Profile
       </Button>
-      <h1 className="text-2xl font-bold text-vanta-text-light mb-4">Your Betting Insights</h1>
+      <h1 className="text-2xl font-bold text-vanta-text-light mb-4">Your Prediction Insights</h1>
       <p className="text-vanta-text-medium">
         This page will provide detailed analytics and tips to help you improve your prediction performance based on your win/loss ratio and game history.
       </p>
