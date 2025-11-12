@@ -21,11 +21,12 @@ import EmailConfirmation from './pages/EmailConfirmation';
 import Insights from './pages/Insights';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
-import ForgotPassword from './pages/ForgotPassword'; // Import the new ForgotPassword page
+import ForgotPassword from './pages/ForgotPassword';
 import EditProfile from './pages/EditProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
+import AllPools from './pages/AllPools'; // Import the new AllPools page
 
 function App() {
   return (
@@ -36,7 +37,7 @@ function App() {
             {/* Standalone routes (no layout) */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<SignUp />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} /> {/* New standalone route */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/email-confirmation" element={<EmailConfirmation />} />
             <Route path="/update-password" element={<div>Update Password Page</div>} />
 
@@ -47,6 +48,7 @@ function App() {
               <Route path="games/:gameId" element={<GameDetails />} />
               <Route path="games/top-games" element={<AllTopGames />} />
               <Route path="pools" element={<Pools />} />
+              <Route path="pools/all" element={<AllPools />} /> {/* New route for AllPools */}
               <Route path="terms-of-use" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="help" element={<Help />} />
