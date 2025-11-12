@@ -21,6 +21,7 @@ import EmailConfirmation from './pages/EmailConfirmation';
 import Insights from './pages/Insights';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import EditProfile from './pages/EditProfile'; // Import the new EditProfile page
 import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
@@ -44,8 +45,6 @@ function App() {
               <Route path="games/:gameId" element={<GameDetails />} />
               <Route path="games/top-games" element={<AllTopGames />} />
               <Route path="pools" element={<Pools />} />
-              <Route path="users" element={<Users />} />
-              <Route path="users/insights" element={<Insights />} />
               <Route path="terms-of-use" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="help" element={<Help />} />
@@ -57,6 +56,9 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="wallet" element={<Wallet />} />
                 <Route path="leaderboard" element={<Leaderboard />} />
+                <Route path="users" element={<Users />} />
+                <Route path="users/insights" element={<Insights />} />
+                <Route path="users/edit-profile" element={<EditProfile />} /> {/* New protected route */}
               </Route>
 
               <Route path="*" element={<NotFound />} />

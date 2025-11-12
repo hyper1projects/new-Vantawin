@@ -44,7 +44,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           </div>
         </div>
         <Button asChild variant="ghost" className="text-vanta-neon-blue hover:text-vanta-neon-blue/80 text-sm font-semibold p-0 h-auto">
-          <Link to="/users/edit-profile"> {/* Placeholder link for editing profile */}
+          <Link to="/users/edit-profile"> {/* Link to the new EditProfile page */}
             Edit Profile <ExternalLink size={16} className="inline-block ml-1" />
           </Link>
         </Button>

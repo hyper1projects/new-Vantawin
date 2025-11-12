@@ -17,6 +17,7 @@ interface AuthContextType {
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
   fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null }>;
+  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; avatar_url?: string }) => Promise<{ error: any }>; // New function
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -72,7 +73,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null }> => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('username, first_name, last_name')
+      .select('username, first_name, last_name, avatar_url') // Added avatar_url to select
       .eq('id', userId)
       .single();
 
@@ -85,6 +86,24 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       firstName: data?.first_name || null,
       lastName: data?.last_name || null,
     };
+  };
+
+  const updateUserProfile = async (userId: string, updates: { username?: string; first_name?: string; last_name?: string; avatar_url?: string }) => {
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', userId);
+
+    if (!error) {
+      // Re-fetch profile to update context state
+      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(userId);
+      setUsername(fetchedUsername);
+      setFirstName(fetchedFirstName);
+      setLastName(fetchedLastName);
+    } else {
+      console.error('Error updating user profile:', error);
+    }
+    return { error };
   };
 
   const signIn = async (identifier: string, password: string) => {
@@ -160,6 +179,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         signOut,
         resetPasswordForEmail,
         fetchUserProfile,
+        updateUserProfile, // Provide the new function
       }}
     >
       {children}
