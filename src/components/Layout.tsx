@@ -38,21 +38,25 @@ const Layout = () => {
     }
   };
 
-  // Calculate dynamic margin-top and height for the main content area
+  // Calculate dynamic padding-top for the main content area to account for fixed headers
   // On mobile, header is 16px (MainHeader) + 12px (MobileSportsSubNavbar) = 28px (7rem)
   // On desktop, header is 16px (MainHeader) = 4rem
-  const contentMarginTopClass = isMobile ? 'mt-[7rem]' : 'mt-16'; // 7rem = 28px, 4rem = 16px
-  const contentHeightClass = isMobile ? 'h-[calc(100vh-7rem)]' : 'h-[calc(100vh-4rem)]';
+  const headerPaddingTopClass = isMobile ? 'pt-[7rem]' : 'pt-16';
 
   return (
     <SidebarProvider>
-      <div className="relative h-screen bg-vanta-blue-dark text-vanta-text-light overflow-x-hidden w-full">
+      {/* This div now fills the full height of its parent (#root) and acts as a flex column */}
+      <div className="relative h-full flex flex-col bg-vanta-blue-dark text-vanta-text-light overflow-x-hidden w-full">
         <MainHeader />
-        {isMobile && <MobileSportsSubNavbar />} {/* Conditionally render MobileSportsSubNavbar */}
-        <div className={`flex ${contentHeightClass} ${contentMarginTopClass} w-full`}>
+        {isMobile && <MobileSportsSubNavbar />}
+
+        {/* This div is the main content area, pushed down by padding-top */}
+        {/* It takes the remaining flexible height and manages its own overflow */}
+        <div className={`flex flex-1 ${headerPaddingTopClass} w-full overflow-hidden`}>
           <div className="hidden md:block h-full flex-shrink-0">
             <Sidebar />
           </div>
+          {/* This is the scrollable content area */}
           <div className="flex-1 h-full overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] overflow-x-hidden min-w-0 pb-16 md:pb-0">
             <Outlet />
           </div>
