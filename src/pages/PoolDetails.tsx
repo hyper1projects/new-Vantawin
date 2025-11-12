@@ -46,9 +46,9 @@ const PoolDetails: React.FC = () => {
   const slotsLeft = pool.maxParticipants ? pool.maxParticipants - pool.participants : 0;
 
   return (
-    <div className="p-0 text-vanta-text-light w-full relative"> {/* Added relative here */}
+    <div className="p-0 text-vanta-text-light w-full relative">
       {/* Back button */}
-      <div className="absolute top-4 left-4 z-20"> {/* Changed top-20 to top-4 */}
+      <div className="absolute top-4 left-4 z-20">
         <Button
           onClick={() => navigate(-1)}
           variant="ghost"
@@ -61,49 +61,52 @@ const PoolDetails: React.FC = () => {
       {/* Pool Header with Image and Title */}
       <PoolHeader pool={pool} />
 
-      <div className="p-8 max-w-7xl mx-auto"> {/* Main content wrapper */}
-        {/* Info Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">INFO</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <PoolInfoCard
-              icon={DollarSign}
-              title="PRIZE POOL"
-              value={`$${pool.prizePool.toLocaleString()}`}
-              tooltipText="Total prize money to be distributed among winners."
-            />
-            <PoolInfoCard
-              icon={Users}
-              title="PARTICIPANTS"
-              value={`${pool.participants} Joined`}
-              tooltipText="Number of players currently participating in this pool."
-            />
-            <PoolInfoCard
-              icon={Wallet}
-              title="ENTRY FEE"
-              value={`$${pool.entryFee}`}
-              tooltipText="Cost to join this prediction pool."
-            />
-            <PoolInfoCard
-              icon={Clock}
-              title="TIME LEFT"
-              value={timeLeftText}
-              tooltipText="Remaining time until the pool closes for new entries or ends."
-            />
+      <div className="p-8 max-w-7xl mx-auto flex flex-col lg:flex-row lg:space-x-8"> {/* Main content wrapper with flex for desktop */}
+        {/* Left Column (for Info and Rules) */}
+        <div className="flex-1 lg:w-2/3">
+          {/* Info Section */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-white mb-6">INFO</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"> {/* Changed to lg:grid-cols-2 for 2x2 layout */}
+              <PoolInfoCard
+                icon={DollarSign}
+                title="PRIZE POOL"
+                value={`$${pool.prizePool.toLocaleString()}`}
+                tooltipText="Total prize money to be distributed among winners."
+              />
+              <PoolInfoCard
+                icon={Users}
+                title="PARTICIPANTS"
+                value={`${pool.participants} Joined`}
+                tooltipText="Number of players currently participating in this pool."
+              />
+              <PoolInfoCard
+                icon={Wallet}
+                title="ENTRY FEE"
+                value={`$${pool.entryFee}`}
+                tooltipText="Cost to join this prediction pool."
+              />
+              <PoolInfoCard
+                icon={Clock}
+                title="TIME LEFT"
+                value={timeLeftText}
+                tooltipText="Remaining time until the pool closes for new entries or ends."
+              />
+            </div>
+          </div>
+
+          {/* Pool Rules & Regulations */}
+          <div className="bg-[#011B47] rounded-[18px] p-6 mb-12 lg:mb-0"> {/* Added mb-12 for mobile, mb-0 for desktop */}
+            <h2 className="text-2xl font-bold text-white mb-4">POOL RULES & REGULATIONS</h2>
+            <h3 className="text-lg font-semibold text-gray-300 mb-2">Quick Rules:</h3>
+            <p className="text-gray-400 leading-relaxed">{pool.rules}</p>
           </div>
         </div>
 
-        {/* Prizes and Pool Stats Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+        {/* Right Column (for Prizes and Pool Stats) */}
+        <div className="lg:w-1/3 flex flex-col space-y-6">
           <PoolPrizesSection pool={pool} />
           <PoolStatsCard players={pool.participants} slotsLeft={slotsLeft} />
-        </div>
-
-        {/* Pool Rules & Regulations */}
-        <div className="bg-[#011B47] rounded-[18px] p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">POOL RULES & REGULATIONS</h2>
-          <h3 className="text-lg font-semibold text-gray-300 mb-2">Quick Rules:</h3>
-          <p className="text-gray-400 leading-relaxed">{pool.rules}</p>
         </div>
       </div>
     </div>
