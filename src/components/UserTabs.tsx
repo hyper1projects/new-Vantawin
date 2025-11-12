@@ -5,11 +5,14 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 
-const UserTabs: React.FC = () => {
-  const [activeMainTab, setActiveMainTab] = useState('gameHistory'); // Changed initial state to 'gameHistory'
-  const [activeTransactionFilter, setActiveTransactionFilter] = useState('all');
+type MainTab = 'gameHistory' | 'rankHistory' | 'transactions'; // Added 'rankHistory'
+type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'refunds';
 
-  const getMainTabButtonClasses = (tabValue: string) => {
+const UserTabs: React.FC = () => {
+  const [activeMainTab, setActiveMainTab] = useState<MainTab>('gameHistory');
+  const [activeTransactionFilter, setActiveTransactionFilter] = useState<TransactionFilter>('all');
+
+  const getMainTabButtonClasses = (tabValue: MainTab) => {
     return cn(
       "px-6 py-3 rounded-[20px] text-lg font-semibold transition-colors duration-200",
       activeMainTab === tabValue
@@ -31,13 +34,19 @@ const UserTabs: React.FC = () => {
     <div className="flex flex-col space-y-6">
       <div className="bg-vanta-blue-dark p-2 rounded-[27px] flex space-x-2 w-full md:w-fit">
         <Button
-          className={getMainTabButtonClasses('gameHistory')} // Moved Game History first
+          className={getMainTabButtonClasses('gameHistory')}
           onClick={() => setActiveMainTab('gameHistory')}
         >
           Game History
         </Button>
         <Button
-          className={getMainTabButtonClasses('transactions')} // Moved Transactions second
+          className={getMainTabButtonClasses('rankHistory')} {/* New Rank History Button */}
+          onClick={() => setActiveMainTab('rankHistory')}
+        >
+          Rank History
+        </Button>
+        <Button
+          className={getMainTabButtonClasses('transactions')}
           onClick={() => setActiveMainTab('transactions')}
         >
           Transactions
@@ -102,6 +111,26 @@ const UserTabs: React.FC = () => {
               <span>Game: Dice Roll</span>
               <span>Result: Loss</span>
               <span className="text-sm text-gray-400">2023-10-25</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeMainTab === 'rankHistory' && ( {/* New Rank History Content */}
+        <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full">
+          <h3 className="text-xl font-semibold mb-4">Rank History</h3>
+          <div className="text-vanta-text-light">
+            <p>Displaying your rank history over time...</p>
+            {/* Placeholder for rank history items */}
+            <div className="flex justify-between items-center py-2 border-b border-gray-800 last:border-b-0">
+              <span>Rank: #15</span>
+              <span>Date: 2024-07-20</span>
+              <span className="text-sm text-gray-400">XP: 125,000</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-800 last:border-b-0">
+              <span>Rank: #18</span>
+              <span>Date: 2024-07-13</span>
+              <span className="text-sm text-gray-400">XP: 110,000</span>
             </div>
           </div>
         </div>
