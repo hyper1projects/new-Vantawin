@@ -21,42 +21,40 @@ const EditProfile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-vanta-blue-dark text-white p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-center">Edit Profile</h1>
+    <div className="bg-vanta-blue-dark text-white p-8 flex-1 overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] max-w-4xl mx-auto">
+      <h1 className="text-4xl font-bold mb-8 text-center">Edit Profile</h1>
 
-        <Tabs defaultValue="profile" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 bg-vanta-blue-medium rounded-xl p-1 mb-8">
-            <TabsTrigger value="profile" className={getTabTriggerClasses('profile')}>
-              Profile
-            </TabsTrigger>
-            <TabsTrigger value="security" className={getTabTriggerClasses('security')}>
-              Security
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className={getTabTriggerClasses('notifications')}>
-              Notifications
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent 
-            value="profile" 
-            className="bg-vanta-blue-medium rounded-xl p-0 overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] max-h-[calc(100vh-200px)]"
-          >
-            <ProfileSettingsTab />
-          </TabsContent>
-          <TabsContent 
-            value="security" 
-            className="bg-vanta-blue-medium rounded-xl p-0 overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] max-h-[calc(100vh-200px)]"
-          >
-            <SecuritySettingsTab />
-          </TabsContent>
-          <TabsContent 
-            value="notifications" 
-            className="bg-vanta-blue-medium rounded-xl p-0 overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] max-h-[calc(100vh-200px)]"
-          >
-            <NotificationSettingsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
+      <Tabs defaultValue="profile" className="w-full" onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3 bg-vanta-blue-medium rounded-xl p-1 mb-8">
+          <TabsTrigger value="profile" className={getTabTriggerClasses('profile')}>
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="security" className={getTabTriggerClasses('security')}>
+            Security
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className={getTabTriggerClasses('notifications')}>
+            Notifications
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent 
+          value="profile" 
+          className="bg-vanta-blue-medium rounded-xl p-0"
+        >
+          <ProfileSettingsTab />
+        </TabsContent>
+        <TabsContent 
+          value="security" 
+          className="bg-vanta-blue-medium rounded-xl p-0"
+        >
+          <SecuritySettingsTab />
+        </TabsContent>
+        <TabsContent 
+          value="notifications" 
+          className="bg-vanta-blue-medium rounded-xl p-0"
+        >
+          <NotificationSettingsTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
