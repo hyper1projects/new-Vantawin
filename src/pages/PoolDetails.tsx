@@ -46,9 +46,9 @@ const PoolDetails: React.FC = () => {
   const slotsLeft = pool.maxParticipants ? pool.maxParticipants - pool.participants : 0;
 
   return (
-    <div className="p-0 text-vanta-text-light w-full">
+    <div className="p-0 text-vanta-text-light w-full relative"> {/* Added relative here */}
       {/* Back button */}
-      <div className="absolute top-20 left-4 z-20"> {/* Adjusted positioning */}
+      <div className="absolute top-4 left-4 z-20"> {/* Changed top-20 to top-4 */}
         <Button
           onClick={() => navigate(-1)}
           variant="ghost"

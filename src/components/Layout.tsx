@@ -57,7 +57,7 @@ const Layout = () => {
             <Sidebar />
           </div>
           {/* This is the scrollable content area */}
-          <div className="flex-1 h-full overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] overflow-x-hidden min-w-0 pb-16 md:pb-0">
+          <div className="flex-1 h-full overflow-y-auto [-webkit-scrollbar:none] [scrollbar-width:none] overflow-x-hidden min-w-0 pb-16 md:pb-0 relative"> {/* Added relative here */}
             <Outlet />
           </div>
           {showRightSidebar && !isMobile && (
