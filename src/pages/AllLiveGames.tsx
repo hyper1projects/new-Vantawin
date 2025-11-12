@@ -10,34 +10,11 @@ import { allGamesData } from '../data/games';
 import { cn } from '@/lib/utils';
 import { Game } from '../types/game';
 
-type GameFilter = 'All' | 'Live' | 'Upcoming';
-
 const AllLiveGames: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState<GameFilter>('Live'); // Default to Live
 
-  const filteredGames = allGamesData.filter(game => {
-    if (selectedFilter === 'All') {
-      return true;
-    }
-    if (selectedFilter === 'Live') {
-      return game.isLive;
-    }
-    if (selectedFilter === 'Upcoming') {
-      return !game.isLive;
-    }
-    return false;
-  });
-
-  const getButtonClasses = (filter: GameFilter) => {
-    const isSelected = selectedFilter === filter;
-    return cn(
-      "size-sm rounded-[12px]",
-      isSelected
-        ? "bg-[#00EEEE] text-[#081028]"
-        : "bg-[#0B295B] text-white hover:text-[#00EEEE] hover:bg-[#0B295B]"
-    );
-  };
+  // Filter games to show only live games, as this page is dedicated to them
+  const filteredGames = allGamesData.filter(game => game.isLive);
 
   return (
     <div className="p-4">
@@ -51,34 +28,13 @@ const AllLiveGames: React.FC = () => {
 
       <SectionHeader title="All Live Games" className="mb-6" textColor="text-vanta-text-light" />
 
-      <div className="flex space-x-1 w-full justify-start px-1 -mt-2 mb-4 border-b border-gray-700 pb-1">
-        <Button 
-          onClick={() => setSelectedFilter('All')}
-          className={getButtonClasses('All')}
-        >
-          All
-        </Button>
-        <Button 
-          onClick={() => setSelectedFilter('Live')}
-          className={getButtonClasses('Live')}
-        >
-          Live
-        </Button>
-        <Button 
-          onClick={() => setSelectedFilter('Upcoming')}
-          className={getButtonClasses('Upcoming')}
-        >
-          Upcoming
-        </Button>
-      </div>
-
       <div className="w-full flex flex-col space-y-4 px-1">
         {filteredGames.length > 0 ? (
           filteredGames.map((game) => (
             <Oddscard key={game.id} game={game} />
           ))
         ) : (
-          <p className="text-vanta-text-light text-center py-8">No live games available for this filter.</p>
+          <p className="text-vanta-text-light text-center py-8">No live games available.</p>
         )}
       </div>
     </div>
