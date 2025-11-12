@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Search, AlertCircle, LogOut, ArrowDownToLine, ArrowUpToLine, Gift, User, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,9 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import LoginDialog from './LoginDialog';
-import SignUpDialog from './SignUpDialog';
-import ForgotPasswordDialog from './ForgotPasswordDialog';
+// Removed LoginDialog, SignUpDialog, ForgotPasswordDialog imports
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -26,12 +24,11 @@ import { useAuth } from '../context/AuthContext';
 const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [signUpOpen, setSignUp] = useState(false); // This is the state variable
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  // Removed loginOpen, signUpOpen, forgotPasswordOpen states
   
   const { user, username, signOut, isLoading } = useAuth();
   const isMobile = useIsMobile();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const location = useLocation();
   const currentPath = location.pathname;
@@ -44,7 +41,7 @@ const MainHeader: React.FC = () => {
   };
 
   const handleCategoryClick = (category: string) => {
-    window.location.href = `/games?category=${category.toLowerCase().replace('.', '')}`;
+    navigate(`/games?category=${category.toLowerCase().replace('.', '')}`); // Use navigate
   };
 
   const handleLogout = async () => {
@@ -190,14 +187,14 @@ const MainHeader: React.FC = () => {
             ) : (
               <>
                 <Button 
-                  onClick={() => setLoginOpen(true)}
-                  className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/10 h-auto" // Adjusted padding/font size for mobile
+                  onClick={() => navigate('/login')} // Navigate to login page
+                  className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/10 h-auto"
                 >
                   Login
                 </Button>
                 <Button 
-                  onClick={() => setSignUp(true)} // Corrected from setSignUpOpen to setSignUp
-                  className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/80 h-auto" // Adjusted padding/font size for mobile
+                  onClick={() => navigate('/register')} // Navigate to register page
+                  className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/80 h-auto"
                 >
                   Sign up
                 </Button>
@@ -206,35 +203,7 @@ const MainHeader: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <LoginDialog 
-        open={loginOpen} 
-        onOpenChange={setLoginOpen}
-        onSwitchToSignUp={() => {
-          setLoginOpen(false);
-          setSignUp(true);
-        }}
-        onSwitchToForgotPassword={() => {
-          setLoginOpen(false);
-          setForgotPasswordOpen(true);
-        }}
-      />
-      <SignUpDialog 
-        open={signUpOpen} 
-        onOpenChange={setSignUp}
-        onSwitchToLogin={() => {
-          setSignUp(false);
-          setLoginOpen(true);
-        }}
-      />
-      <ForgotPasswordDialog
-        open={forgotPasswordOpen}
-        onOpenChange={setForgotPasswordOpen}
-        onSwitchToLogin={() => {
-          setForgotPasswordOpen(false);
-          setLoginOpen(true);
-        }}
-      />
+      {/* Removed LoginDialog, SignUpDialog, ForgotPasswordDialog components */}
     </>
   );
 };

@@ -21,7 +21,8 @@ import EmailConfirmation from './pages/EmailConfirmation';
 import Insights from './pages/Insights';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
-import EditProfile from './pages/EditProfile'; // Import the new EditProfile page
+import ForgotPassword from './pages/ForgotPassword'; // Import the new ForgotPassword page
+import EditProfile from './pages/EditProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
@@ -35,6 +36,7 @@ function App() {
             {/* Standalone routes (no layout) */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} /> {/* New standalone route */}
             <Route path="/email-confirmation" element={<EmailConfirmation />} />
             <Route path="/update-password" element={<div>Update Password Page</div>} />
 
@@ -58,7 +60,7 @@ function App() {
                 <Route path="leaderboard" element={<Leaderboard />} />
                 <Route path="users" element={<Users />} />
                 <Route path="users/insights" element={<Insights />} />
-                <Route path="users/edit-profile" element={<EditProfile />} /> {/* New protected route */}
+                <Route path="users/edit-profile" element={<EditProfile />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />

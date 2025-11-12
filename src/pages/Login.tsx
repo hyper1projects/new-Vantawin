@@ -6,24 +6,30 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const Login: React.FC = () => {
-  const [identifier, setIdentifier] = useState(''); // Can be username or phone number
+  const [email, setEmail] = useState(''); // Changed to email for Supabase signInWithPassword
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { signIn } = useAuth(); // Use signIn from AuthContext
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     // Basic validation
-    if (!identifier || !password) {
-      toast.error('Please enter your username/phone number and password.');
+    if (!email || !password) {
+      toast.error('Please enter your email and password.');
       return;
     }
 
-    // In a real application, you would send this data to a backend for authentication.
-    console.log('Logging in with:', { identifier, password });
-    toast.success('Login successful! Redirecting to home...');
-    navigate('/'); // Redirect to home after successful login
+    const { error } = await signIn(email, password);
+
+    if (!error) {
+      toast.success('Login successful! Redirecting to home...');
+      navigate('/'); // Redirect to home after successful login
+    } else {
+      toast.error(error.message || 'Login failed. Please check your credentials.');
+    }
   };
 
   return (
@@ -32,28 +38,37 @@ const Login: React.FC = () => {
         <h1 className="text-3xl font-bold text-center text-vanta-neon-blue mb-6">Login</h1>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <Label htmlFor="identifier" className="text-vanta-text-light text-base font-semibold mb-2 block">Username or Phone Number</Label>
+            <Label htmlFor="email" className="text-vanta-text-light text-base font-semibold mb-2 block">
+              Email
+            </Label>
             <Input
-              id="identifier"
-              type="text"
-              placeholder="Enter your username or phone number"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12"
+              id="email"
+              type="email" // Changed type to email
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
           </div>
           <div>
-            <Label htmlFor="password" className="text-vanta-text-light text-base font-semibold mb-2 block">Password</Label>
+            <Label htmlFor="password" className="text-vanta-text-light text-base font-semibold mb-2 block">
+              Password
+            </Label>
             <Input
               id="password"
               type="password"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12"
+              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
+            <div className="text-right mt-2">
+              <Link to="/forgot-password" className="text-vanta-neon-blue text-sm hover:underline"> {/* Link to new ForgotPassword page */}
+                Forgot Password?
+              </Link>
+            </div>
           </div>
           <Button
             type="submit"
