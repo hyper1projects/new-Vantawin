@@ -6,11 +6,17 @@ import { Game } from '../types/game';
 import { Button } from '@/components/ui/button';
 import { allGamesData } from '../data/games'; // Import centralized game data
 import CollapsibleSection from './CollapsibleSection'; // Import the CollapsibleSection
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const LaLigaSection: React.FC = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   // Filter games to show only La Liga matches (both live and upcoming) from allGamesData
   const filteredGames = allGamesData.filter(game => game.league === 'La Liga');
   const laLigaCount = filteredGames.length; // Get the count of La Liga games
+
+  const handleShowMoreClick = () => {
+    navigate('/games/la-liga'); // Navigate to the new AllLaLigaGames page
+  };
 
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
@@ -34,7 +40,7 @@ const LaLigaSection: React.FC = () => {
         <div className="w-full flex justify-end px-4 pt-4">
           <Button 
             className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2"
-            onClick={() => console.log('Show More La Liga clicked')} // Placeholder for future functionality
+            onClick={handleShowMoreClick} // Updated onClick handler
           >
             Show More
           </Button>

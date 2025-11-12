@@ -17,6 +17,9 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
 import GameDetails from './pages/GameDetails';
 import AllTopGames from './pages/AllTopGames';
+import AllLiveGames from './pages/AllLiveGames'; // New import
+import AllPremierLeagueGames from './pages/AllPremierLeagueGames'; // New import
+import AllLaLigaGames from './pages/AllLaLigaGames'; // New import
 import EmailConfirmation from './pages/EmailConfirmation';
 import Insights from './pages/Insights';
 import Login from './pages/Login';
@@ -26,7 +29,7 @@ import EditProfile from './pages/EditProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider } from './context/AuthContext';
-import PoolDetails from './pages/PoolDetails'; // Import the new PoolDetails page
+import PoolDetails from './pages/PoolDetails';
 
 function App() {
   return (
@@ -47,8 +50,11 @@ function App() {
               <Route path="games" element={<Games />} />
               <Route path="games/:gameId" element={<GameDetails />} />
               <Route path="games/top-games" element={<AllTopGames />} />
+              <Route path="games/live-games" element={<AllLiveGames />} /> {/* New route */}
+              <Route path="games/premier-league" element={<AllPremierLeagueGames />} /> {/* New route */}
+              <Route path="games/la-liga" element={<AllLaLigaGames />} /> {/* New route */}
               <Route path="pools" element={<Pools />} />
-              <Route path="pools/:poolId" element={<PoolDetails />} /> {/* New route for PoolDetails */}
+              <Route path="pools/:poolId" element={<PoolDetails />} />
               <Route path="terms-of-use" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="help" element={<Help />} />
