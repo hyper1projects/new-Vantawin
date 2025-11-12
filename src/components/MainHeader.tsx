@@ -27,7 +27,7 @@ const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
   const [loginOpen, setLoginOpen] = useState(false);
-  const [signUpOpen, setSignUp] = useState(false);
+  const [signUpOpen, setSignUp] = useState(false); // This is the state variable
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   
   const { user, username, signOut, isLoading } = useAuth();
@@ -196,7 +196,7 @@ const MainHeader: React.FC = () => {
                   Login
                 </Button>
                 <Button 
-                  onClick={() => setSignUpOpen(true)}
+                  onClick={() => setSignUp(true)} // Corrected from setSignUpOpen to setSignUp
                   className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/80 h-auto" // Adjusted padding/font size for mobile
                 >
                   Sign up
