@@ -6,12 +6,12 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import ProfileCard from '../components/ProfileCard';
-import WinLossRatioCard from '../components/WinLossRatioCard'; // Import the new WinLossRatioCard
+import WinLossRatioCard from '../components/WinLossRatioCard';
 import UserTabs from '../components/UserTabs';
 import { format } from 'date-fns';
 
 const Users: React.FC = () => {
-  const { user, username, isLoading } = useAuth();
+  const { user, username, avatarUrl, isLoading } = useAuth(); // Added avatarUrl
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -40,7 +40,7 @@ const Users: React.FC = () => {
     gamesPlayed: 21,
     winRate: 80,
     wins: 7,
-    avatarUrl: '/images/profile/Profile.png',
+    // avatarUrl is now fetched from AuthContext
   };
 
   // Format joined date
@@ -56,9 +56,9 @@ const Users: React.FC = () => {
           gamesPlayed={userStats.gamesPlayed}
           winRate={userStats.winRate}
           wins={userStats.wins}
-          avatarUrl={userStats.avatarUrl}
+          avatarUrl={avatarUrl || '/images/profile/Profile.png'} // Use avatarUrl from context
         />
-        <WinLossRatioCard /> {/* Use the new WinLossRatioCard */}
+        <WinLossRatioCard />
       </div>
       <UserTabs />
     </div>

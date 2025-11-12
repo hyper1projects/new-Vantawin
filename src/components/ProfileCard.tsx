@@ -33,7 +33,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={avatarUrl || "/placeholder.svg"} alt={username} />
+            <AvatarImage src={avatarUrl || "/images/profile/Profile.png"} alt={username} /> {/* Use provided avatarUrl or default */}
             <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-2xl">
               {username.substring(0, 2).toUpperCase()}
             </AvatarFallback>
@@ -44,7 +44,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           </div>
         </div>
         <Button asChild variant="ghost" className="text-vanta-neon-blue hover:text-vanta-neon-blue/80 text-sm font-semibold p-0 h-auto">
-          <Link to="/users/edit-profile"> {/* Link to the new EditProfile page */}
+          <Link to="/users/edit-profile">
             Edit Profile <ExternalLink size={16} className="inline-block ml-1" />
           </Link>
         </Button>

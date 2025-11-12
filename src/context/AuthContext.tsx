@@ -9,15 +9,19 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   username: string | null;
-  firstName: string | null; // Added firstName
-  lastName: string | null;  // Added lastName
+  firstName: string | null;
+  lastName: string | null;
+  mobileNumber: string | null; // Added mobileNumber
+  dateOfBirth: string | null;  // Added dateOfBirth (as string for simplicity, can be Date object)
+  gender: string | null;       // Added gender
+  avatarUrl: string | null;    // Added avatarUrl
   isLoading: boolean;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
-  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null }>;
-  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; avatar_url?: string }) => Promise<{ error: any }>; // New function
+  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null }>;
+  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string }) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,10 +30,14 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState<string | null>(null); // Added state
-  const [lastName, setLastName] = useState<string | null>(null);   // Added state
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
+  const [mobileNumber, setMobileNumber] = useState<string | null>(null); // Added state
+  const [dateOfBirth, setDateOfBirth] = useState<string | null>(null);   // Added state
+  const [gender, setGender] = useState<string | null>(null);             // Added state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);       // Added state
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -37,14 +45,22 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         setSession(currentSession);
         setUser(currentSession?.user || null);
         if (currentSession?.user) {
-          const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(currentSession.user.id);
+          const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(currentSession.user.id);
           setUsername(fetchedUsername);
           setFirstName(fetchedFirstName);
           setLastName(fetchedLastName);
+          setMobileNumber(fetchedMobileNumber);
+          setDateOfBirth(fetchedDateOfBirth);
+          setGender(fetchedGender);
+          setAvatarUrl(fetchedAvatarUrl);
         } else {
           setUsername(null);
           setFirstName(null);
           setLastName(null);
+          setMobileNumber(null);
+          setDateOfBirth(null);
+          setGender(null);
+          setAvatarUrl(null);
         }
         setIsLoading(false);
       }
@@ -55,10 +71,14 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       setSession(initialSession);
       setUser(initialSession?.user || null);
       if (initialSession?.user) {
-        const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(initialSession.user.id);
+        const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(initialSession.user.id);
         setUsername(fetchedUsername);
         setFirstName(fetchedFirstName);
         setLastName(fetchedLastName);
+        setMobileNumber(fetchedMobileNumber);
+        setDateOfBirth(fetchedDateOfBirth);
+        setGender(fetchedGender);
+        setAvatarUrl(fetchedAvatarUrl);
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -70,25 +90,29 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
   }, []);
 
-  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null }> => {
+  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null }> => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('username, first_name, last_name, avatar_url') // Added avatar_url to select
+      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, avatar_url')
       .eq('id', userId)
       .single();
 
     if (error) {
       console.error('Error fetching user profile:', error);
-      return { username: null, firstName: null, lastName: null };
+      return { username: null, firstName: null, lastName: null, mobileNumber: null, dateOfBirth: null, gender: null, avatarUrl: null };
     }
     return {
       username: data?.username || null,
       firstName: data?.first_name || null,
       lastName: data?.last_name || null,
+      mobileNumber: data?.mobile_number || null,
+      dateOfBirth: data?.date_of_birth || null,
+      gender: data?.gender || null,
+      avatarUrl: data?.avatar_url || null,
     };
   };
 
-  const updateUserProfile = async (userId: string, updates: { username?: string; first_name?: string; last_name?: string; avatar_url?: string }) => {
+  const updateUserProfile = async (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string }) => {
     const { error } = await supabase
       .from('profiles')
       .update(updates)
@@ -96,10 +120,14 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     if (!error) {
       // Re-fetch profile to update context state
-      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(userId);
+      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(userId);
       setUsername(fetchedUsername);
       setFirstName(fetchedFirstName);
       setLastName(fetchedLastName);
+      setMobileNumber(fetchedMobileNumber);
+      setDateOfBirth(fetchedDateOfBirth);
+      setGender(fetchedGender);
+      setAvatarUrl(fetchedAvatarUrl);
     } else {
       console.error('Error updating user profile:', error);
     }
@@ -114,10 +142,14 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (error) {
       console.error('Sign In Error:', error);
     } else if (data.user) {
-      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName } = await fetchUserProfile(data.user.id);
+      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(data.user.id);
       setUsername(fetchedUsername);
       setFirstName(fetchedFirstName);
       setLastName(fetchedLastName);
+      setMobileNumber(fetchedMobileNumber);
+      setDateOfBirth(fetchedDateOfBirth);
+      setGender(fetchedGender);
+      setAvatarUrl(fetchedAvatarUrl);
     }
     return { error };
   };
@@ -135,8 +167,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (error) {
       console.error('Sign Up Error:', error);
     } else if (data.user && !data.user.confirmed_at) {
-      // If user is created but not confirmed (email verification is pending)
-      navigate('/email-confirmation'); // Redirect to the new confirmation page
+      navigate('/email-confirmation');
     }
     return { data, error };
   };
@@ -149,8 +180,12 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       setSession(null);
       setUser(null);
       setUsername(null);
-      setFirstName(null); // Clear state on sign out
-      setLastName(null);  // Clear state on sign out
+      setFirstName(null);
+      setLastName(null);
+      setMobileNumber(null);
+      setDateOfBirth(null);
+      setGender(null);
+      setAvatarUrl(null);
     }
     return { error };
   };
@@ -173,13 +208,17 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         username,
         firstName,
         lastName,
+        mobileNumber,
+        dateOfBirth,
+        gender,
+        avatarUrl,
         isLoading,
         signIn,
         signUp,
         signOut,
         resetPasswordForEmail,
         fetchUserProfile,
-        updateUserProfile, // Provide the new function
+        updateUserProfile,
       }}
     >
       {children}
