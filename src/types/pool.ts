@@ -12,4 +12,8 @@ export interface Pool {
   image?: string; // Optional image for the pool
   tier: 'Bronze' | 'Silver' | 'Gold'; // New tier property
   rules: string; // Added rules property
+  prizeDistribution?: { // New optional prize distribution property
+    rank: string;
+    amount: number;
+  }[];
 }

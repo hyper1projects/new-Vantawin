@@ -3,9 +3,13 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import PoolDetailCard from '../components/PoolDetailCard';
+import { ArrowLeft, DollarSign, Users, Wallet, Clock } from 'lucide-react'; // Import necessary icons
 import { allPoolsData } from '../data/pools'; // Import centralized pool data
+import PoolHeader from '../components/PoolHeader'; // New component
+import PoolInfoCard from '../components/PoolInfoCard'; // New component
+import PoolPrizesSection from '../components/PoolPrizesSection'; // New component
+import PoolStatsCard from '../components/PoolStatsCard'; // New component
+import { formatDistanceToNowStrict, addDays } from 'date-fns'; // For time left calculation
 
 const PoolDetails: React.FC = () => {
   const { poolId } = useParams<{ poolId: string }>();
@@ -25,17 +29,83 @@ const PoolDetails: React.FC = () => {
     );
   }
 
-  return (
-    <div className="p-4 text-vanta-text-light max-w-3xl mx-auto">
-      <Button
-        onClick={() => navigate(-1)}
-        variant="ghost"
-        className="mb-6 text-vanta-neon-blue hover:bg-vanta-accent-dark-blue flex items-center gap-2"
-      >
-        <ArrowLeft size={20} /> Back to Pools
-      </Button>
+  // Calculate time left
+  const endTime = new Date(pool.endTime);
+  const now = new Date();
+  let timeLeftText = '';
+  if (pool.status === 'ongoing' || pool.status === 'upcoming') {
+    if (endTime > now) {
+      timeLeftText = formatDistanceToNowStrict(endTime, { addSuffix: true });
+    } else {
+      timeLeftText = 'Ended';
+    }
+  } else {
+    timeLeftText = 'Ended';
+  }
 
-      <PoolDetailCard pool={pool} />
+  const slotsLeft = pool.maxParticipants ? pool.maxParticipants - pool.participants : 0;
+
+  return (
+    <div className="p-0 text-vanta-text-light w-full">
+      {/* Back button */}
+      <div className="absolute top-20 left-4 z-20"> {/* Adjusted positioning */}
+        <Button
+          onClick={() => navigate(-1)}
+          variant="ghost"
+          className="text-vanta-neon-blue hover:bg-vanta-accent-dark-blue flex items-center gap-2"
+        >
+          <ArrowLeft size={20} /> Back to Pools
+        </Button>
+      </div>
+
+      {/* Pool Header with Image and Title */}
+      <PoolHeader pool={pool} />
+
+      <div className="p-8 max-w-7xl mx-auto"> {/* Main content wrapper */}
+        {/* Info Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-white mb-6">INFO</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <PoolInfoCard
+              icon={DollarSign}
+              title="PRIZE POOL"
+              value={`$${pool.prizePool.toLocaleString()}`}
+              tooltipText="Total prize money to be distributed among winners."
+            />
+            <PoolInfoCard
+              icon={Users}
+              title="PARTICIPANTS"
+              value={`${pool.participants} Joined`}
+              tooltipText="Number of players currently participating in this pool."
+            />
+            <PoolInfoCard
+              icon={Wallet}
+              title="ENTRY FEE"
+              value={`$${pool.entryFee}`}
+              tooltipText="Cost to join this prediction pool."
+            />
+            <PoolInfoCard
+              icon={Clock}
+              title="TIME LEFT"
+              value={timeLeftText}
+              tooltipText="Remaining time until the pool closes for new entries or ends."
+            />
+          </div>
+        </div>
+
+        {/* Prizes and Pool Stats Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+          <PoolPrizesSection pool={pool} />
+          <PoolStatsCard players={pool.participants} slotsLeft={slotsLeft} />
+        </div>
+
+        {/* Pool Rules & Regulations */}
+        <div className="bg-[#011B47] rounded-[18px] p-6">
+          <h2 className="text-2xl font-bold text-white mb-4">POOL RULES & REGULATIONS</h2>
+          <h3 className="text-lg font-semibold text-gray-300 mb-2">Quick Rules:</h3>
+          <p className="text-gray-400 leading-relaxed">{pool.rules}</p>
+        </div>
+      </div>
     </div>
   );
 };

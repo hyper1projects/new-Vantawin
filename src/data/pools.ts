@@ -15,6 +15,11 @@ export const allPoolsData: Pool[] = [
     image: '/images/carousel/NG-1MCasinoTournament2610.jpeg',
     tier: 'Bronze',
     rules: 'Participants must predict the correct outcome (Win/Draw/Loss) for all specified Premier League matches. Points are awarded for correct predictions. The top predictor wins the prize pool. Tie-breakers apply.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 25000 },
+      { rank: '1st Runner Up', amount: 15000 },
+      { rank: '2nd Runner Up', amount: 10000 },
+    ],
   },
   {
     id: 'pool-2',
@@ -30,6 +35,12 @@ export const allPoolsData: Pool[] = [
     image: '/images/carousel/NG-VARPAYOUT.jpg',
     tier: 'Silver',
     rules: 'Predict the winners of Champions League knockout stages. Each correct prediction earns points. Bonus points for predicting exact scores. Full rules available upon joining.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 100000 },
+      { rank: '1st Runner Up', amount: 75000 },
+      { rank: '2nd Runner Up', amount: 50000 },
+      { rank: '3rd Runner Up', amount: 25000 },
+    ],
   },
   {
     id: 'pool-3',
@@ -45,6 +56,12 @@ export const allPoolsData: Pool[] = [
     image: '/images/carousel/carousel-image-1.jpg',
     tier: 'Gold',
     rules: 'Predict the outcomes of all World Cup qualifier matches. High stakes, high rewards. Detailed scoring system will be provided before the pool starts.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 500000 },
+      { rank: '1st Runner Up', amount: 250000 },
+      { rank: '2nd Runner Up', amount: 150000 },
+      { rank: '3rd Runner Up', amount: 100000 },
+    ],
   },
   {
     id: 'pool-4',
@@ -60,6 +77,11 @@ export const allPoolsData: Pool[] = [
     image: '/images/carousel/carousel-image-2.jpg',
     tier: 'Bronze',
     rules: 'Predict the winner of each series in the NBA playoffs, including the Finals. Points for correct series winners and bonus points for correct series scores.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 40000 },
+      { rank: '1st Runner Up', amount: 20000 },
+      { rank: '2nd Runner Up', amount: 15000 },
+    ],
   },
   {
     id: 'pool-5',
@@ -75,6 +97,12 @@ export const allPoolsData: Pool[] = [
     image: '/images/carousel/carousel-image-3.jpg',
     tier: 'Silver',
     rules: 'This pool focused on the group stage of a major tournament. Results are now final and prizes have been distributed.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 200000 },
+      { rank: '1st Runner Up', amount: 150000 },
+      { rank: '2nd Runner Up', amount: 100000 },
+      { rank: '3rd Runner Up', amount: 50000 },
+    ],
   },
   {
     id: 'pool-6',
@@ -90,6 +118,12 @@ export const allPoolsData: Pool[] = [
     image: '/images/carousel/NG-1MCasinoTournament2610.jpeg',
     tier: 'Gold',
     rules: 'Predictions for the Australian Open tennis tournament. Points for correct match winners and set scores. Final results are available.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 750000 },
+      { rank: '1st Runner Up', amount: 400000 },
+      { rank: '2nd Runner Up', amount: 200000 },
+      { rank: '3rd Runner Up', amount: 150000 },
+    ],
   },
   {
     id: 'pool-7',
@@ -101,10 +135,15 @@ export const allPoolsData: Pool[] = [
     maxParticipants: 150,
     startTime: '2024-10-22T11:00:00Z',
     endTime: '2024-11-25T23:59:59Z',
-    description: 'Another exciting bronze pool!',
+    description: 'A general sports prediction pool covering various events. Predict outcomes to earn points. Check the leaderboard for real-time standings.',
     image: '/images/carousel/carousel-image-1.jpg',
     tier: 'Bronze',
     rules: 'A general sports prediction pool covering various events. Predict outcomes to earn points. Check the leaderboard for real-time standings.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 30000 },
+      { rank: '1st Runner Up', amount: 20000 },
+      { rank: '2nd Runner Up', amount: 10000 },
+    ],
   },
   {
     id: 'pool-8',
@@ -120,5 +159,11 @@ export const allPoolsData: Pool[] = [
     image: '/images/carousel/carousel-image-2.jpg',
     tier: 'Silver',
     rules: 'This upcoming pool will focus on a major esports tournament. Details on specific games and scoring will be released closer to the start date.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 150000 },
+      { rank: '1st Runner Up', amount: 80000 },
+      { rank: '2nd Runner Up', amount: 50000 },
+      { rank: '3rd Runner Up', amount: 20000 },
+    ],
   },
 ];
