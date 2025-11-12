@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
 
-const sportsCategories = ['Football', 'Basketball', 'Tennis', 'A.Football', 'Golf']; // No 'All' for mobile sub-navbar
+const sportsCategories = ['Football', 'Basketball', 'Tennis', 'A.Football', 'Esports']; // No 'All' for mobile sub-navbar
 
 const MobileSportsSubNavbar: React.FC = () => {
   const location = useLocation();
