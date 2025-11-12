@@ -150,7 +150,7 @@ const SecuritySettingsTab: React.FC = () => {
             <Button
               type="submit"
               variant="outline"
-              className="border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
+              className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
               disabled={isChangingPassword}
             >
               {isChangingPassword ? 'Confirming...' : 'Confirm'}
@@ -191,7 +191,7 @@ const SecuritySettingsTab: React.FC = () => {
             </div>
             <Button
               variant="outline"
-              className="border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
+              className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
               onClick={handleCreatePin}
               disabled={isCreatingPin}
             >
@@ -227,7 +227,7 @@ const SecuritySettingsTab: React.FC = () => {
               </div>
               <Button
                 variant="outline"
-                className="border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
+                className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
                 onClick={handleSendOtp}
                 disabled={isSendingOtp}
               >
@@ -258,7 +258,7 @@ const SecuritySettingsTab: React.FC = () => {
             </div>
             <Button
               variant="outline"
-              className="border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
+              className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
               onClick={handleDeactivateAccount}
               disabled={isDeactivating}
             >
@@ -283,7 +283,7 @@ const SecuritySettingsTab: React.FC = () => {
             </div>
             <Button
               variant="outline"
-              className="border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-[14px] px-6 py-2 h-12 font-bold text-base"
+              className="bg-transparent border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-[14px] px-6 py-2 h-12 font-bold text-base"
               onClick={handleDeleteAccount}
               disabled={isDeleting}
             >
