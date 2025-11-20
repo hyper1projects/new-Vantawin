@@ -38,22 +38,31 @@ export interface TelegramUser {
 
 export function isTelegramEnvironment(): boolean {
   // Check window.Telegram.WebApp first as it's the most direct way
-  if (typeof window !== 'undefined' && window.Telegram?.WebApp?.initData) {
+  // Check for WebApp existence, not just initData (which might be empty in dev/test)
+  if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+    console.log('Telegram WebApp detected via window.Telegram.WebApp');
+    console.log('initData:', window.Telegram.WebApp.initData);
+    console.log('initDataUnsafe:', window.Telegram.WebApp.initDataUnsafe);
     return true;
   }
 
   try {
     const params = retrieveLaunchParams();
+    console.log('Telegram params from SDK:', params);
     return !!params.initData;
-  } catch {
+  } catch (error) {
+    console.log('Not in Telegram environment, error:', error);
     return false;
   }
 }
 
 export function getTelegramUser(): TelegramUser | null {
+  console.log('getTelegramUser() called');
+
   // Try getting user from window.Telegram.WebApp first
   if (typeof window !== 'undefined' && window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = window.Telegram.WebApp.initDataUnsafe.user;
+    console.log('Got Telegram user from window.Telegram.WebApp.initDataUnsafe:', user);
     return {
       id: user.id,
       firstName: user.first_name,
@@ -66,7 +75,10 @@ export function getTelegramUser(): TelegramUser | null {
     };
   }
 
+  console.log('No user in window.Telegram.WebApp.initDataUnsafe, checking SDK...');
+
   if (!isTelegramEnvironment()) {
+    console.log('Not in Telegram environment');
     return null;
   }
 
@@ -74,9 +86,14 @@ export function getTelegramUser(): TelegramUser | null {
     const { initData } = retrieveLaunchParams();
     const data = initData as any;
 
+    console.log('initData from SDK:', data);
+
     if (!data?.user) {
+      console.log('No user in initData');
       return null;
     }
+
+    console.log('Got user from SDK initData:', data.user);
 
     return {
       id: data.user.id,
