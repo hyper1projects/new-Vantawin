@@ -59,12 +59,105 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setTelegramId(profile?.telegramId || null);
   };
 
+  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, avatar_url, telegram_id')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      return { username: null, firstName: null, lastName: null, mobileNumber: null, dateOfBirth: null, gender: null, avatarUrl: null, telegramId: null };
+    }
+    return {
+      username: data?.username || null,
+      firstName: data?.first_name || null,
+      lastName: data?.last_name || null,
+      mobileNumber: data?.mobile_number || null,
+      dateOfBirth: data?.date_of_birth || null,
+      gender: data?.gender || null,
+      avatarUrl: data?.avatar_url || null,
+      telegramId: data?.telegram_id || null,
+    };
+  };
+
+  const signInWithTelegram = async () => {
+    console.log('Attempting to sign in with Telegram...');
+    const tgUser = getTelegramUser();
+    if (!tgUser) {
+      console.log('No Telegram user found during sign in.');
+      setIsLoading(false);
+      return;
+    }
+
+    setTelegramUser(tgUser);
+
+    const email = `${tgUser.id}@telegram.user`;
+    const password = `telegram_${tgUser.id}`;
+
+    let { data: userData, error: signInError } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (signInError && signInError.message.includes('Invalid login credentials')) {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: tgUser.username,
+            first_name: tgUser.firstName,
+            last_name: tgUser.lastName,
+            avatar_url: tgUser.photoUrl,
+            telegram_id: tgUser.id,
+          },
+        },
+      });
+
+      if (signUpError) {
+        console.error('Error signing up user with Telegram:', signUpError);
+        setIsLoading(false);
+        return;
+      }
+
+      userData = signUpData;
+    } else if (signInError) {
+      console.error('Error signing in user with Telegram:', signInError);
+      setIsLoading(false);
+      return;
+    }
+
+    setSession(userData?.session || null);
+    setUser(userData?.user || null);
+
+    if (userData?.user) {
+      const profile = await fetchUserProfile(userData.user.id);
+      setUserState(profile);
+    }
+
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     const telegramEnv = isTelegramEnvironment();
+    console.log('Is Telegram Environment:', telegramEnv);
     setIsTelegram(telegramEnv);
 
     if (telegramEnv) {
+      // Notify Telegram that the app is ready
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        try {
+          window.Telegram.WebApp.expand();
+        } catch (e) {
+          console.error('Failed to expand Telegram WebApp:', e);
+        }
+      }
+
       const tgUser = getTelegramUser();
+      console.log('Telegram User:', tgUser);
       setTelegramUser(tgUser);
       signInWithTelegram();
     } else {
@@ -97,85 +190,6 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       };
     }
   }, []);
-
-  const signInWithTelegram = async () => {
-    const tgUser = getTelegramUser();
-    if (!tgUser) {
-      setIsLoading(false);
-      return;
-    }
-
-    setTelegramUser(tgUser);
-
-    const email = `${tgUser.id}@telegram.user`;
-    const password = `telegram_${tgUser.id}`;
-
-    let { data: user, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (signInError && signInError.message.includes('Invalid login credentials')) {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            username: tgUser.username,
-            first_name: tgUser.firstName,
-            last_name: tgUser.lastName,
-            avatar_url: tgUser.photoUrl,
-            telegram_id: tgUser.id,
-          },
-        },
-      });
-
-      if (signUpError) {
-        console.error('Error signing up user with Telegram:', signUpError);
-        setIsLoading(false);
-        return;
-      }
-
-      user = signUpData.user;
-    } else if (signInError) {
-      console.error('Error signing in user with Telegram:', signInError);
-      setIsLoading(false);
-      return;
-    }
-
-    setSession(user?.session);
-    setUser(user?.user);
-
-    if (user?.user) {
-      const profile = await fetchUserProfile(user.user.id);
-      setUserState(profile);
-    }
-    
-    setIsLoading(false);
-  };
-
-  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }> => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, avatar_url, telegram_id')
-      .eq('id', userId)
-      .single();
-
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      return { username: null, firstName: null, lastName: null, mobileNumber: null, dateOfBirth: null, gender: null, avatarUrl: null, telegramId: null };
-    }
-    return {
-      username: data?.username || null,
-      firstName: data?.first_name || null,
-      lastName: data?.last_name || null,
-      mobileNumber: data?.mobile_number || null,
-      dateOfBirth: data?.date_of_birth || null,
-      gender: data?.gender || null,
-      avatarUrl: data?.avatar_url || null,
-      telegramId: data?.telegram_id || null,
-    };
-  };
 
   const updateUserProfile = async (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string; telegram_id?: number }) => {
     const { error } = await supabase
