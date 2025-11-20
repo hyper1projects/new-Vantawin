@@ -20,15 +20,14 @@ import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../context/AuthContext';
+import { getTelegramDisplayName } from '../utils/telegram';
 
 const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
-  // Removed loginOpen, signUpOpen, forgotPasswordOpen states
-  
-  const { user, username, signOut, isLoading } = useAuth();
+  const { user, username, firstName, lastName, avatarUrl, signOut, isLoading, isTelegram, telegramUser } = useAuth();
   const isMobile = useIsMobile();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const location = useLocation();
   const currentPath = location.pathname;
@@ -52,6 +51,19 @@ const MainHeader: React.FC = () => {
       toast.error('Failed to log out.');
     }
   };
+
+  // Get display name and avatar
+  const displayName = isTelegram && telegramUser 
+    ? getTelegramDisplayName(telegramUser)
+    : username || `${firstName || ''} ${lastName || ''}`.trim() || 'Guest';
+  
+  const displayEmail = isTelegram && telegramUser
+    ? telegramUser.username ? `@${telegramUser.username}` : `User ID: ${telegramUser.id}`
+    : user?.email || '';
+
+  const userAvatar = isTelegram && telegramUser?.photoUrl 
+    ? telegramUser.photoUrl 
+    : avatarUrl || '/placeholder.svg';
 
   if (isLoading) {
     return null;
@@ -125,26 +137,26 @@ const MainHeader: React.FC = () => {
 
                 {/* Avatar and Dropdown Trigger - always visible */}
                 <div className="flex items-center space-x-1">
-                  <Link to="/users"> {/* Wrap Avatar with Link */}
-                    <Avatar className="h-8 w-8"> {/* Reduced size for mobile */}
-                      <AvatarImage src="/placeholder.svg" alt={username || "User"} />
-                      <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-xs"> {/* Reduced font size for mobile */}
-                        {username ? username.substring(0, 2).toUpperCase() : 'UN'}
+                  <Link to="/users">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={userAvatar} alt={displayName} />
+                      <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-xs">
+                        {displayName.substring(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-white"> {/* Reduced size for mobile */}
-                        <ChevronDown size={14} /> {/* Reduced size for mobile */}
+                      <Button variant="ghost" className="h-8 w-8 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-white">
+                        <ChevronDown size={14} />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 bg-vanta-blue-medium text-vanta-text-light border-vanta-accent-dark-blue" align="end" forceMount>
                       <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">{username || 'Guest'}</p>
+                          <p className="text-sm font-medium leading-none">{displayName}</p>
                           <p className="text-xs leading-none text-gray-400">
-                            {user.email}
+                            {displayEmail}
                           </p>
                         </div>
                       </DropdownMenuLabel>

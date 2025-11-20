@@ -28,8 +28,26 @@ import ForgotPassword from './pages/ForgotPassword';
 import EditProfile from './pages/EditProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
-import { AuthContextProvider } from './context/AuthContext';
+import { AuthContextProvider, useAuth } from './context/AuthContext';
 import PoolDetails from './pages/PoolDetails';
+import { Navigate } from 'react-router-dom';
+
+// Wrapper component to redirect Telegram users away from auth pages
+function AuthRouteGuard({ children }: { children: React.ReactElement }) {
+  const { isTelegram, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen bg-vanta-blue-dark">
+      <div className="text-vanta-neon-blue">Loading...</div>
+    </div>;
+  }
+  
+  if (isTelegram) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+}
 
 function App() {
   return (
@@ -37,12 +55,12 @@ function App() {
       <AuthContextProvider>
         <MatchSelectionProvider>
           <Routes>
-            {/* Standalone routes (no layout) */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<SignUp />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/email-confirmation" element={<EmailConfirmation />} />
-            <Route path="/update-password" element={<div>Update Password Page</div>} />
+            {/* Standalone routes (no layout) - redirect if in Telegram */}
+            <Route path="/login" element={<AuthRouteGuard><Login /></AuthRouteGuard>} />
+            <Route path="/register" element={<AuthRouteGuard><SignUp /></AuthRouteGuard>} />
+            <Route path="/forgot-password" element={<AuthRouteGuard><ForgotPassword /></AuthRouteGuard>} />
+            <Route path="/email-confirmation" element={<AuthRouteGuard><EmailConfirmation /></AuthRouteGuard>} />
+            <Route path="/update-password" element={<AuthRouteGuard><div>Update Password Page</div></AuthRouteGuard>} />
 
             {/* Routes with the main layout */}
             <Route path="/" element={<Layout />}>
