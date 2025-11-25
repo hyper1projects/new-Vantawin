@@ -2,8 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '../integrations/supabase/client'; // Import your Supabase client
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { supabase } from '../integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { isTelegramEnvironment, getTelegramUser, type TelegramUser } from '../utils/telegram';
 
 interface AuthContextType {
   session: Session | null;
@@ -11,17 +12,22 @@ interface AuthContextType {
   username: string | null;
   firstName: string | null;
   lastName: string | null;
-  mobileNumber: string | null; // Added mobileNumber
-  dateOfBirth: string | null;  // Added dateOfBirth (as string for simplicity, can be Date object)
-  gender: string | null;       // Added gender
-  avatarUrl: string | null;    // Added avatarUrl
+  mobileNumber: string | null;
+  dateOfBirth: string | null;
+  gender: string | null;
+  avatarUrl: string | null;
   isLoading: boolean;
+  isTelegram: boolean;
+  telegramUser: TelegramUser | null;
+  telegramId: number | null;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
-  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null }>;
-  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string }) => Promise<{ error: any }>;
+  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }>;
+  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string; telegram_id?: number }) => Promise<{ error: any }>;
+  signInWithTelegram: () => Promise<void>;
+  setUserState: (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,74 +38,37 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [username, setUsername] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [lastName, setLastName] = useState<string | null>(null);
-  const [mobileNumber, setMobileNumber] = useState<string | null>(null); // Added state
-  const [dateOfBirth, setDateOfBirth] = useState<string | null>(null);   // Added state
-  const [gender, setGender] = useState<string | null>(null);             // Added state
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);       // Added state
+  const [mobileNumber, setMobileNumber] = useState<string | null>(null);
+  const [dateOfBirth, setDateOfBirth] = useState<string | null>(null);
+  const [gender, setGender] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTelegram, setIsTelegram] = useState(false);
+  const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
+  const [telegramId, setTelegramId] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        setSession(currentSession);
-        setUser(currentSession?.user || null);
-        if (currentSession?.user) {
-          const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(currentSession.user.id);
-          setUsername(fetchedUsername);
-          setFirstName(fetchedFirstName);
-          setLastName(fetchedLastName);
-          setMobileNumber(fetchedMobileNumber);
-          setDateOfBirth(fetchedDateOfBirth);
-          setGender(fetchedGender);
-          setAvatarUrl(fetchedAvatarUrl);
-        } else {
-          setUsername(null);
-          setFirstName(null);
-          setLastName(null);
-          setMobileNumber(null);
-          setDateOfBirth(null);
-          setGender(null);
-          setAvatarUrl(null);
-        }
-        setIsLoading(false);
-      }
-    );
+  const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
+    setUsername(profile?.username || null);
+    setFirstName(profile?.firstName || null);
+    setLastName(profile?.lastName || null);
+    setMobileNumber(profile?.mobileNumber || null);
+    setDateOfBirth(profile?.dateOfBirth || null);
+    setGender(profile?.gender || null);
+    setAvatarUrl(profile?.avatarUrl || null);
+    setTelegramId(profile?.telegramId || null);
+  };
 
-    // Fetch initial session
-    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
-      setSession(initialSession);
-      setUser(initialSession?.user || null);
-      if (initialSession?.user) {
-        const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(initialSession.user.id);
-        setUsername(fetchedUsername);
-        setFirstName(fetchedFirstName);
-        setLastName(fetchedLastName);
-        setMobileNumber(fetchedMobileNumber);
-        setDateOfBirth(fetchedDateOfBirth);
-        setGender(fetchedGender);
-        setAvatarUrl(fetchedAvatarUrl);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-
-  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null }> => {
+  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }> => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, avatar_url')
+      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, avatar_url, telegram_id')
       .eq('id', userId)
       .single();
 
     if (error) {
       console.error('Error fetching user profile:', error);
-      return { username: null, firstName: null, lastName: null, mobileNumber: null, dateOfBirth: null, gender: null, avatarUrl: null };
+      return { username: null, firstName: null, lastName: null, mobileNumber: null, dateOfBirth: null, gender: null, avatarUrl: null, telegramId: null };
     }
     return {
       username: data?.username || null,
@@ -109,25 +78,128 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       dateOfBirth: data?.date_of_birth || null,
       gender: data?.gender || null,
       avatarUrl: data?.avatar_url || null,
+      telegramId: data?.telegram_id || null,
     };
   };
 
-  const updateUserProfile = async (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string }) => {
+  const signInWithTelegram = async () => {
+    console.log('Attempting to sign in with Telegram...');
+    const tgUser = getTelegramUser();
+    if (!tgUser) {
+      console.log('No Telegram user found during sign in.');
+      setIsLoading(false);
+      return;
+    }
+
+    setTelegramUser(tgUser);
+
+    const email = `${tgUser.id}@telegram.user`;
+    const password = `telegram_${tgUser.id}`;
+
+    let { data: userData, error: signInError } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (signInError && signInError.message.includes('Invalid login credentials')) {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: tgUser.username,
+            first_name: tgUser.firstName,
+            last_name: tgUser.lastName,
+            avatar_url: tgUser.photoUrl,
+            telegram_id: tgUser.id,
+          },
+        },
+      });
+
+      if (signUpError) {
+        console.error('Error signing up user with Telegram:', signUpError);
+        setIsLoading(false);
+        return;
+      }
+
+      userData = signUpData;
+    } else if (signInError) {
+      console.error('Error signing in user with Telegram:', signInError);
+      setIsLoading(false);
+      return;
+    }
+
+    setSession(userData?.session || null);
+    setUser(userData?.user || null);
+
+    if (userData?.user) {
+      const profile = await fetchUserProfile(userData.user.id);
+      setUserState(profile);
+    }
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    const telegramEnv = isTelegramEnvironment();
+    console.log('Is Telegram Environment:', telegramEnv);
+    setIsTelegram(telegramEnv);
+
+    if (telegramEnv) {
+      // Notify Telegram that the app is ready
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        try {
+          window.Telegram.WebApp.expand();
+        } catch (e) {
+          console.error('Failed to expand Telegram WebApp:', e);
+        }
+      }
+
+      const tgUser = getTelegramUser();
+      console.log('Telegram User:', tgUser);
+      setTelegramUser(tgUser);
+      signInWithTelegram();
+    } else {
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        async (event, currentSession) => {
+          setSession(currentSession);
+          setUser(currentSession?.user || null);
+          if (currentSession?.user) {
+            const profile = await fetchUserProfile(currentSession.user.id);
+            setUserState(profile);
+          } else {
+            setUserState(null);
+          }
+          setIsLoading(false);
+        }
+      );
+
+      supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
+        setSession(initialSession);
+        setUser(initialSession?.user || null);
+        if (initialSession?.user) {
+          const profile = await fetchUserProfile(initialSession.user.id);
+          setUserState(profile);
+        }
+        setIsLoading(false);
+      });
+
+      return () => {
+        authListener.subscription.unsubscribe();
+      };
+    }
+  }, []);
+
+  const updateUserProfile = async (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string; telegram_id?: number }) => {
     const { error } = await supabase
       .from('profiles')
       .update(updates)
       .eq('id', userId);
 
     if (!error) {
-      // Re-fetch profile to update context state
-      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(userId);
-      setUsername(fetchedUsername);
-      setFirstName(fetchedFirstName);
-      setLastName(fetchedLastName);
-      setMobileNumber(fetchedMobileNumber);
-      setDateOfBirth(fetchedDateOfBirth);
-      setGender(fetchedGender);
-      setAvatarUrl(fetchedAvatarUrl);
+      const profile = await fetchUserProfile(userId);
+      setUserState(profile);
     } else {
       console.error('Error updating user profile:', error);
     }
@@ -142,14 +214,8 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (error) {
       console.error('Sign In Error:', error);
     } else if (data.user) {
-      const { username: fetchedUsername, firstName: fetchedFirstName, lastName: fetchedLastName, mobileNumber: fetchedMobileNumber, dateOfBirth: fetchedDateOfBirth, gender: fetchedGender, avatarUrl: fetchedAvatarUrl } = await fetchUserProfile(data.user.id);
-      setUsername(fetchedUsername);
-      setFirstName(fetchedFirstName);
-      setLastName(fetchedLastName);
-      setMobileNumber(fetchedMobileNumber);
-      setDateOfBirth(fetchedDateOfBirth);
-      setGender(fetchedGender);
-      setAvatarUrl(fetchedAvatarUrl);
+      const profile = await fetchUserProfile(data.user.id);
+      setUserState(profile);
     }
     return { error };
   };
@@ -179,13 +245,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     } else {
       setSession(null);
       setUser(null);
-      setUsername(null);
-      setFirstName(null);
-      setLastName(null);
-      setMobileNumber(null);
-      setDateOfBirth(null);
-      setGender(null);
-      setAvatarUrl(null);
+      setUserState(null);
     }
     return { error };
   };
@@ -213,12 +273,17 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         gender,
         avatarUrl,
         isLoading,
+        isTelegram,
+        telegramUser,
+        telegramId,
         signIn,
         signUp,
         signOut,
         resetPasswordForEmail,
         fetchUserProfile,
         updateUserProfile,
+        signInWithTelegram,
+        setUserState,
       }}
     >
       {children}
