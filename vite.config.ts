@@ -4,21 +4,34 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import fs from "fs";
 
-export default defineConfig(() => ({
-  server: {
-    host: "::",
-    port: 8080,
-    // Enable HTTPS for Telegram Mini Apps (optional for local development)
-    // For production, use proper SSL certificates from your hosting provider
-    https: process.env.VITE_HTTPS === 'true' ? {
-      key: fs.readFileSync(path.resolve(__dirname, './certs/localhost-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, './certs/localhost-cert.pem')),
-    } : undefined,
-  },
-  plugins: [dyadComponentTagger(), react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+// Use the function form of defineConfig to access the command
+export default defineConfig(({ command }) => {
+  const config = {
+    server: {
+      host: "::",
+      port: 8080,
+      https: undefined, // Default to undefined
     },
-  },
-}));
+    plugins: [dyadComponentTagger(), react()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+  };
+
+  // Only apply HTTPS config for the dev server ('serve' command)
+  // and when the VITE_HTTPS environment variable is explicitly set.
+  if (command === 'serve' && process.env.VITE_HTTPS === 'true') {
+    try {
+      config.server.https = {
+        key: fs.readFileSync(path.resolve(__dirname, './certs/localhost-key.pem')),
+        cert: fs.readFileSync(path.resolve(__dirname, './certs/localhost-cert.pem')),
+      };
+    } catch (e) {
+      console.warn('HTTPS certificates not found. Starting dev server in HTTP mode.');
+    }
+  }
+
+  return config;
+});
