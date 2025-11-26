@@ -102,6 +102,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     });
 
     if (signInError && signInError.message.includes('Invalid login credentials')) {
+      console.log('Telegram user not found in Supabase, attempting to sign up...');
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email,
         password: password,
@@ -132,7 +133,23 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setSession(userData?.session || null);
     setUser(userData?.user || null);
 
-    if (userData?.user) {
+    if (userData?.user && tgUser) {
+      // Ensure profile exists and is updated with Telegram data
+      const { error: upsertError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: userData.user.id,
+          username: tgUser.username || userData.user.user_metadata.username, // Use Telegram username or existing metadata
+          first_name: tgUser.firstName,
+          last_name: tgUser.lastName,
+          avatar_url: tgUser.photoUrl,
+          telegram_id: tgUser.id,
+        }, { onConflict: 'id' }); // Upsert based on user ID
+
+      if (upsertError) {
+        console.error('Error upserting Telegram user profile:', upsertError);
+      }
+
       const profile = await fetchUserProfile(userData.user.id);
       setUserState(profile);
     }

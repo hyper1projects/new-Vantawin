@@ -1,3 +1,5 @@
+"use client";
+
 import { retrieveLaunchParams } from '@telegram-apps/sdk';
 
 declare global {
@@ -77,36 +79,27 @@ export function getTelegramUser(): TelegramUser | null {
 
   console.log('No user in window.Telegram.WebApp.initDataUnsafe, checking SDK...');
 
-  if (!isTelegramEnvironment()) {
-    console.log('Not in Telegram environment');
-    return null;
-  }
-
+  // If not from window.Telegram.WebApp, try SDK's retrieveLaunchParams
   try {
-    const { initData } = retrieveLaunchParams();
-    const data = initData as any;
-
-    console.log('initData from SDK:', data);
-
-    if (!data?.user) {
-      console.log('No user in initData');
+    const { user: sdkUser } = retrieveLaunchParams(); // Directly get user from SDK
+    if (!sdkUser) {
+      console.log('No user in SDK launch params');
       return null;
     }
 
-    console.log('Got user from SDK initData:', data.user);
-
+    console.log('Got user from SDK launch params:', sdkUser);
     return {
-      id: data.user.id,
-      firstName: data.user.firstName,
-      lastName: data.user.lastName,
-      username: data.user.username,
-      languageCode: data.user.languageCode,
-      isPremium: data.user.isPremium,
-      photoUrl: data.user.photoUrl,
-      allowsWriteToPm: data.user.allowsWriteToPm,
+      id: sdkUser.id,
+      firstName: sdkUser.first_name,
+      lastName: sdkUser.last_name,
+      username: sdkUser.username,
+      languageCode: sdkUser.language_code,
+      isPremium: sdkUser.is_premium,
+      photoUrl: sdkUser.photo_url,
+      allowsWriteToPm: sdkUser.allows_write_to_pm,
     };
   } catch (error) {
-    console.error('Error getting Telegram user:', error);
+    console.error('Error getting Telegram user from SDK:', error);
     return null;
   }
 }
