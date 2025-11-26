@@ -7,14 +7,15 @@ import PremierLeagueSection from '../components/PremierLeagueSection';
 import LaLigaSection from '../components/LaLigaSection';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Game } from '../types/game';
+import ChampionsLeagueSection from '../components/ChampionLeagueSection';
 
 const Games = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const queryParams = new URLSearchParams(location.search);
   const urlCategory = queryParams.get('category') || 'football';
-  
+
   const formattedSelectedSport = urlCategory.charAt(0).toUpperCase() + urlCategory.slice(1);
 
   return (
@@ -30,7 +31,10 @@ const Games = () => {
           <div className="mt-8">
             <PremierLeagueSection />
           </div>
-
+          {/* Champion league Section */}
+          <div className="mt-8">
+            <ChampionsLeagueSection />
+          </div>
           {/* New La Liga Section */}
           <div className="mt-8">
             <LaLigaSection />
