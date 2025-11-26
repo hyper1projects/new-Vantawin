@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { useInitData, useWebApp } from '@telegram-apps/sdk-react'; // Changed useMiniApp to useWebApp
+import { useSDK } from '@telegram-apps/sdk-react';
 
 export interface TelegramUser {
   id: number;
@@ -60,8 +60,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [displayName, setDisplayName] = useState<string>('Guest');
   const navigate = useNavigate();
 
-  const webApp = useWebApp(); // Changed miniApp to webApp
-  const initData = useInitData();
+  const { initData, webApp } = useSDK();
 
   const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
     setUsername(profile?.username || null);
@@ -216,7 +215,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
       return () => authListener.subscription.unsubscribe();
     }
-  }, [initData, webApp]); // Changed dependency from miniApp to webApp
+  }, [initData, webApp]);
 
   const updateUserProfile = async (userId: string, updates: any) => {
     const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
