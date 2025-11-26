@@ -15,17 +15,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-// Removed LoginDialog, SignUpDialog, ForgotPasswordDialog imports
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../context/AuthContext';
-import { getTelegramDisplayName } from '../utils/telegram';
 
 const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
-  const { user, username, firstName, lastName, avatarUrl, signOut, isLoading, isTelegram, telegramUser } = useAuth();
+  const { user, signOut, isLoading, isTelegram, telegramUser, displayName, avatarUrl } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -51,11 +49,6 @@ const MainHeader: React.FC = () => {
       toast.error('Failed to log out.');
     }
   };
-
-  // Get display name and avatar
-  const displayName = isTelegram && telegramUser 
-    ? getTelegramDisplayName(telegramUser)
-    : username || `${firstName || ''} ${lastName || ''}`.trim() || 'Guest';
   
   const displayEmail = isTelegram && telegramUser
     ? telegramUser.username ? `@${telegramUser.username}` : `User ID: ${telegramUser.id}`
@@ -215,7 +208,6 @@ const MainHeader: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Removed LoginDialog, SignUpDialog, ForgotPasswordDialog components */}
     </>
   );
 };

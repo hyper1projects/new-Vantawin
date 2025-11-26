@@ -4,7 +4,18 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { isTelegramEnvironment, getTelegramUser, type TelegramUser } from '../utils/telegram';
+import { useInitData, useMiniApp } from '@telegram-apps/sdk-react';
+
+export interface TelegramUser {
+  id: number;
+  firstName: string;
+  lastName?: string;
+  username?: string;
+  languageCode?: string;
+  isPremium?: boolean;
+  photoUrl?: string;
+  allowsWriteToPm?: boolean;
+}
 
 interface AuthContextType {
   session: Session | null;
@@ -20,18 +31,17 @@ interface AuthContextType {
   isTelegram: boolean;
   telegramUser: TelegramUser | null;
   telegramId: number | null;
+  displayName: string;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
   fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }>;
   updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string; telegram_id?: number }) => Promise<{ error: any }>;
-  signInWithTelegram: () => Promise<void>;
-  setUserState: (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-AuthContext.displayName = 'AuthContext'; // Added this line
+AuthContext.displayName = 'AuthContext';
 
 export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -47,7 +57,11 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isTelegram, setIsTelegram] = useState(false);
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [telegramId, setTelegramId] = useState<number | null>(null);
+  const [displayName, setDisplayName] = useState<string>('Guest');
   const navigate = useNavigate();
+
+  const miniApp = useMiniApp();
+  const initData = useInitData();
 
   const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
     setUsername(profile?.username || null);
@@ -58,6 +72,10 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setGender(profile?.gender || null);
     setAvatarUrl(profile?.avatarUrl || null);
     setTelegramId(profile?.telegramId || null);
+
+    if (!isTelegram) {
+      setDisplayName(profile?.username || `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim() || 'Guest');
+    }
   };
 
   const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }> => {
@@ -67,9 +85,8 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       .eq('id', userId)
       .single();
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') { // Ignore 'PGRST116' (no rows found)
       console.error('Error fetching user profile:', error);
-      return { username: null, firstName: null, lastName: null, mobileNumber: null, dateOfBirth: null, gender: null, avatarUrl: null, telegramId: null };
     }
     return {
       username: data?.username || null,
@@ -83,30 +100,16 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
   };
 
-  const signInWithTelegram = async () => {
-    console.log('Attempting to sign in with Telegram...');
-    const tgUser = getTelegramUser();
-    if (!tgUser) {
-      console.log('No Telegram user found during sign in.');
-      setIsLoading(false);
-      return;
-    }
-
-    setTelegramUser(tgUser);
-
+  const signInWithTelegram = async (tgUser: TelegramUser) => {
     const email = `${tgUser.id}@telegram.user`;
     const password = `telegram_${tgUser.id}`;
 
-    let { data: userData, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    let { data: userData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (signInError && signInError.message.includes('Invalid login credentials')) {
-      console.log('Telegram user not found in Supabase, attempting to sign up...');
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: email,
-        password: password,
+        email,
+        password,
         options: {
           data: {
             username: tgUser.username,
@@ -119,14 +122,13 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       });
 
       if (signUpError) {
-        console.error('Error signing up user with Telegram:', signUpError);
+        console.error('Error signing up Telegram user:', signUpError);
         setIsLoading(false);
         return;
       }
-
       userData = signUpData;
     } else if (signInError) {
-      console.error('Error signing in user with Telegram:', signInError);
+      console.error('Error signing in Telegram user:', signInError);
       setIsLoading(false);
       return;
     }
@@ -134,53 +136,57 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setSession(userData?.session || null);
     setUser(userData?.user || null);
 
-    if (userData?.user && tgUser) {
-      // Ensure profile exists and is updated with Telegram data
+    if (userData?.user) {
       const { error: upsertError } = await supabase
         .from('profiles')
         .upsert({
           id: userData.user.id,
-          username: tgUser.username || userData.user.user_metadata.username, // Use Telegram username or existing metadata
+          username: tgUser.username || userData.user.user_metadata.username,
           first_name: tgUser.firstName,
           last_name: tgUser.lastName,
           avatar_url: tgUser.photoUrl,
           telegram_id: tgUser.id,
-        }, { onConflict: 'id' }); // Upsert based on user ID
+        }, { onConflict: 'id' });
 
-      if (upsertError) {
-        console.error('Error upserting Telegram user profile:', upsertError);
-      }
+      if (upsertError) console.error('Error upserting Telegram profile:', upsertError);
 
       const profile = await fetchUserProfile(userData.user.id);
       setUserState(profile);
     }
-
     setIsLoading(false);
   };
 
   useEffect(() => {
-    const telegramEnv = isTelegramEnvironment();
-    console.log('Is Telegram Environment:', telegramEnv);
-    setIsTelegram(telegramEnv);
+    if (initData === undefined) {
+      setIsLoading(true);
+      return;
+    }
 
-    if (telegramEnv) {
-      // Notify Telegram that the app is ready
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.ready();
-        try {
-          window.Telegram.WebApp.expand();
-        } catch (e) {
-          console.error('Failed to expand Telegram WebApp:', e);
-        }
-      }
+    if (initData && initData.user) {
+      setIsTelegram(true);
+      miniApp.ready();
+      miniApp.expand();
 
-      const tgUser = getTelegramUser();
-      console.log('Telegram User:', tgUser);
+      const tgUser: TelegramUser = {
+        id: initData.user.id,
+        firstName: initData.user.firstName,
+        lastName: initData.user.lastName,
+        username: initData.user.username,
+        languageCode: initData.user.languageCode,
+        isPremium: initData.user.isPremium,
+        photoUrl: initData.user.photoUrl,
+        allowsWriteToPm: initData.user.allowsWriteToPm,
+      };
       setTelegramUser(tgUser);
-      signInWithTelegram();
+      
+      if (tgUser.username) setDisplayName(`@${tgUser.username}`);
+      else setDisplayName(tgUser.lastName ? `${tgUser.firstName} ${tgUser.lastName}` : tgUser.firstName);
+
+      signInWithTelegram(tgUser);
     } else {
+      setIsTelegram(false);
       const { data: authListener } = supabase.auth.onAuthStateChange(
-        async (event, currentSession) => {
+        async (_, currentSession) => {
           setSession(currentSession);
           setUser(currentSession?.user || null);
           if (currentSession?.user) {
@@ -188,6 +194,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             setUserState(profile);
           } else {
             setUserState(null);
+            setDisplayName('Guest');
           }
           setIsLoading(false);
         }
@@ -199,114 +206,48 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         if (initialSession?.user) {
           const profile = await fetchUserProfile(initialSession.user.id);
           setUserState(profile);
+        } else {
+          setDisplayName('Guest');
         }
         setIsLoading(false);
       });
 
-      return () => {
-        authListener.subscription.unsubscribe();
-      };
+      return () => authListener.subscription.unsubscribe();
     }
-  }, []);
+  }, [initData, miniApp]);
 
-  const updateUserProfile = async (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string; telegram_id?: number }) => {
-    const { error } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', userId);
-
+  const updateUserProfile = async (userId: string, updates: any) => {
+    const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
     if (!error) {
       const profile = await fetchUserProfile(userId);
       setUserState(profile);
-    } else {
-      console.error('Error updating user profile:', error);
     }
     return { error };
   };
 
-  const signIn = async (identifier: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: identifier,
-      password: password,
-    });
-    if (error) {
-      console.error('Sign In Error:', error);
-    } else if (data.user) {
-      const profile = await fetchUserProfile(data.user.id);
-      setUserState(profile);
-    }
-    return { error };
+  const signIn = async (email: string, password: string) => {
+    return supabase.auth.signInWithPassword({ email, password });
   };
 
   const signUp = async (email: string, username: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          username: username,
-        },
-      },
-    });
-    if (error) {
-      console.error('Sign Up Error:', error);
-    } else if (data.user && !data.user.confirmed_at) {
-      navigate('/email-confirmation');
-    }
-    return { data, error };
+    return supabase.auth.signUp({ email, password, options: { data: { username } } });
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Sign Out Error:', error);
-    } else {
-      setSession(null);
-      setUser(null);
-      setUserState(null);
-    }
-    return { error };
+    return supabase.auth.signOut();
   };
 
   const resetPasswordForEmail = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/update-password`,
-    });
-    if (error) {
-      console.error('Reset Password Error:', error);
-    }
-    return { error };
+    return supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/update-password` });
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        username,
-        firstName,
-        lastName,
-        mobileNumber,
-        dateOfBirth,
-        gender,
-        avatarUrl,
-        isLoading,
-        isTelegram,
-        telegramUser,
-        telegramId,
-        signIn,
-        signUp,
-        signOut,
-        resetPasswordForEmail,
-        fetchUserProfile,
-        updateUserProfile,
-        signInWithTelegram,
-        setUserState,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const value = {
+    session, user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, avatarUrl,
+    isLoading, isTelegram, telegramUser, telegramId, displayName,
+    signIn, signUp, signOut, resetPasswordForEmail, fetchUserProfile, updateUserProfile
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
