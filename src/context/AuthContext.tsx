@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import * as TelegramSDK from '@telegram-apps/sdk-react';
+import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 
 export interface TelegramUser {
   id: number;
@@ -60,7 +60,25 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [displayName, setDisplayName] = useState<string>('Guest');
   const navigate = useNavigate();
 
-  const { initData, webApp } = TelegramSDK.useSDK();
+  const [initData, setInitData] = useState<any>(undefined);
+  const [webApp, setWebApp] = useState<any>(undefined);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+      const app = (window as any).Telegram.WebApp;
+      setWebApp(app);
+      try {
+        const { initData } = retrieveLaunchParams();
+        setInitData(initData);
+      } catch (e) {
+        console.error('Error retrieving launch params:', e);
+        setInitData(app.initDataUnsafe);
+      }
+    } else {
+      setInitData(null);
+      setWebApp(null);
+    }
+  }, []);
 
   const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
     setUsername(profile?.username || null);
@@ -179,7 +197,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
         allowsWriteToPm: initData.user.allowsWriteToPm,
       };
       setTelegramUser(tgUser);
-      
+
       if (tgUser.username) setDisplayName(`@${tgUser.username}`);
       else setDisplayName(tgUser.lastName ? `${tgUser.firstName} ${tgUser.lastName}` : tgUser.firstName);
 
