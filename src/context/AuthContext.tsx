@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { useSDK } from '@telegram-apps/sdk-react';
+import * as TelegramSDK from '@telegram-apps/sdk-react';
 
 export interface TelegramUser {
   id: number;
@@ -60,7 +60,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [displayName, setDisplayName] = useState<string>('Guest');
   const navigate = useNavigate();
 
-  const { initData, webApp } = useSDK();
+  const { initData, webApp } = TelegramSDK.useSDK();
 
   const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
     setUsername(profile?.username || null);
