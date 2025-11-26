@@ -1,10 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { SdkProvider } from "./components/SdkProvider";
+import { SDKProvider } from "@telegram-apps/sdk-react";
 
 createRoot(document.getElementById("root")!).render(
-  <SdkProvider>
+  <SDKProvider acceptCustomStyles debug>
     <App />
-  </SdkProvider>
+  </SDKProvider>
 );
