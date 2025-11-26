@@ -1,10 +1,28 @@
 "use client";
 
-import React, { type PropsWithChildren, useEffect } from 'react';
+import React, { type PropsWithChildren, useEffect, useState } from 'react';
 import { miniApp, viewport, themeParams, init, retrieveLaunchParams } from '@telegram-apps/sdk';
 
-function TelegramApp({ children }: PropsWithChildren) {
+export function TelegramProvider({ children }: PropsWithChildren) {
+  const [isTelegramEnv, setIsTelegramEnv] = useState(false);
+
+  // Effect to detect Telegram environment, runs once on mount
   useEffect(() => {
+    let telegramDetected = false;
+    try {
+      const params = retrieveLaunchParams();
+      telegramDetected = !!params.initData;
+    } catch {
+      telegramDetected = false;
+    }
+    setIsTelegramEnv(telegramDetected);
+  }, []);
+
+  // Effect for Telegram Mini App initialization and viewport expansion
+  // This hook is always called, but its logic is conditional
+  useEffect(() => {
+    if (!isTelegramEnv) return; // Only run if in Telegram environment
+
     try {
       // Initialize the SDK
       init();
@@ -30,10 +48,13 @@ function TelegramApp({ children }: PropsWithChildren) {
     } catch (error) {
       console.error('Error initializing Telegram Mini App:', error);
     }
-  }, []);
+  }, [isTelegramEnv]); // Dependency on isTelegramEnv ensures it runs when the environment is determined
 
+  // Effect to apply Telegram theme colors
+  // This hook is always called, but its logic is conditional
   useEffect(() => {
-    // Apply Telegram theme colors to CSS variables if needed
+    if (!isTelegramEnv) return; // Only run if in Telegram environment
+
     try {
       if (themeParams.isMounted()) {
         const params = themeParams.state();
@@ -64,25 +85,7 @@ function TelegramApp({ children }: PropsWithChildren) {
     } catch (error) {
       console.error('Error applying theme:', error);
     }
-  }, []);
-
-  return <>{children}</>;
-}
-
-export function TelegramProvider({ children }: PropsWithChildren) {
-  // Check if we're in Telegram environment
-  let isTelegram = false;
-  try {
-    const params = retrieveLaunchParams();
-    isTelegram = !!params.initData;
-  } catch {
-    isTelegram = false;
-  }
-
-  // Only wrap with TelegramApp if in Telegram
-  if (isTelegram) {
-    return <TelegramApp>{children}</TelegramApp>;
-  }
+  }, [isTelegramEnv]); // Dependency on isTelegramEnv
 
   return <>{children}</>;
 }
