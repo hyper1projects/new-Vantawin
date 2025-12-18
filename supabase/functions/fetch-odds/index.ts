@@ -45,14 +45,13 @@ Deno.serve(async (req) => {
 
         for (const league of leagues) {
             console.log(`Fetching ${league.name}...`);
-            const url = `https://api.the-odds-api.com/v4/sports/${league.key}/odds?regions=eu&markets=h2h,totals,btts&apiKey=${API_KEY}`;
+            // Removed 'btts' from the markets parameter as it's not supported by all endpoints.
+            const url = `https://api.the-odds-api.com/v4/sports/${league.key}/odds?regions=eu&markets=h2h,totals&apiKey=${API_KEY}`;
             const response = await fetch(url);
 
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error(`Failed to fetch ${league.name} (Status: ${response.status}): ${errorText}`);
-                // If the API key is invalid or rate-limited, it often returns a 401 or 429 status.
-                // We should log this more clearly.
                 if (response.status === 401) {
                     console.error('API Key Unauthorized: Please check your ODDS_API_KEY.');
                 } else if (response.status === 429) {
@@ -82,7 +81,8 @@ Deno.serve(async (req) => {
                 const bookmaker = game.bookmakers && game.bookmakers[0]; // Use first available
                 const h2h = bookmaker?.markets?.find((m: any) => m.key === "h2h");
                 const totals = bookmaker?.markets?.find((m: any) => m.key === "totals");
-                const btts = bookmaker?.markets?.find((m: any) => m.key === "btts");
+                // btts market is no longer requested, so this will be undefined
+                const btts = bookmaker?.markets?.find((m: any) => m.key === "btts"); 
 
                 const h2hOutcomeHome = h2h?.outcomes.find((o: any) => o.name === game.home_team)?.price || 0;
                 const h2hOutcomeAway = h2h?.outcomes.find((o: any) => o.name === game.away_team)?.price || 0;
@@ -151,6 +151,7 @@ Deno.serve(async (req) => {
                             }
                         ]
                     } : null,
+                    // The btts question will now be filtered out if btts is undefined
                     btts ? {
                         id: "btts",
                         type: "btts",
