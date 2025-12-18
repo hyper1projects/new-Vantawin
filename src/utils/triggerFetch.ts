@@ -6,14 +6,24 @@ export const triggerOddsFetch = async () => {
         const { data, error } = await supabase.functions.invoke('fetch-odds');
 
         if (error) {
-            console.error("Error invoking function:", error);
-            throw error;
+            console.error('Error invoking fetch-odds:', error);
+            return false;
         }
 
-        console.log("Fetch success:", data);
-        return data;
-    } catch (e) {
-        console.error("API Trigger Failed:", e);
-        return null;
+        console.log('Fetch-odds response:', data); // Log the full response
+        if (data && data.error) {
+            console.error('Fetch-odds internal error:', data.error);
+            return false;
+        }
+
+        // Check if count is 0
+        if (data && data.count === 0) {
+            console.warn('Fetch-odds success but returned 0 games. Check API usage or League Keys.');
+        }
+
+        return true;
+    } catch (err) {
+        console.error('Unexpected error triggering fetch:', err);
+        return false;
     }
 };

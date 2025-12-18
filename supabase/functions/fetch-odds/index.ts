@@ -9,7 +9,9 @@ const corsHeaders = {
 // Fixed namespace for game ID generation to ensure stability updates
 const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 
-const API_KEY = Deno.env.get('ODDS_API_KEY') || 'c2d823601e1c78d3a0eaccd47cdbdfd4';
+// IMPORTANT: Ensure ODDS_API_KEY is set in Supabase Edge Function secrets.
+// Removed hardcoded fallback to ensure the environment variable is used.
+const API_KEY = Deno.env.get('ODDS_API_KEY'); 
 
 Deno.serve(async (req) => {
     // Handle CORS
@@ -18,6 +20,14 @@ Deno.serve(async (req) => {
     }
 
     try {
+        if (!API_KEY) {
+            console.error('ODDS_API_KEY is not set in environment variables.');
+            return new Response(JSON.stringify({ error: 'ODDS_API_KEY is not configured.' }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 500,
+            });
+        }
+
         const supabaseClient = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -35,12 +45,19 @@ Deno.serve(async (req) => {
 
         for (const league of leagues) {
             console.log(`Fetching ${league.name}...`);
-            // include alternate_totals to get 1.5, 3.5 etc
-            const url = `https://api.the-odds-api.com/v4/sports/${league.key}/odds?regions=eu&markets=h2h,totals,btts,alternate_totals&apiKey=${API_KEY}`;
+            const url = `https://api.the-odds-api.com/v4/sports/${league.key}/odds?regions=eu&markets=h2h,totals,btts&apiKey=${API_KEY}`;
             const response = await fetch(url);
 
             if (!response.ok) {
-                console.error(`Failed to fetch ${league.name}: ${response.statusText}`);
+                const errorText = await response.text();
+                console.error(`Failed to fetch ${league.name} (Status: ${response.status}): ${errorText}`);
+                // If the API key is invalid or rate-limited, it often returns a 401 or 429 status.
+                // We should log this more clearly.
+                if (response.status === 401) {
+                    console.error('API Key Unauthorized: Please check your ODDS_API_KEY.');
+                } else if (response.status === 429) {
+                    console.error('API Rate Limit Exceeded: You might have used up your daily requests.');
+                }
                 continue;
             }
 
@@ -64,8 +81,7 @@ Deno.serve(async (req) => {
 
                 const bookmaker = game.bookmakers && game.bookmakers[0]; // Use first available
                 const h2h = bookmaker?.markets?.find((m: any) => m.key === "h2h");
-                const totals = bookmaker?.markets?.find((m: any) => m.key === "totals"); // Usually 2.5
-                const alternateTotals = bookmaker?.markets?.find((m: any) => m.key === "alternate_totals"); // Contains 1.5, 3.5 etc
+                const totals = bookmaker?.markets?.find((m: any) => m.key === "totals");
                 const btts = bookmaker?.markets?.find((m: any) => m.key === "btts");
 
                 const h2hOutcomeHome = h2h?.outcomes.find((o: any) => o.name === game.home_team)?.price || 0;
@@ -81,34 +97,6 @@ Deno.serve(async (req) => {
                         notDrawOdds = Math.round((1 / probNotDraw) * 100) / 100;
                     }
                 }
-
-                // Helper to find totals in alternate_totals list
-                // outcomes has { name: "Over", price: 1.5, point: 1.5 }
-                const getTotalsOdds = (line: number) => {
-                    // Check standard 'totals' first if it matches (usually 2.5) or look in alternate
-                    let market = null;
-                    // standard 'totals' often has key 'totals' and no explicitly listed point in the market object, but outcomes have points? 
-                    // The Odds API structure for alternate_totals is usually a list of outcomes in one market OR multiple markets. 
-                    // Actually alternate_totals is a list of markets? No, the documentation says "markets=alternate_totals". 
-                    // "markets" in response is an array. We look for key="alternate_totals".
-                    // Accessing outcomes.
-
-                    // Strategy: combine outcomes from 'totals' and 'alternate_totals' to find our lines
-                    const allTotalOutcomes = [
-                        ...(totals?.outcomes || []),
-                        ...(alternateTotals?.outcomes || [])
-                    ];
-
-                    const over = allTotalOutcomes.find((o: any) => o.name === "Over" && o.point === line)?.price || 0;
-                    const under = allTotalOutcomes.find((o: any) => o.name === "Under" && o.point === line)?.price || 0;
-
-                    if (over === 0 || under === 0) return null;
-                    return { over, under };
-                };
-
-                const odds15 = getTotalsOdds(1.5);
-                const odds25 = getTotalsOdds(2.5);
-                const odds35 = getTotalsOdds(3.5);
 
                 // Build Questions (JSONB)
                 const questions = [
@@ -146,31 +134,21 @@ Deno.serve(async (req) => {
                             }
                         ]
                     },
-                    odds15 ? {
-                        id: "over_1_5_goals",
-                        type: "over_1_5_goals",
-                        text: "Will there be 2 or more goals?",
-                        options: [
-                            { id: `opt_${game.id}_over_1_5`, label: "Yes", odds: odds15.over },
-                            { id: `opt_${game.id}_under_1_5`, label: "No", odds: odds15.under }
-                        ]
-                    } : null,
-                    odds25 ? {
+                    totals ? {
                         id: "over_2_5_goals",
                         type: "over_2_5_goals",
                         text: "Will there be 3 or more goals?",
                         options: [
-                            { id: `opt_${game.id}_over_2_5`, label: "Yes", odds: odds25.over },
-                            { id: `opt_${game.id}_under_2_5`, label: "No", odds: odds25.under }
-                        ]
-                    } : null,
-                    odds35 ? {
-                        id: "over_3_5_goals",
-                        type: "over_3_5_goals",
-                        text: "Will there be 4 or more goals?",
-                        options: [
-                            { id: `opt_${game.id}_over_3_5`, label: "Yes", odds: odds35.over },
-                            { id: `opt_${game.id}_under_3_5`, label: "No", odds: odds35.under }
+                            {
+                                id: `opt_${game.id}_over_2_5`,
+                                label: "Yes",
+                                odds: totals.outcomes.find((o: any) => o.name === "Over")?.price || 0
+                            },
+                            {
+                                id: `opt_${game.id}_under_2_5`,
+                                label: "No",
+                                odds: totals.outcomes.find((o: any) => o.name === "Under")?.price || 0
+                            }
                         ]
                     } : null,
                     btts ? {

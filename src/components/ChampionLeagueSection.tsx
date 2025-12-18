@@ -37,7 +37,7 @@ const ChampionsLeagueSection: React.FC = () => {
         </div>
 
         <div className="w-full flex justify-end px-4 pt-4">
-          <Button 
+          <Button
             className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[12px] px-6 py-2"
             onClick={handleShowMoreClick}
           >
