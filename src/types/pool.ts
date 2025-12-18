@@ -1,19 +1,21 @@
+export interface PoolPrize {
+  rank: string;
+  amount: number;
+}
+
 export interface Pool {
   id: string;
-  name: string;
+  name: string; // DB: name
+  description?: string; // DB: description
   status: 'ongoing' | 'upcoming' | 'ended';
-  prizePool: number;
+  prizePool: number; // DB: total_pot
   entryFee: number;
-  participants: number;
-  maxParticipants?: number; // Optional for upcoming/ongoing
-  startTime: string; // e.g., "2024-10-27T10:00:00Z"
-  endTime: string; // e.g., "2024-10-27T18:00:00Z"
-  description: string;
-  image?: string; // Optional image for the pool
-  tier: 'Bronze' | 'Silver' | 'Gold'; // New tier property
-  rules: string; // Added rules property
-  prizeDistribution?: { // New optional prize distribution property
-    rank: string;
-    amount: number;
-  }[];
+  participants: number; // Count from pool_participants
+  maxParticipants?: number; // DB: max_participants
+  startTime: string; // ISO
+  endTime: string; // ISO
+  image?: string; // DB: image_url
+  tier: 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
+  rules?: string;
+  prizeDistribution?: PoolPrize[];
 }

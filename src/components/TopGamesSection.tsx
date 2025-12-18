@@ -6,7 +6,8 @@ import { Game } from '../types/game'; // Ensure Game type is imported
 import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { allGamesData } from '../data/games'; // Import centralized game data
+import { useMatchesContext } from '../context/MatchesContext'; // Import centralized game data
+import { allGamesData } from '../data/games'; // Import centralized game data as fallback
 import CollapsibleSection from './CollapsibleSection'; // Import the new CollapsibleSection
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -15,9 +16,13 @@ type GameFilter = 'All' | 'Live' | 'Upcoming';
 const TopGamesSection: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All');
   const navigate = useNavigate(); // Initialize useNavigate
+  const { games } = useMatchesContext();
 
-  // Filter games based on the selectedFilter from allGamesData
-  const filteredGames = allGamesData.filter(game => {
+  // Fallback to mock data if context games are empty
+  const displayGames = (games && games.length > 0) ? games : allGamesData;
+
+  // Filter games based on the selectedFilter from displayGames
+  const filteredGames = displayGames.filter(game => {
     if (selectedFilter === 'All') {
       return true;
     }
@@ -50,21 +55,21 @@ const TopGamesSection: React.FC = () => {
       <div className="w-full bg-[#0D2C60] rounded-t-[18px]">
         <SectionHeader title="Top Games" className="w-full" textColor="text-white" />
       </div>
-      
+
       <div className="flex space-x-1 w-full justify-start px-1 -mt-2 mb-1 border-b border-gray-700 pb-1">
-        <Button 
+        <Button
           onClick={() => setSelectedFilter('All')}
           className={getButtonClasses('All')}
         >
           All
         </Button>
-        <Button 
+        <Button
           onClick={() => setSelectedFilter('Live')}
           className={getButtonClasses('Live')}
         >
           Live
         </Button>
-        <Button 
+        <Button
           onClick={() => setSelectedFilter('Upcoming')}
           className={getButtonClasses('Upcoming')}
         >
@@ -86,7 +91,7 @@ const TopGamesSection: React.FC = () => {
 
       {/* Show More Button positioned to bottom right */}
       <div className="w-full flex justify-end px-2 pt-2 pb-1">
-        <Button 
+        <Button
           className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[8px] px-4 py-1.5 text-sm"
           onClick={handleShowMoreClick} // Updated onClick handler
         >

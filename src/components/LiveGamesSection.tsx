@@ -1,32 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Oddscard from "./Oddscard";
 import CollapsibleSection from "./CollapsibleSection";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Game } from "../types/game";
-import { fetchLiveGames } from "../lib/fetchOdds";
+import { useMatchesContext } from "../context/MatchesContext"; // Import useMatchesContext
 
 const LiveGamesSection: React.FC = () => {
   const navigate = useNavigate();
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { games, loading } = useMatchesContext(); // Get games and loading state from context
 
-  useEffect(() => {
-    async function load() {
-      const liveGames = await fetchLiveGames();
-      setGames(liveGames);
-      setLoading(false);
-    }
-    load();
-  }, []);
+  // Filter games to show only live games
+  const liveGames = games.filter(game => game.isLive);
 
   const handleShowMoreClick = () => {
     navigate("/games/live-games");
   };
 
-  const liveGamesCount = games.length;
+  const liveGamesCount = liveGames.length;
 
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
@@ -35,11 +27,11 @@ const LiveGamesSection: React.FC = () => {
 
           {loading && <p className="text-center text-vanta-text-light">Loading...</p>}
 
-          {!loading && games.length === 0 && (
+          {!loading && liveGames.length === 0 && (
             <p className="text-center text-vanta-text-light">No live games available.</p>
           )}
 
-          {games.map((game) => (
+          {liveGames.map((game) => (
             <Oddscard key={game.id} game={game} />
           ))}
         </div>

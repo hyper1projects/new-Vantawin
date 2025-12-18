@@ -1,37 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Oddscard from './Oddscard';
-import { Game } from '../types/game';
 import { Button } from '@/components/ui/button';
 import CollapsibleSection from './CollapsibleSection';
 import { useNavigate } from 'react-router-dom';
-
-// Assuming you have this fetch function implemented somewhere
-import { fetchLaLigaGames} from "../lib/fetchOdds";
+import { useMatchesContext } from '../context/MatchesContext'; // Import useMatchesContext
 
 const LaLigaSection: React.FC = () => {
   const navigate = useNavigate();
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { games, loading } = useMatchesContext(); // Get games and loading state from context
 
-  useEffect(() => {
-    const loadGames = async () => {
-      setLoading(true);
-      try {
-        const fetchedGames = await fetchLaLigaGames();
-        setGames(fetchedGames);
-      } catch (error) {
-        console.error('Failed to fetch La Liga games:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadGames();
-  }, []);
-
-  const laLigaCount = games.length;
+  // Filter games for La Liga
+  const laLigaGames = games.filter(game => game.league === 'La Liga');
 
   const handleShowMoreClick = () => {
     navigate('/games/la-liga');
@@ -39,12 +20,12 @@ const LaLigaSection: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
-      <CollapsibleSection title="La Liga Matches" count={laLigaCount} defaultOpen={true}>
+      <CollapsibleSection title="La Liga Matches" count={laLigaGames.length} defaultOpen={true}>
         <div className="w-full flex flex-col space-y-4 px-4 pt-4">
           {loading ? (
             <p className="text-vanta-text-light text-center py-8">Loading La Liga games...</p>
-          ) : games.length > 0 ? (
-            games.map((game) => (
+          ) : laLigaGames.length > 0 ? (
+            laLigaGames.map((game) => (
               <Oddscard key={game.id} game={game} />
             ))
           ) : (

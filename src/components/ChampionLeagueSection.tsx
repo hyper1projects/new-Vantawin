@@ -1,33 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Oddscard from './Oddscard';
 import { Button } from '@/components/ui/button';
 import CollapsibleSection from './CollapsibleSection';
 import { useNavigate } from 'react-router-dom';
-
-import { fetchChampionsLeagueGames } from '../lib/fetchOdds';
+import { useMatchesContext } from '../context/MatchesContext'; // Import useMatchesContext
 
 const ChampionsLeagueSection: React.FC = () => {
   const navigate = useNavigate();
-  const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { games, loading } = useMatchesContext(); // Get games and loading state from context
 
-  useEffect(() => {
-    async function getGames() {
-      setLoading(true);
-      try {
-        const fetchedGames = await fetchChampionsLeagueGames();
-        setGames(fetchedGames);
-      } catch (error) {
-        console.error("Error fetching Champions League games:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    getGames();
-  }, []);
+  // Filter games for Champions League
+  const championsLeagueGames = games.filter(game => game.league === 'Champions League');
 
   const handleShowMoreClick = () => {
     navigate('/games/champions-league');
@@ -35,12 +20,12 @@ const ChampionsLeagueSection: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
-      <CollapsibleSection title="Champions League Matches" count={games.length} defaultOpen={true}>
+      <CollapsibleSection title="Champions League Matches" count={championsLeagueGames.length} defaultOpen={true}>
         <div className="w-full flex flex-col space-y-4 px-4 pt-4">
           {loading ? (
             <p className="text-vanta-text-light text-center py-8">Loading games...</p>
-          ) : games.length > 0 ? (
-            games.map((game) => (
+          ) : championsLeagueGames.length > 0 ? (
+            championsLeagueGames.map((game) => (
               <Oddscard
                 key={game.id}
                 game={game}
@@ -65,4 +50,3 @@ const ChampionsLeagueSection: React.FC = () => {
 };
 
 export default ChampionsLeagueSection;
-  

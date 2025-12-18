@@ -2,31 +2,64 @@
 
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { allGamesData } from '../data/games'; // Import centralized game data
+import { useMatchesContext } from '../context/MatchesContext'; // Import centralized game data
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import MatchHeaderImage from '../components/MatchHeaderImage'; // Import the MatchHeaderImage component
 import FullTimeCard from '../components/FullTimeCard'; // Import FullTimeCard
 import TotalGoalsCard from '../components/TotalGoalsCard'; // Import the new TotalGoalsCard
 import SimpleQuestionCard from '../components/SimpleQuestionCard'; // Import SimpleQuestionCard
+import { allGamesData } from '../data/games'; // Import fallback data
 
 const GameDetails: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
+  const { games, loading, error } = useMatchesContext();
 
-  const game = allGamesData.find(g => g.id === gameId);
+  console.log("GameDetails: Mounted. Params ID:", gameId);
+  console.log("GameDetails: Context Loading:", loading);
+  console.log("GameDetails: Total Games in Context:", games.length);
+
+  // Fallback Logic: Try to find game in Context, otherwise look in Mock Data
+  const contextGame = games.find(g => g.id === gameId);
+  const mockGame = allGamesData.find(g => g.id === gameId);
+  const game = contextGame || mockGame;
+
+  // Handle loading state only if we don't have a game found yet (and we rely on context)
+  if (loading && !game) {
+    console.log("GameDetails: Loading state active.");
+    return <div className="p-8 text-center text-vanta-text-light">Loading match details...</div>;
+  }
+
+  if (error && !game) {
+    console.error("GameDetails: Error detected:", error);
+    return (
+      <div className="p-8 text-center text-red-500">
+        <h2 className="text-xl font-bold">Error Loading Games</h2>
+        <p>{error}</p>
+        <Button onClick={() => window.location.reload()} className="mt-4 bg-vanta-neon-blue text-vanta-blue-dark">
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   if (!game) {
+    console.warn("GameDetails: Game NOT found for ID:", gameId);
     return (
       <div className="p-4 text-vanta-text-light text-center">
         <h1 className="text-2xl font-bold mb-4">Game Not Found</h1>
         <p className="mb-4">The game you are looking for does not exist.</p>
+        <p className="text-xs text-gray-500">Requested ID: {gameId}</p>
         <Button onClick={() => navigate('/games')} className="bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px]">
           Go to Games
         </Button>
       </div>
     );
   }
+
+  console.log("GameDetails: Game found:", game.team1.name, "vs", game.team2.name);
+
 
   return (
     <div className="p-4 text-vanta-text-light">

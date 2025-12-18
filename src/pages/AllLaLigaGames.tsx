@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import SectionHeader from '../components/SectionHeader';
 import Oddscard from '../components/Oddscard';
-import { allGamesData } from '../data/games';
+import { useMatchesContext } from '../context/MatchesContext';
 import { cn } from '@/lib/utils';
 import { Game } from '../types/game';
 
@@ -15,8 +15,9 @@ type GameFilter = 'All' | 'Live' | 'Upcoming';
 const AllLaLigaGames: React.FC = () => {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All');
+  const { games } = useMatchesContext();
 
-  const filteredGames = allGamesData.filter(game => {
+  const filteredGames = games.filter(game => {
     if (game.league !== 'La Liga') return false; // Filter specifically for La Liga
 
     if (selectedFilter === 'All') {
@@ -54,19 +55,19 @@ const AllLaLigaGames: React.FC = () => {
       <SectionHeader title="All La Liga Games" className="mb-6" textColor="text-vanta-text-light" />
 
       <div className="flex space-x-1 w-full justify-start px-1 -mt-2 mb-4 border-b border-gray-700 pb-1">
-        <Button 
+        <Button
           onClick={() => setSelectedFilter('All')}
           className={getButtonClasses('All')}
         >
           All
         </Button>
-        <Button 
+        <Button
           onClick={() => setSelectedFilter('Live')}
           className={getButtonClasses('Live')}
         >
           Live
         </Button>
-        <Button 
+        <Button
           onClick={() => setSelectedFilter('Upcoming')}
           className={getButtonClasses('Upcoming')}
         >

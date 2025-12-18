@@ -6,15 +6,16 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import SectionHeader from '../components/SectionHeader';
 import Oddscard from '../components/Oddscard';
-import { allGamesData } from '../data/games';
+import { useMatchesContext } from '../context/MatchesContext';
 import { cn } from '@/lib/utils';
 import { Game } from '../types/game';
 
 const AllLiveGames: React.FC = () => {
   const navigate = useNavigate();
+  const { games } = useMatchesContext();
 
   // Filter games to show only live games, as this page is dedicated to them
-  const filteredGames = allGamesData.filter(game => game.isLive);
+  const filteredGames = games.filter(game => game.isLive);
 
   return (
     <div className="p-4">

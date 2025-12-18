@@ -15,15 +15,23 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game, question }) => {
   const { team1, team2 } = game;
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
-  // Use question.text and question.odds directly
+  // Use question.text directly
   const questionText = question.text;
-  const yesOdd = question.odds.yes !== undefined ? question.odds.yes : 0;
-  const noOdd = question.odds.no !== undefined ? question.odds.no : 0;
   const questionId = question.id;
+
+  // Helper to find options
+  const yesOption = question.options?.find(o => o.label === 'Yes' || o.id.includes('yes'));
+  const noOption = question.options?.find(o => o.label === 'No' || o.id.includes('no'));
+
+  const yesOdd = yesOption?.odds || 0;
+  const noOdd = noOption?.odds || 0;
 
   const handleOddsClick = (e: React.MouseEvent, choice: 'yes' | 'no', oddValue: number) => {
     e.stopPropagation();
-    setSelectedMatch(game, `${questionId}_${choice}_${oddValue.toFixed(2)}`);
+    const option = choice === 'yes' ? yesOption : noOption;
+    if (option) {
+      setSelectedMatch(game, `${questionId}_${option.id}_${oddValue.toFixed(2)}`);
+    }
   };
 
   return (
@@ -55,14 +63,14 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game, question }) => {
               value={yesOdd}
               label="Yes" // Removed odds from label
               onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
-              isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_yes_${yesOdd.toFixed(2)}`}
+              isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_${yesOption?.id}_${yesOdd.toFixed(2)}`}
               className="rounded-[12px] px-6 py-2 mt-2"
             />
             <OddsButton
               value={noOdd}
               label="No" // Removed odds from label
               onClick={(e) => handleOddsClick(e, 'no', noOdd)}
-              isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_no_${noOdd.toFixed(2)}`}
+              isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_${noOption?.id}_${noOdd.toFixed(2)}`}
               className="rounded-[12px] px-6 py-2 mt-2"
             />
           </div>
