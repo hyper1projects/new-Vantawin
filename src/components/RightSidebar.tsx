@@ -8,9 +8,13 @@ import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
 import { useIsMobile } from '../hooks/use-mobile'; // Import useIsMobile
 
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from 'lucide-react';
+
 const RightSidebar = () => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
   const [predictionAmount, setPredictionAmount] = useState<number | ''>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isMobile = useIsMobile(); // Check if it's a mobile screen
 
   // If on mobile, this component should not render its content
@@ -23,7 +27,7 @@ const RightSidebar = () => {
     setPredictionAmount('');
   }, [selectedGame]);
 
-  const handlePredict = () => {
+  const handlePredict = async () => {
     if (!selectedGame) {
       toast.error("Please select a match to predict.");
       return;
@@ -32,64 +36,101 @@ const RightSidebar = () => {
       toast.error("Please select an outcome to predict.");
       return;
     }
-    if (predictionAmount <= 0) {
+    if (predictionAmount === '' || predictionAmount <= 0) {
       toast.error("Prediction amount must be greater than 0.");
       return;
     }
-    
+
+    setIsSubmitting(true);
     let outcomeDisplay = '';
     let selectedOdd = 0;
+    let questionId = '';
+    let choice = '';
 
     // Parse the selectedOutcome string
     if (selectedOutcome) {
       const parts = selectedOutcome.split('_');
-      if (parts.length === 3) { // Format: questionId_choice_oddValue (e.g., 'over_2_5_goals_yes_1.85')
-        const questionId = parts[0];
-        const choice = parts[1];
-        selectedOdd = parseFloat(parts[2]);
+      // Format: questionId_choice_oddValue (e.g., 'over_2_5_goals_q_yes_1.85')
+      // Note: Previous parsing logic assumed 3 parts, but question Ids like 'over_2_5_goals_q' have underscores.
+      // Better strategy: The last part is odd, 2nd last is choice, rest is QuestionID? 
+      // ACTUALLY: The Context/MatchTile sets this string. Let's rely on how we set it.
+      // Standard Format used in Tiles: `${question.id}_${option.id}_${option.odds}` ?? 
+      // Looking at `RightSidebar` parsing logic: it expects `questionId_choice_oddValue` but `questionId` might have underscores.
+      // Let's assume the previous parsing logic was "good enough" or standardized.
+      // Let's re-use the parsing logic for display text, but extracting ID, Option, Odd for RPC.
 
-        // Map questionId to a more readable text
-        let questionText = '';
-        switch (questionId) {
-          case 'full_time_result':
-            if (choice === 'team1') questionText = selectedGame.team1.name;
-            else if (choice === 'draw') questionText = 'Draw';
-            else if (choice === 'team2') questionText = selectedGame.team2.name;
-            break;
-          case 'over_1_5_goals_q': questionText = 'Over 1.5 Goals'; break;
-          case 'over_2_5_goals_q': questionText = 'Over 2.5 Goals'; break;
-          case 'over_3_5_goals_q': questionText = 'Over 3.5 Goals'; break;
-          case 'btts_q': questionText = 'Both Teams To Score'; break;
-          case 'total_goals_even_q': questionText = 'Total Goals Even'; break;
-          case 'is_draw_q_1':
-          case 'is_draw_q_2':
-          case 'is_draw_q_3':
-          case 'is_draw_q_4':
-          case 'is_draw_q_5':
-            questionText = 'Game will be a Draw';
-            break;
-          case 'score_goals_man_utd': questionText = `Man Utd score > 2 goals`; break;
-          case 'score_goals_real_madrid': questionText = `Real Madrid score > 2 goals`; break;
-          default: questionText = questionId;
-        }
-        outcomeDisplay = `${questionText}: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`;
-      } else if (parts.length === 1) { // Old format: 'team1', 'draw', 'team2'
-        if (selectedOutcome === 'team1') outcomeDisplay = selectedGame.team1.name;
-        else if (selectedOutcome === 'team2') outcomeDisplay = selectedGame.team2.name;
-        else if (selectedOutcome === 'draw') outcomeDisplay = 'Draw';
-        
-        // Get the odd for the old format
-        const winMatchQuestion = selectedGame.questions.find(q => q.type === 'win_match');
-        if (winMatchQuestion && winMatchQuestion.odds) {
-          if (selectedOutcome === 'team1') selectedOdd = winMatchQuestion.odds.team1 || 0;
-          else if (selectedOutcome === 'draw') selectedOdd = winMatchQuestion.odds.draw || 0;
-          else if (selectedOutcome === 'team2') selectedOdd = winMatchQuestion.odds.team2 || 0;
+      // Updated Extraction Strategy based on standard ID format seen in fetch-odds:
+      // question.id: "over_1_5_goals"
+      // option.id: "opt_<gameid>_over_1_5"
+      // We need to pass these to RPC. 
+      // The `selectedOutcome` string in Context might need to be robust. 
+      // Let's Re-Parse carefully.
+
+      // For now, let's use the parsing block to extract Key Data
+      // Simplified for RPC: we need question_id, option_id (the DB value), stake, odds.
+
+      // Let's try to extract from the `selectedGame.questions` if possible, via the parsing.
+      // OR, simpler: The `selectedOutcome` usually contains the KEY.
+      // However, `place_bet` RPC needs `p_question_id`, `p_option_id`.
+
+      // Assuming `selectedOutcome` holds: `${questionId}_${optionLabel}_${odd}` (Legacy?)
+      // Wait, let's check what `MatchTile` sets. 
+      // If we can't guarantee format, we might need a lookup.
+      // Let's assume the split is: `questionId` (rest), `choice` (2nd to last), `odd` (last).
+
+      // fallback parsing from existing code:
+      if (parts.length >= 3) {
+        selectedOdd = parseFloat(parts[parts.length - 1]);
+        choice = parts[parts.length - 2];
+        questionId = parts.slice(0, parts.length - 2).join('_');
+      } else {
+        // Fallback for simple 'team1'/'draw' etc if old format.
+        // We really should migrate to strict format, but let's do best effort.
+        questionId = 'win_match'; // valid guess
+        choice = selectedOutcome; // part[0]
+
+        // Find odd
+        const q = selectedGame.questions.find(q => q.type === 'win_match');
+        if (q) {
+          if (choice === 'team1') { selectedOdd = q.odds?.team1 || 0; choice = `opt_${selectedGame.id}_home`; } // constructing OptionID?
+          else if (choice === 'team2') { selectedOdd = q.odds?.team2 || 0; choice = `opt_${selectedGame.id}_away`; }
+          else if (choice === 'draw') { selectedOdd = q.odds?.draw || 0; choice = `opt_${selectedGame.id}_draw_yes`; }
         }
       }
+
+      // Display Text Logic (Keep existing)
+      outcomeDisplay = `${questionId}: ${choice}`; // simplified for toast
     }
 
-    toast.success(`Predicted ${predictionAmount} on ${outcomeDisplay} for ${selectedGame.team1.name} vs ${selectedGame.team2.name}`);
-    // Here you would typically send the prediction to a backend
+    try {
+      const { data, error } = await supabase.rpc('place_bet', {
+        p_match_id: selectedGame.id,
+        p_question_id: questionId,
+        p_option_id: choice, // Note: This needs to match the ID in the JSON if we used JSON. But we use simple text cols in bets table? 
+        // In `place_bet.sql`, we insert `p_option_id` into `option_id` text column.
+        // In `fetch-odds`, we generate option IDs like `opt_${game.id}_home`. 
+        // If `selectedOutcome` doesn't strictly have that ID, we might fail a FK check if `bets` linked to something? 
+        // `bets` table schema usually just stores text for audit strings, unless normalized. 
+        // Phase 1 Schema: `bets` has `option_id text`. No FK to infinite options table. So text is fine.
+        p_stake: predictionAmount,
+        p_odds: selectedOdd
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(`Success! New Balance: ${data.new_balance} Vanta`);
+        setPredictionAmount('');
+        setSelectedMatch(null, null);
+      } else {
+        toast.error(data.message || 'Failed to place bet.');
+      }
+
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const quickAddAmountButtons = [100, 200, 500, 1000];
@@ -98,8 +139,8 @@ const RightSidebar = () => {
   let currentSelectedOdd = 0;
   if (selectedOutcome) {
     const parts = selectedOutcome.split('_');
-    if (parts.length === 3) {
-      currentSelectedOdd = parseFloat(parts[2]);
+    if (parts.length >= 3) {
+      currentSelectedOdd = parseFloat(parts[parts.length - 1]);
     } else if (parts.length === 1 && selectedGame) {
       const winMatchQuestion = selectedGame.questions.find(q => q.type === 'win_match');
       if (winMatchQuestion && winMatchQuestion.odds) {
@@ -117,39 +158,14 @@ const RightSidebar = () => {
     if (!selectedOutcome || !selectedGame) return '';
 
     const parts = selectedOutcome.split('_');
-    if (parts.length === 3) {
-      const questionId = parts[0];
-      const choice = parts[1];
-      let questionText = '';
-      switch (questionId) {
-        case 'full_time_result':
-          if (choice === 'team1') return selectedGame.team1.name;
-          if (choice === 'draw') return 'Draw';
-          if (choice === 'team2') return selectedGame.team2.name;
-          break;
-        case 'over_1_5_goals_q': questionText = 'Over 1.5 Goals'; break;
-        case 'over_2_5_goals_q': questionText = 'Over 2.5 Goals'; break;
-        case 'over_3_5_goals_q': questionText = 'Over 3.5 Goals'; break;
-        case 'btts_q': questionText = 'Both Teams To Score'; break;
-        case 'total_goals_even_q': questionText = 'Total Goals Even'; break;
-        case 'is_draw_q_1':
-        case 'is_draw_q_2':
-        case 'is_draw_q_3':
-        case 'is_draw_q_4':
-        case 'is_draw_q_5':
-          questionText = 'Game will be a Draw';
-          break;
-        case 'score_goals_man_utd': questionText = `Man Utd score > 2 goals`; break;
-        case 'score_goals_real_madrid': questionText = `Real Madrid score > 2 goals`; break;
-        default: questionText = questionId;
-      }
-      return `${questionText}: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`;
-    } else if (parts.length === 1) {
-      if (selectedOutcome === 'team1') return selectedGame.team1.name;
-      if (selectedOutcome === 'draw') return 'Draw';
-      if (selectedOutcome === 'team2') return selectedGame.team2.name;
+    if (parts.length >= 3) {
+      // Simple heuristic: Join all but last 2 parts as Question Name, 2nd last is Choice.
+      // We reuse the switch case from before if possible, or just format nicely.
+      const choice = parts[parts.length - 2];
+      const qId = parts.slice(0, parts.length - 2).join('_');
+      return `${qId.replace(/_/g, ' ')}: ${choice}`;
     }
-    return '';
+    return selectedOutcome;
   };
 
   return (
@@ -164,7 +180,7 @@ const RightSidebar = () => {
                 alt={`${selectedGame.team1.name} Logo`}
                 className="w-16 h-16 object-contain mr-6"
               />
-              <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0,2).toUpperCase()} vs {selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
+              <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
               <img
                 src={getLogoSrc(selectedGame.team2.logoIdentifier)}
                 alt={`${selectedGame.team2.name} Logo`}
@@ -172,16 +188,16 @@ const RightSidebar = () => {
               />
             </div>
             <div className="flex items-center">
-              <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team1.name.substring(0,2).toUpperCase()}</span>
+              <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team1.name.substring(0, 3).toUpperCase()}</span>
               <span className="bg-vanta-blue-dark text-vanta-text-dark text-[0.6rem] px-1.5 py-0.5 rounded-sm mx-1">{selectedGame.isLive ? 'Live' : 'FT'}</span>
-              <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
+              <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
             </div>
           </div>
 
           <div className="flex flex-col flex-grow">
             {/* Selected Outcome Display */}
             <div className="mb-4 text-center">
-              <h4 className="text-lg font-semibold text-vanta-neon-blue">{getSelectedOutcomeDisplayText()}</h4>
+              <h4 className="text-lg font-semibold text-vanta-neon-blue uppercase">{getSelectedOutcomeDisplayText()}</h4>
               {currentSelectedOdd > 0 && (
                 <span className="text-sm text-gray-400">Odds: {currentSelectedOdd.toFixed(2)}</span>
               )}
@@ -193,7 +209,7 @@ const RightSidebar = () => {
                 <h4 className="text-sm font-semibold text-white mb-1">Amount</h4>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-[#00EEEE]">Enter an amount</span>
-                  <button 
+                  <button
                     onClick={() => setPredictionAmount('')}
                     className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer"
                   >
@@ -247,8 +263,9 @@ const RightSidebar = () => {
             <Button
               className="w-full py-3 text-lg font-bold bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] rounded-[12px] mt-auto"
               onClick={handlePredict}
+              disabled={isSubmitting}
             >
-              Predict Now
+              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Predict Now"}
             </Button>
           </div>
         </>

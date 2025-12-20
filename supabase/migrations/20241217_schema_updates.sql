@@ -46,32 +46,13 @@ CREATE TABLE public.pools (
     created_at timestamp with time zone DEFAULT now()
 );
 
--- 3. Create public.pool_participants
+-- 3. REMOVED public.pool_participants
+-- This table is superseded by `tournament_entries` in 20251220_create_tournament_entries.sql
+-- Removing to prevent confusion and foreign key errors.
 
-CREATE TABLE IF NOT EXISTS public.pool_participants (
-    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    pool_id uuid NOT NULL REFERENCES public.pools(id) ON DELETE CASCADE,
-    user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-    joined_at timestamp with time zone DEFAULT now(),
-    UNIQUE(pool_id, user_id)
-);
-
--- 4. Create public.bets
-
-CREATE TABLE IF NOT EXISTS public.bets (
-    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-    match_id uuid NOT NULL REFERENCES public.matches(id) ON DELETE CASCADE,
-    question_id text NOT NULL, -- ID from the question JSON
-    option_id text NOT NULL,   -- ID from the specific option in JSON
-    amount numeric NOT NULL CHECK (amount > 0),
-    potential_payout numeric,
-    status text DEFAULT 'pending'::text CHECK (status IN ('pending', 'won', 'lost', 'void')),
-    created_at timestamp with time zone DEFAULT now()
-);
+-- 4. REMOVED public.bets
+-- This table is superseded by `bets` in 20251220_create_bets.sql
+-- Removing to prevent confusion and schema mismatch (user_id vs entry_id).
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_bets_user_id ON public.bets(user_id);
-CREATE INDEX IF NOT EXISTS idx_bets_match_id ON public.bets(match_id);
-CREATE INDEX IF NOT EXISTS idx_pool_participants_user_id ON public.pool_participants(user_id);
 CREATE INDEX IF NOT EXISTS idx_matches_start_time ON public.matches(start_time);

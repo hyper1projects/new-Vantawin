@@ -1,22 +1,41 @@
-"use client";
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Game } from '../types/game';
+import { useGatekeeper } from '../hooks/useGatekeeper';
+import TierSelectionModal from '../components/TierSelectionModal';
+import { useAuth } from './AuthContext';
 
 interface MatchSelectionContextType {
   selectedGame: Game | null;
-  selectedOutcome: string | null; // Changed type to string | null
-  setSelectedMatch: (game: Game | null, outcome?: string | null) => void; // Changed type to string | null
+  selectedOutcome: string | null;
+  setSelectedMatch: (game: Game | null, outcome?: string | null) => void;
 }
 
 const MatchSelectionContext = createContext<MatchSelectionContextType | undefined>(undefined);
 
 export const MatchSelectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-  const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null); // Changed type to string | null
+  const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const setSelectedMatch = (game: Game | null, outcome: string | null = null) => { // Changed type to string | null
+  const { user } = useAuth();
+  const { hasEntry, isLoading, checkEntryStatus } = useGatekeeper();
+
+  const setSelectedMatch = async (game: Game | null, outcome: string | null = null) => {
+    // If clearing selection (game is null), allow it
+    if (!game) {
+      setSelectedGame(null);
+      setSelectedOutcome(null);
+      return;
+    }
+
+    // If selecting a bet, check gatekeeper
+    // Verify status freshness if needed, or rely on hook state
+    if (!hasEntry && !isLoading) {
+      setIsModalOpen(true);
+      return;
+    }
+
     setSelectedGame(game);
     setSelectedOutcome(outcome);
   };
@@ -24,6 +43,11 @@ export const MatchSelectionProvider: React.FC<{ children: ReactNode }> = ({ chil
   return (
     <MatchSelectionContext.Provider value={{ selectedGame, selectedOutcome, setSelectedMatch }}>
       {children}
+      <TierSelectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        userId={user?.id}
+      />
     </MatchSelectionContext.Provider>
   );
 };

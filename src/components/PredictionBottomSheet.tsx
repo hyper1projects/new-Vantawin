@@ -17,6 +17,9 @@ import {
   DrawerClose,
 } from '@/components/ui/drawer'; // Using shadcn/ui drawer
 
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from 'lucide-react';
+
 interface PredictionBottomSheetProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -25,6 +28,7 @@ interface PredictionBottomSheetProps {
 const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, onOpenChange }) => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
   const [predictionAmount, setPredictionAmount] = useState<number | ''>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Reset prediction amount when a new game is selected or drawer opens/closes
   useEffect(() => {
@@ -33,7 +37,7 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
     }
   }, [selectedGame, isOpen]);
 
-  const handlePredict = () => {
+  const handlePredict = async () => {
     if (!selectedGame) {
       toast.error("Please select a match to predict.");
       return;
@@ -42,59 +46,63 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
       toast.error("Please select an outcome to predict.");
       return;
     }
-    if (predictionAmount <= 0) {
+    if (predictionAmount === '' || predictionAmount <= 0) {
       toast.error("Prediction amount must be greater than 0.");
       return;
     }
-    
+
+    setIsSubmitting(true);
     let outcomeDisplay = '';
     let selectedOdd = 0;
+    let questionId = '';
+    let choice = '';
 
     if (selectedOutcome) {
       const parts = selectedOutcome.split('_');
-      if (parts.length === 3) {
-        const questionId = parts[0];
-        const choice = parts[1];
-        selectedOdd = parseFloat(parts[2]);
+      // Fallback Parsing similar to RightSidebar
+      if (parts.length >= 3) {
+        selectedOdd = parseFloat(parts[parts.length - 1]);
+        choice = parts[parts.length - 2];
+        questionId = parts.slice(0, parts.length - 2).join('_');
+      } else {
+        questionId = 'win_match';
+        choice = selectedOutcome;
 
-        let questionText = '';
-        switch (questionId) {
-          case 'full_time_result':
-            if (choice === 'team1') questionText = selectedGame.team1.name;
-            else if (choice === 'draw') questionText = 'Draw';
-            else if (choice === 'team2') questionText = selectedGame.team2.name;
-            break;
-          case 'over_1_5_goals_q': questionText = 'Over 1.5 Goals'; break;
-          case 'over_2_5_goals_q': questionText = 'Over 2.5 Goals'; break;
-          case 'over_3_5_goals_q': questionText = 'Over 3.5 Goals'; break;
-          case 'btts_q': questionText = 'Both Teams To Score'; break;
-          case 'total_goals_even_q': questionText = 'Total Goals Even'; break;
-          case 'is_draw_q_1':
-          case 'is_draw_q_2':
-          case 'is_draw_q_3':
-          case 'is_draw_q_4':
-          case 'is_draw_q_5':
-            questionText = 'Game will be a Draw';
-            break;
-          case 'score_goals_man_utd': questionText = `Man Utd score > 2 goals`; break;
-          case 'score_goals_real_madrid': questionText = `Real Madrid score > 2 goals`; break;
-          default: questionText = questionId;
+        const q = selectedGame.questions.find(q => q.type === 'win_match');
+        if (q) {
+          if (choice === 'team1') { selectedOdd = q.odds?.team1 || 0; choice = `opt_${selectedGame.id}_home`; }
+          else if (choice === 'team2') { selectedOdd = q.odds?.team2 || 0; choice = `opt_${selectedGame.id}_away`; }
+          else if (choice === 'draw') { selectedOdd = q.odds?.draw || 0; choice = `opt_${selectedGame.id}_draw_yes`; }
         }
-        outcomeDisplay = `${questionText}: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`;
-      } else if (parts.length === 1) {
-        if (selectedOutcome === 'team1') outcomeDisplay = selectedGame.team1.name;
-        else if (selectedOutcome === 'team2') outcomeDisplay = selectedGame.team2.name;
-        else if (selectedOutcome === 'draw') outcomeDisplay = 'Draw';
-        
-        if (selectedOutcome === 'team1') selectedOdd = selectedGame.questions.find(q => q.type === 'win_match')?.odds.team1 || 0;
-        else if (selectedOutcome === 'draw') selectedOdd = selectedGame.questions.find(q => q.type === 'win_match')?.odds.draw || 0;
-        else if (selectedOutcome === 'team2') selectedOdd = selectedGame.questions.find(q => q.type === 'win_match')?.odds.team2 || 0;
       }
+      outcomeDisplay = `${questionId}: ${choice}`;
     }
 
-    toast.success(`Predicted ${predictionAmount} on ${outcomeDisplay} for ${selectedGame.team1.name} vs ${selectedGame.team2.name}`);
-    onOpenChange(false); // Close the drawer after prediction
-    setSelectedMatch(null, null); // Clear selected match
+    try {
+      const { data, error } = await supabase.rpc('place_bet', {
+        p_match_id: selectedGame.id,
+        p_question_id: questionId,
+        p_option_id: choice,
+        p_stake: predictionAmount,
+        p_odds: selectedOdd
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(`Success! New Balance: ${data.new_balance} Vanta`);
+        setPredictionAmount('');
+        setSelectedMatch(null, null);
+        onOpenChange(false);
+      } else {
+        toast.error(data.message || 'Failed to place bet.');
+      }
+
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const quickAddAmountButtons = [100, 200, 500, 1000];
@@ -102,8 +110,8 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
   let currentSelectedOdd = 0;
   if (selectedOutcome) {
     const parts = selectedOutcome.split('_');
-    if (parts.length === 3) {
-      currentSelectedOdd = parseFloat(parts[2]);
+    if (parts.length >= 3) {
+      currentSelectedOdd = parseFloat(parts[parts.length - 1]);
     } else if (parts.length === 1 && selectedGame) {
       const winMatchQuestion = selectedGame.questions.find(q => q.type === 'win_match');
       if (winMatchQuestion && winMatchQuestion.odds) {
@@ -119,39 +127,12 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
     if (!selectedOutcome || !selectedGame) return '';
 
     const parts = selectedOutcome.split('_');
-    if (parts.length === 3) {
-      const questionId = parts[0];
-      const choice = parts[1];
-      let questionText = '';
-      switch (questionId) {
-        case 'full_time_result':
-          if (choice === 'team1') return selectedGame.team1.name;
-          if (choice === 'draw') return 'Draw';
-          if (choice === 'team2') return selectedGame.team2.name;
-          break;
-        case 'over_1_5_goals_q': questionText = 'Over 1.5 Goals'; break;
-        case 'over_2_5_goals_q': questionText = 'Over 2.5 Goals'; break;
-        case 'over_3_5_goals_q': questionText = 'Over 3.5 Goals'; break;
-        case 'btts_q': questionText = 'Both Teams To Score'; break;
-        case 'total_goals_even_q': questionText = 'Total Goals Even'; break;
-        case 'is_draw_q_1':
-        case 'is_draw_q_2':
-        case 'is_draw_q_3':
-        case 'is_draw_q_4':
-        case 'is_draw_q_5':
-          questionText = 'Game will be a Draw';
-          break;
-        case 'score_goals_man_utd': questionText = `Man Utd score > 2 goals`; break;
-        case 'score_goals_real_madrid': questionText = `Real Madrid score > 2 goals`; break;
-        default: questionText = questionId;
-      }
-      return `${questionText}: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`;
-    } else if (parts.length === 1) {
-      if (selectedOutcome === 'team1') return selectedGame.team1.name;
-      if (selectedOutcome === 'draw') return 'Draw';
-      if (selectedOutcome === 'team2') return selectedGame.team2.name;
+    if (parts.length >= 3) {
+      const choice = parts[parts.length - 2];
+      const qId = parts.slice(0, parts.length - 2).join('_');
+      return `${qId.replace(/_/g, ' ')}: ${choice}`;
     }
-    return '';
+    return selectedOutcome;
   };
 
   return (
@@ -163,7 +144,7 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
             {selectedGame ? `${selectedGame.team1.name} vs ${selectedGame.team2.name}` : 'Select a game and outcome'}
           </DrawerDescription>
         </DrawerHeader>
-        
+
         {selectedGame ? (
           <div className="flex flex-col flex-grow p-4 overflow-y-auto">
             {/* Logo and Match Code */}
@@ -174,7 +155,7 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
                   alt={`${selectedGame.team1.name} Logo`}
                   className="w-12 h-12 object-contain mr-4"
                 />
-                <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0,2).toUpperCase()} vs {selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
+                <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
                 <img
                   src={getLogoSrc(selectedGame.team2.logoIdentifier)}
                   alt={`${selectedGame.team2.name} Logo`}
@@ -182,15 +163,15 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
                 />
               </div>
               <div className="flex items-center">
-                <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team1.name.substring(0,2).toUpperCase()}</span>
+                <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team1.name.substring(0, 3).toUpperCase()}</span>
                 <span className="bg-vanta-blue-dark text-vanta-text-dark text-[0.6rem] px-1.5 py-0.5 rounded-sm mx-1">{selectedGame.isLive ? 'Live' : 'FT'}</span>
-                <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team2.name.substring(0,2).toUpperCase()}</span>
+                <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
               </div>
             </div>
 
             {/* Selected Outcome Display */}
             <div className="mb-4 text-center">
-              <h4 className="text-lg font-semibold text-vanta-neon-blue">{getSelectedOutcomeDisplayText()}</h4>
+              <h4 className="text-lg font-semibold text-vanta-neon-blue uppercase">{getSelectedOutcomeDisplayText()}</h4>
               {currentSelectedOdd > 0 && (
                 <span className="text-sm text-gray-400">Odds: {currentSelectedOdd.toFixed(2)}</span>
               )}
@@ -202,7 +183,7 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
                 <h4 className="text-sm font-semibold text-white mb-1">Amount</h4>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-[#00EEEE]">Enter an amount</span>
-                  <button 
+                  <button
                     onClick={() => setPredictionAmount('')}
                     className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer"
                   >
@@ -261,8 +242,9 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
               <Button
                 className="w-full py-3 text-lg font-bold bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] rounded-[12px]"
                 onClick={handlePredict}
+                disabled={isSubmitting}
               >
-                Predict Now
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Predict Now"}
               </Button>
             </DrawerFooter>
           </div>
