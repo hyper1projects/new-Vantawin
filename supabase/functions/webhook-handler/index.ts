@@ -1,6 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { HmacSha512 } from "https://deno.land/std@0.190.0/crypto/hmac.ts";
-import { encode } from "https://deno.land/std@0.190.0/encoding/hex.ts";
+import { hmac } from 'https://esm.sh/js-sha512';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -13,15 +12,13 @@ Deno.serve(async (req) => {
         const bodyText = await req.text();
 
         const ipnSecret = Deno.env.get('NOWPAYMENTS__IPN_SECRET');
-        if (!ipnSecret) throw new Error('Missing IPN Secret');
+        if (!ipnSecret) {
+            console.error('Missing IPN Secret');
+            return new Response('Server configuration error: Missing IPN Secret', { status: 500 });
+        }
 
-        // Verify the signature for security using Deno-native crypto
-        const key = new TextEncoder().encode(ipnSecret);
-        const hmac = new HmacSha512(key);
-        hmac.update(bodyText);
-        const digestBuffer = hmac.digest();
-        const hexEncodedBuffer = encode(new Uint8Array(digestBuffer));
-        const digest = new TextDecoder().decode(hexEncodedBuffer);
+        // Verify the signature for security using js-sha512
+        const digest = hmac.create(ipnSecret).update(bodyText).hex();
 
         if (digest !== signature) {
             console.warn('Invalid IPN signature received.');
@@ -52,13 +49,16 @@ Deno.serve(async (req) => {
 
             if (error) {
                 console.error('Failed to update balance via RPC:', error);
+                // Even if DB update fails, we must return 200 to NOWPayments to prevent retries
             }
         }
 
+        // Always return 200 OK to NOWPayments if the signature is valid
         return new Response('OK', { status: 200, headers: corsHeaders });
 
     } catch (error) {
         console.error('Webhook Handler Error:', error.message);
-        return new Response(error.message, { status: 400, headers: corsHeaders });
+        // Return a generic error to the caller, but log the details
+        return new Response('An internal error occurred', { status: 500, headers: corsHeaders });
     }
 });
