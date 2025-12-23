@@ -36,6 +36,8 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
         return 'bg-gray-400 text-gray-800';
       case 'Gold':
         return 'bg-yellow-500 text-gray-800';
+      case 'Platinum':
+        return 'bg-blue-100 text-blue-900 border border-blue-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]'; // Distinctive shiny look
       default:
         return 'bg-gray-300 text-gray-800';
     }

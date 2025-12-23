@@ -31,13 +31,14 @@ interface AuthContextType {
   isTelegram: boolean;
   telegramUser: TelegramUser | null;
   telegramId: number | null;
+  walletAddress: string | null;
   displayName: string;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
-  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }>;
-  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; avatar_url?: string; telegram_id?: number }) => Promise<{ error: any }>;
+  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null }>;
+  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; wallet_address?: string; avatar_url?: string; telegram_id?: number }) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,6 +58,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isTelegram, setIsTelegram] = useState(false);
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [telegramId, setTelegramId] = useState<number | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>('Guest');
   const navigate = useNavigate();
 
@@ -80,7 +82,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, []);
 
-  const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
+  const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
     setUsername(profile?.username || null);
     setFirstName(profile?.firstName || null);
     setLastName(profile?.lastName || null);
@@ -89,16 +91,17 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setGender(profile?.gender || null);
     setAvatarUrl(profile?.avatarUrl || null);
     setTelegramId(profile?.telegramId || null);
+    setWalletAddress(profile?.walletAddress || null);
 
     if (!isTelegram) {
       setDisplayName(profile?.username || `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim() || 'Guest');
     }
   };
 
-  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; avatarUrl: string | null; telegramId: number | null }> => {
+  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null }> => {
     const { data, error } = await supabase
-      .from('profiles')
-      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, avatar_url, telegram_id')
+      .from('users') // NOTE: Changed from 'profiles' to 'users' based on schema migration 20251220110000. IF profiles is alias, ok. But migration said 'users'.
+      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, wallet_address, avatar_url, telegram_id')
       .eq('id', userId)
       .single();
 
@@ -112,6 +115,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       mobileNumber: data?.mobile_number || null,
       dateOfBirth: data?.date_of_birth || null,
       gender: data?.gender || null,
+      walletAddress: data?.wallet_address || null,
       avatarUrl: data?.avatar_url || null,
       telegramId: data?.telegram_id || null,
     };
@@ -155,7 +159,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     if (userData?.user) {
       const { error: upsertError } = await supabase
-        .from('profiles')
+        .from('users')
         .upsert({
           id: userData.user.id,
           username: tgUser.username || userData.user.user_metadata.username,
@@ -236,7 +240,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   }, [initData, webApp]);
 
   const updateUserProfile = async (userId: string, updates: any) => {
-    const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
+    const { error } = await supabase.from('users').update(updates).eq('id', userId);
     if (!error) {
       const profile = await fetchUserProfile(userId);
       setUserState(profile);
@@ -261,7 +265,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   const value = {
-    session, user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, avatarUrl,
+    session, user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, avatarUrl, walletAddress,
     isLoading, isTelegram, telegramUser, telegramId, displayName,
     signIn, signUp, signOut, resetPasswordForEmail, fetchUserProfile, updateUserProfile
   };

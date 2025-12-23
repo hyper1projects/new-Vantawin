@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { supabase } from '@/integrations/supabase/client';
+import { createPayment } from '@/services/paymentService';
 import { Loader2 } from 'lucide-react';
 
 interface TierSelectionModalProps {
@@ -25,11 +25,13 @@ const TierSelectionModal: React.FC<TierSelectionModalProps> = ({ isOpen, onClose
     const handleSelectTier = async (tier: typeof TIERS[0]) => {
         setLoadingTier(tier.name);
         try {
-            const { data, error } = await supabase.functions.invoke('create-invoice', {
-                body: { tier: tier.name, amount: tier.fee }
-            });
+            // TODO: Retrieve activePoolId from context or props if needed. 
+            // For now, passing a placeholder or checking if it's available in parent.
+            // Assuming 'activePoolId' is not yet passed, we might need to update the prop interface later.
+            // Passing 'demo-pool' if not available for this wiring phase.
+            const activePoolId = 'demo-pool-id';
 
-            if (error) throw error;
+            const data = await createPayment(tier.name, tier.fee, activePoolId);
 
             // Redirect to Payment URL (NOWPayments provides invoice_url)
             if (data.invoice_url) {
@@ -37,9 +39,10 @@ const TierSelectionModal: React.FC<TierSelectionModalProps> = ({ isOpen, onClose
             } else {
                 console.error("No invoice URL returned", data);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Payment Error:', err);
             // Show error toast
+            alert("Payment Failed: " + (err.message || "Unknown error"));
         } finally {
             setLoadingTier(null);
         }

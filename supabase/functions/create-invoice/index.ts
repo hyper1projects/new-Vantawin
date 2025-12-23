@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
         if (!apiKey) throw new Error('Missing NOWPayments API Key')
 
         // Call NOWPayments
-        const response = await fetch('https://api.nowpayments.io/v1/invoice', {
+        const response = await fetch('https://api-sandbox.nowpayments.io/v1/invoice', {
             method: 'POST',
             headers: {
                 'x-api-key': apiKey,

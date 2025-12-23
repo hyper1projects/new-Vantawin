@@ -3,13 +3,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Gamepad2, Wallet, Trophy, Users, BookText, HelpCircle, Mail, ChevronRight, User } from 'lucide-react'; // Import User icon
-import { 
-  Sidebar as ShadcnSidebar, 
-  SidebarContent, 
-  SidebarFooter, 
-  SidebarGroup, 
-  SidebarGroupContent, 
-  SidebarMenu, 
+import { useAdmin } from '../hooks/useAdmin';
+import {
+  Sidebar as ShadcnSidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader
@@ -25,6 +26,12 @@ const Sidebar = () => {
     { name: "Leaderboard", icon: Users, path: "/leaderboard" },
     { name: "Profile", icon: User, path: "/users" }, // Changed from Wallet to Profile, and path to /users
   ];
+
+  const { isAdmin } = useAdmin();
+
+  if (isAdmin) {
+    primaryNavItems.push({ name: "Admin", icon: Trophy, path: "/admin" }); // Re-using Trophy icon for now or we can import another
+  }
 
   const secondaryNavItems = [
     { name: "Terms of Use", icon: BookText, path: "/terms" },
@@ -43,8 +50,8 @@ const Sidebar = () => {
                 const isActive = location.pathname === item.path;
                 return (
                   <SidebarMenuItem key={item.name} className="mb-2"> {/* Added mb-2 for spacing */}
-                    <SidebarMenuButton 
-                      asChild 
+                    <SidebarMenuButton
+                      asChild
                       isActive={isActive}
                       className={isActive ? 'bg-vanta-accent-dark-blue text-white relative before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-vanta-neon-blue' : 'text-white'}
                     >

@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const ProfileSettingsTab: React.FC = () => {
-  const { user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, avatarUrl, fetchUserProfile, updateUserProfile, isLoading } = useAuth();
+  const { user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, walletAddress, avatarUrl, fetchUserProfile, updateUserProfile, isLoading } = useAuth();
 
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [currentFirstName, setCurrentFirstName] = useState<string>('');
@@ -23,6 +23,7 @@ const ProfileSettingsTab: React.FC = () => {
   const [currentMobileNumber, setCurrentMobileNumber] = useState<string>('');
   const [currentDateOfBirth, setCurrentDateOfBirth] = useState<Date | undefined>(undefined);
   const [currentGender, setCurrentGender] = useState<string>('');
+  const [currentWalletAddress, setCurrentWalletAddress] = useState<string>('');
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string>('/images/profile/Profile.png'); // Default avatar
   const [isSaving, setIsSaving] = useState(false);
 
@@ -36,6 +37,7 @@ const ProfileSettingsTab: React.FC = () => {
         setCurrentMobileNumber(profile.mobileNumber || '');
         setCurrentDateOfBirth(profile.dateOfBirth ? new Date(profile.dateOfBirth) : undefined);
         setCurrentGender(profile.gender || '');
+        setCurrentWalletAddress(profile.walletAddress || '');
         setCurrentAvatarUrl(profile.avatarUrl || '/images/profile/Profile.png');
       };
       loadProfile();
@@ -57,6 +59,7 @@ const ProfileSettingsTab: React.FC = () => {
       mobile_number: currentMobileNumber,
       date_of_birth: currentDateOfBirth ? format(currentDateOfBirth, 'yyyy-MM-dd') : undefined,
       gender: currentGender,
+      wallet_address: currentWalletAddress,
       avatar_url: currentAvatarUrl,
     });
     setIsSaving(false);
@@ -147,6 +150,18 @@ const ProfileSettingsTab: React.FC = () => {
       </div>
 
       <div>
+        <Label htmlFor="walletAddress" className="text-vanta-text-light text-base font-semibold mb-2 block">Wallet Address (ERC-20)</Label>
+        <Input
+          id="walletAddress"
+          type="text"
+          placeholder="0x..."
+          value={currentWalletAddress}
+          onChange={(e) => setCurrentWalletAddress(e.target.value)}
+          className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
+        />
+      </div>
+
+      <div>
         <Label htmlFor="dateOfBirth" className="text-vanta-text-light text-base font-semibold mb-2 block">Date of Birth</Label>
         <Popover>
           <PopoverTrigger asChild>
@@ -201,7 +216,7 @@ const ProfileSettingsTab: React.FC = () => {
           disabled
         />
       </div>
-      
+
       <Button
         type="submit"
         className="w-full bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] py-3 text-lg font-bold"

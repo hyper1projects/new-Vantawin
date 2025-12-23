@@ -188,4 +188,22 @@ export const allPoolsData: Pool[] = [
       { rank: '25th Position', amount: 100 },
     ],
   },
+  {
+    id: 'pool-9',
+    name: 'Platinum Pool I',
+    status: 'ongoing',
+    prizePool: 5000000,
+    entryFee: 5000,
+    participants: 45,
+    maxParticipants: 50,
+    startTime: '2024-11-01T10:00:00Z',
+    endTime: '2024-12-31T23:59:59Z',
+    description: 'The ultimate high-stakes challenge for elite predictors.',
+    image: '/images/carousel/NG-1MCasinoTournament2610.jpeg',
+    tier: 'Platinum',
+    rules: 'Exclusive pool for Platinum members. Predict the outcome of high-profile international matches. Winner takes all.',
+    prizeDistribution: [
+      { rank: 'Winner', amount: 5000000 },
+    ],
+  },
 ];

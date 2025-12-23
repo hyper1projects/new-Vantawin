@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Game } from '../types/game';
 import { useGatekeeper } from '../hooks/useGatekeeper';
 import TierSelectionModal from '../components/TierSelectionModal';
+import BetSlip from '../components/BetSlip';
 import { useAuth } from './AuthContext';
 
 interface MatchSelectionContextType {
@@ -47,6 +48,13 @@ export const MatchSelectionProvider: React.FC<{ children: ReactNode }> = ({ chil
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         userId={user?.id}
+      />
+      <BetSlip
+        isOpen={!!selectedGame && !!selectedOutcome}
+        onClose={() => { setSelectedGame(null); setSelectedOutcome(null); }}
+        match={selectedGame}
+        selectedOutcomeId={selectedOutcome}
+        activePoolId="demo-pool-id" // TODO: Connect to real pool context
       />
     </MatchSelectionContext.Provider>
   );

@@ -2,6 +2,7 @@
 
 -- 1. Add Admin Flag to Users
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS is_admin boolean DEFAULT false;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS real_money_balance numeric DEFAULT 0;
 
 -- 2. Withdrawal Requests Table
 CREATE TABLE IF NOT EXISTS public.withdrawals (
