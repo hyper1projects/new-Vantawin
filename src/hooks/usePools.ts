@@ -13,7 +13,7 @@ export const usePools = () => {
                 setLoading(true);
                 const { data, error } = await supabase
                     .from('pools')
-                    .select('*');
+                    .select('*, pool_participants(count)');
 
                 if (error) {
                     throw error;
@@ -28,14 +28,14 @@ export const usePools = () => {
                         status: item.status,
                         prizePool: item.total_pot,
                         entryFee: item.entry_fee,
-                        participants: 0, // TODO: Fetch actua count from pool_participants if needed
+                        participants: item.pool_participants[0]?.count ?? 0,
                         maxParticipants: item.max_participants,
                         startTime: item.start_time,
                         endTime: item.end_time,
                         image: item.image_url,
                         tier: item.tier,
-                        rules: '', // Not in basic schema yet?
-                        prizeDistribution: [] // Not in basic schema line items
+                        rules: item.rules,
+                        prizeDistribution: item.prize_distribution || []
                     }));
                     setPools(mappedPools);
                 }
