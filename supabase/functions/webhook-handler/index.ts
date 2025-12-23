@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { createHmac } from "https://deno.land/std@0.190.0/node/crypto.ts";
+import { HmacSha512 } from "https://deno.land/std@0.190.0/crypto/hmac.ts";
+import { encode } from "https://deno.land/std@0.190.0/encoding/hex.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -14,10 +15,13 @@ Deno.serve(async (req) => {
         const ipnSecret = Deno.env.get('NOWPAYMENTS__IPN_SECRET');
         if (!ipnSecret) throw new Error('Missing IPN Secret');
 
-        // Verify the signature for security
-        const hmac = createHmac('sha512', ipnSecret);
+        // Verify the signature for security using Deno-native crypto
+        const key = new TextEncoder().encode(ipnSecret);
+        const hmac = new HmacSha512(key);
         hmac.update(bodyText);
-        const digest = hmac.digest('hex');
+        const digestBuffer = hmac.digest();
+        const hexEncodedBuffer = encode(new Uint8Array(digestBuffer));
+        const digest = new TextDecoder().decode(hexEncodedBuffer);
 
         if (digest !== signature) {
             console.warn('Invalid IPN signature received.');
