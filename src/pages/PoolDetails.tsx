@@ -1,21 +1,79 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, DollarSign, Users, Wallet, Clock } from 'lucide-react'; // Import necessary icons
-import { allPoolsData } from '../data/pools'; // Import centralized pool data
-import PoolHeader from '../components/PoolHeader'; // New component
-import PoolInfoCard from '../components/PoolInfoCard'; // New component
-import PoolPrizesSection from '../components/PoolPrizesSection'; // New component
-import PoolStatsCard from '../components/PoolStatsCard'; // New component
-import { formatDistanceToNowStrict, addDays } from 'date-fns'; // For time left calculation
+import { ArrowLeft, DollarSign, Users, Wallet, Clock, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Pool } from '../types/pool';
+import PoolHeader from '../components/PoolHeader';
+import PoolInfoCard from '../components/PoolInfoCard';
+import PoolPrizesSection from '../components/PoolPrizesSection';
+import PoolStatsCard from '../components/PoolStatsCard';
+import { formatDistanceToNowStrict } from 'date-fns';
 
 const PoolDetails: React.FC = () => {
   const { poolId } = useParams<{ poolId: string }>();
   const navigate = useNavigate();
+  const [pool, setPool] = useState<Pool | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const pool = allPoolsData.find(p => p.id === poolId);
+  useEffect(() => {
+    const fetchPoolDetails = async () => {
+      if (!poolId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('pools')
+          .select('*, pool_participants(count)')
+          .eq('id', poolId)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          const mappedPool: Pool = {
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            status: data.status,
+            prizePool: data.total_pot,
+            entryFee: data.entry_fee,
+            participants: data.pool_participants[0]?.count ?? 0,
+            maxParticipants: data.max_participants,
+            startTime: data.start_time,
+            endTime: data.end_time,
+            image: data.image_url,
+            tier: data.tier,
+            rules: data.rules,
+            prizeDistribution: data.prize_distribution || [],
+          };
+          setPool(mappedPool);
+        }
+      } catch (error) {
+        console.error("Error fetching pool details:", error);
+        setPool(null); // Ensure pool is null on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPoolDetails();
+  }, [poolId]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-vanta-dark">
+        <Loader2 className="w-10 h-10 text-vanta-neon-blue animate-spin" />
+      </div>
+    );
+  }
 
   if (!pool) {
     return (
