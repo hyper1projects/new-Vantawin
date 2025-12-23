@@ -171,7 +171,6 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
 
             {/* Selected Outcome Display */}
             <div className="mb-4 text-center">
-              <h4 className="text-lg font-semibold text-vanta-neon-blue uppercase">{getSelectedOutcomeDisplayText()}</h4>
               {currentSelectedOdd > 0 && (
                 <span className="text-sm text-gray-400">Odds: {currentSelectedOdd.toFixed(2)}</span>
               )}
