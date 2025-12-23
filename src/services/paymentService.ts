@@ -17,13 +17,7 @@ export interface CreatePaymentResponse {
 
 export const createPayment = async (tier: string, amount: number, poolId: string): Promise<CreatePaymentResponse> => {
     const { data, error } = await supabase.functions.invoke('create-invoice', {
-        body: {
-            tier,
-            amount,
-            pool_id: poolId,
-            success_url: `${window.location.origin}/games`,
-            cancel_url: `${window.location.origin}/wallet`
-        }
+        body: { tier, amount, pool_id: poolId }
     });
 
     if (error) throw new Error(error.message);

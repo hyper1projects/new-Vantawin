@@ -54,7 +54,8 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     };
 
     const handleCardClick = () => {
-        navigate(`/games/${game.id}`);
+        console.log("Oddscard: Card clicked. Navigating to Pools page.");
+        navigate(`/pools`);
     };
 
     const renderTeam = (team: Team) => (
