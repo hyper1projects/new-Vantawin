@@ -66,15 +66,6 @@ function App() {
               <Route path="/email-confirmation" element={<AuthRouteGuard><EmailConfirmation /></AuthRouteGuard>} />
               <Route path="/update-password" element={<AuthRouteGuard><div>Update Password Page</div></AuthRouteGuard>} />
 
-              {/* Admin Routes (Protected) */}
-              <Route path="/admin" element={
-                <AdminRoute>
-                  <Layout>
-                    <AdminDashboard />
-                  </Layout>
-                </AdminRoute>
-              } />
-
               {/* Routes with the main layout */}
               <Route path="/" element={<Layout />}>
                 <Route index element={<Index />} />
@@ -93,13 +84,18 @@ function App() {
                 <Route path="support" element={<Support />} />
                 <Route path="how-it-works" element={<div>How It Works Page</div>} />
 
-                {/* Protected routes, now nested within the Layout route */}
+                {/* Protected routes for regular users */}
                 <Route element={<ProtectedRoute />}>
                   <Route path="wallet" element={<Wallet />} />
                   <Route path="leaderboard" element={<Leaderboard />} />
                   <Route path="users" element={<Users />} />
                   <Route path="users/insights" element={<Insights />} />
                   <Route path="users/edit-profile" element={<EditProfile />} />
+                </Route>
+
+                {/* Protected routes for admins */}
+                <Route element={<AdminRoute />}>
+                  <Route path="admin" element={<AdminDashboard />} />
                 </Route>
 
                 <Route path="*" element={<NotFound />} />

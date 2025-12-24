@@ -1,10 +1,9 @@
-
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAdmin } from '../hooks/useAdmin';
 import { Loader2 } from 'lucide-react';
 
-export default function AdminRoute({ children }: { children: React.ReactElement }) {
+export default function AdminRoute() {
     const { isAdmin, loading } = useAdmin();
 
     if (loading) {
@@ -19,5 +18,5 @@ export default function AdminRoute({ children }: { children: React.ReactElement 
         return <Navigate to="/" replace />;
     }
 
-    return children;
+    return <Outlet />;
 }
