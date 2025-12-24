@@ -86,7 +86,39 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
         </div>
       </div>
 
-      {/* Removed the Button component as the entire card is now clickable */}
+      <Button
+        className="w-full mt-auto bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 font-bold z-10 relative"
+        onClick={async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          try {
+            const { data: { user } } = await import('@/integrations/supabase/client').then(m => m.supabase.auth.getUser());
+            if (!user) {
+              alert("Please login to join");
+              return;
+            }
+
+            // Call join_pool RPC
+            const { error: joinError } = await import('@/integrations/supabase/client').then(m => m.supabase.rpc('join_pool', {
+              p_pool_id: pool.id,
+              p_user_id: user.id
+            }));
+
+            if (joinError) {
+              throw joinError;
+            }
+
+            alert("Successfully joined the pool!");
+            window.location.reload(); // Refresh to update UI counts
+          } catch (err: any) {
+            console.error("Join Error:", err);
+            alert(`Failed to join: ${err.message}`);
+          }
+        }}
+      >
+        Join Now
+      </Button>
     </Link>
   );
 };

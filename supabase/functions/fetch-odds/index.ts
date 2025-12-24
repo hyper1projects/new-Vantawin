@@ -193,6 +193,20 @@ Deno.serve(async (req) => {
                 console.error('Supabase Upsert Error:', error);
                 throw error;
             }
+
+            // Cleanup: Remote matches older than 5 hours (assuming they are done)
+            // This prevents "Zombie Games" from staying in the DB forever
+            const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
+            console.log(`Cleaning up matches older than: ${fiveHoursAgo}`);
+
+            const { error: deleteError } = await supabaseClient
+                .from('matches')
+                .delete()
+                .lt('start_time', fiveHoursAgo); // relying on standard ISO string comparison
+
+            if (deleteError) {
+                console.error("Cleanup Error:", deleteError);
+            }
         }
 
         return new Response(JSON.stringify({ success: true, count: allMatches.length }), {

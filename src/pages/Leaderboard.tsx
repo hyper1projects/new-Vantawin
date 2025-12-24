@@ -12,7 +12,6 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        setIsLoading(true);
         // 1. Get active pool ID
         const { data: poolId, error: poolError } = await supabase.rpc('get_active_pool_id', { p_tier: 'free' }); // Default to free or pass tier? Assuming global for now
 
@@ -56,6 +55,28 @@ const Leaderboard = () => {
     };
 
     fetchLeaderboard();
+
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('leaderboard_updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'tournament_entries'
+        },
+        (payload) => {
+          console.log('Leaderboard update received!', payload);
+          // Simple strategy: Just refetch the sorted view to get correct ranks
+          fetchLeaderboard();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const top3Players = leaderboardEntries.filter(entry => entry.rank <= 3);

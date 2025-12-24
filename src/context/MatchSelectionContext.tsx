@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Game } from '../types/game';
 import { useGatekeeper } from '../hooks/useGatekeeper';
 import TierSelectionModal from '../components/TierSelectionModal';
-import BetSlip from '../components/BetSlip';
-import { useAuth } from './AuthContext';
+// BetSlip import removed
 
 interface MatchSelectionContextType {
   selectedGame: Game | null;
@@ -17,23 +16,15 @@ const MatchSelectionContext = createContext<MatchSelectionContextType | undefine
 export const MatchSelectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { user } = useAuth();
-  const { hasEntry, isLoading, checkEntryStatus } = useGatekeeper();
+  // No longer needed here if Sidebar handles it, but keeping for compatibility if referenced elsewhere
+  const { user } = useGatekeeper(); // Just ensuring hook usage is valid if needed, or remove.
 
   const setSelectedMatch = async (game: Game | null, outcome: string | null = null) => {
     // If clearing selection (game is null), allow it
     if (!game) {
       setSelectedGame(null);
       setSelectedOutcome(null);
-      return;
-    }
-
-    // If selecting a bet, check gatekeeper
-    // Verify status freshness if needed, or rely on hook state
-    if (!hasEntry && !isLoading) {
-      setIsModalOpen(true);
       return;
     }
 
@@ -44,18 +35,6 @@ export const MatchSelectionProvider: React.FC<{ children: ReactNode }> = ({ chil
   return (
     <MatchSelectionContext.Provider value={{ selectedGame, selectedOutcome, setSelectedMatch }}>
       {children}
-      <TierSelectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        userId={user?.id}
-      />
-      <BetSlip
-        isOpen={!!selectedGame && !!selectedOutcome}
-        onClose={() => { setSelectedGame(null); setSelectedOutcome(null); }}
-        match={selectedGame}
-        selectedOutcomeId={selectedOutcome}
-        activePoolId="demo-pool-id" // TODO: Connect to real pool context
-      />
     </MatchSelectionContext.Provider>
   );
 };
