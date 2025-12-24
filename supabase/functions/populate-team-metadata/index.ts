@@ -20,37 +20,38 @@ Deno.serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        // 1. Get all unique team names from your matches that are NOT in team_metadata yet
-
-        // A. Get all teams currently in matches (Home and Away)
+        // 1. Get all unique team names from your matches.
         const { data: matches, error: matchError } = await supabase.from('matches').select('home_team, away_team');
         if (matchError) throw matchError;
         if (!matches) return new Response(JSON.stringify({ message: "No matches found" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-        const allTeams = new Set<string>();
+        const allTeamsInMatches = new Set<string>();
         matches.forEach((m: any) => {
             const homeName = m.home_team?.name || m.home_team;
             const awayName = m.away_team?.name || m.away_team;
 
-            if (typeof homeName === 'string') allTeams.add(homeName);
-            if (typeof awayName === 'string') allTeams.add(awayName);
+            if (typeof homeName === 'string') allTeamsInMatches.add(homeName);
+            if (typeof awayName === 'string') allTeamsInMatches.add(awayName);
         });
 
-        // B. Get all teams we already have logos for
-        const { data: existing, error: metaError } = await supabase.from('team_metadata').select('team_name');
+        // 2. Get all teams we ALREADY have logos for.
+        const { data: existingWithLogos, error: metaError } = await supabase
+            .from('team_metadata')
+            .select('team_name')
+            .not('logo_url', 'is', null); // The key change: only select teams that HAVE a logo.
         if (metaError) throw metaError;
 
-        const existingSet = new Set(existing?.map(e => e.team_name) || []);
+        const teamsWithLogosSet = new Set(existingWithLogos?.map(e => e.team_name) || []);
 
-        // C. Find the missing ones
-        const missingTeams = [...allTeams].filter(team => !existingSet.has(team));
-        console.log(`Found ${missingTeams.length} missing logos.`);
+        // 3. Find teams that are in matches but are missing a logo.
+        const teamsToFetch = [...allTeamsInMatches].filter(team => !teamsWithLogosSet.has(team));
+        console.log(`Found ${teamsToFetch.length} teams missing logos.`);
 
-        // 2. Loop and Fetch from SportsDB
+        // 4. Loop and Fetch from SportsDB
         const updates = [];
 
         // Rate Limit Safety: 10 items per run is a safe batch size.
-        for (const teamName of missingTeams.slice(0, 10)) {
+        for (const teamName of teamsToFetch.slice(0, 10)) {
             console.log(`Searching logo for: ${teamName}`);
             const searchName = encodeURIComponent(teamName);
             const url = `${TSDB_BASE_URL}?t=${searchName}`;
@@ -65,7 +66,6 @@ Deno.serve(async (req) => {
 
                 if (data.teams && data.teams.length > 0) {
                     const teamData = data.teams[0];
-                    // IMPROVED: Check for logo in order of preference.
                     const logo = teamData.strTeamBadge || teamData.strTeamLogo || null;
                     
                     updates.push({
@@ -78,16 +78,17 @@ Deno.serve(async (req) => {
                     }
                 } else {
                     console.log(`No logo found for ${teamName}`);
-                    updates.push({ team_name: teamName, logo_url: null });
+                    // We still add it with null so we don't search for it again unless the table is cleared.
+                    // Or we can choose not to add it, so it gets retried next time. Let's not add it.
                 }
             } catch (err) {
                 console.error(`Error processing ${teamName}:`, err);
             }
         }
 
-        // 3. Save to DB
+        // 5. Save to DB
         if (updates.length > 0) {
-            const { error } = await supabase.from('team_metadata').upsert(updates);
+            const { error } = await supabase.from('team_metadata').upsert(updates, { onConflict: 'team_name' });
             if (error) throw error;
         }
 
