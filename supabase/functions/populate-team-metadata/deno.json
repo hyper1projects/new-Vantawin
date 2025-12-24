@@ -1,0 +1,7 @@
+{
+    "functions": {
+        "populate-team-metadata": {
+            "noVerify": true
+        }
+    }
+}
