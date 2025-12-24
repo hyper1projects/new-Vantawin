@@ -9,12 +9,9 @@ const corsHeaders = {
 // Fixed namespace for game ID generation to ensure stability updates
 const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 
-// IMPORTANT: Ensure ODDS_API_KEY is set in Supabase Edge Function secrets.
-// Removed hardcoded fallback to ensure the environment variable is used.
 const API_KEY = Deno.env.get('ODDS_API_KEY');
 
 Deno.serve(async (req) => {
-    // Handle CORS
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
@@ -45,73 +42,48 @@ Deno.serve(async (req) => {
 
         for (const league of leagues) {
             console.log(`Fetching ${league.name}...`);
-            // Reverted to only h2h,totals because API returned 422 (Unsupported Markets: btts, alternate_totals)
             const url = `https://api.the-odds-api.com/v4/sports/${league.key}/odds?regions=eu&markets=h2h,totals&apiKey=${API_KEY}`;
             const response = await fetch(url);
-
-            // ... (error handling code remains same, omitted for brevity in tool call, will rely on existing context to merge) ...
-
-            // Wait, replace strategy: I need to replace the URL line (49) and then the question building logic (127-216)
-            // But I cannot do non-contiguous edits easily without multi-replace, and the file content is large.
-            // I will use a larger block replacement starting from the loop.
-
 
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error(`Failed to fetch ${league.name} (Status: ${response.status}): ${errorText}`);
-                // ...
                 continue;
             }
 
             const data = await response.json();
-            // ... (validation ...)
-
-            // ... (Analysis logging ...)
+            if (!Array.isArray(data) || data.length === 0) {
+                console.log(`No upcoming games found for ${league.name}.`);
+                continue;
+            }
 
             const mapped = data.map((game: any) => {
-                // Generate standard UUIDv5 from valid API ID string
                 let dbId;
                 try {
-                    const data = new TextEncoder().encode(game.id);
                     dbId = uuidv5(game.id, NAMESPACE);
                 } catch (e) {
                     console.error("UUID gen error", e);
                     dbId = crypto.randomUUID();
                 }
 
-                // Smart Bookmaker Selection
-                let bookmaker = null;
-                let maxMarkets = -1;
-
-                if (game.bookmakers) {
-                    for (const bk of game.bookmakers) {
-                        let score = 0;
-                        const hasH2h = bk.markets.some((m: any) => m.key === 'h2h');
-                        const hasTotals = bk.markets.some((m: any) => m.key === 'totals');
-                        const hasBtts = bk.markets.some((m: any) => m.key === 'btts');
-                        const hasAlternate = bk.markets.some((m: any) => m.key === 'alternate_totals');
-
-                        if (hasH2h) score++;
-                        if (hasTotals) score++;
-                        if (hasBtts) score++;
-                        if (hasAlternate) score++;
-
-                        if (score > maxMarkets) {
-                            maxMarkets = score;
-                            bookmaker = bk;
+                // NEW: Robust market finder
+                const findMarket = (gameData: any, marketKey: string) => {
+                    if (!gameData.bookmakers) return null;
+                    for (const bk of gameData.bookmakers) {
+                        const market = bk.markets.find((m: any) => m.key === marketKey);
+                        if (market && market.outcomes && market.outcomes.length > 0) {
+                            return market;
                         }
                     }
-                }
+                    return null;
+                };
 
-                // Fallback
-                if (!bookmaker && game.bookmakers) {
-                    bookmaker = game.bookmakers[0];
-                }
+                const h2h = findMarket(game, 'h2h');
+                const totals = findMarket(game, 'totals');
 
-                const h2h = bookmaker?.markets?.find((m: any) => m.key === "h2h");
-                const totals = bookmaker?.markets?.find((m: any) => m.key === "totals");
-                const alternateTotals = bookmaker?.markets?.find((m: any) => m.key === "alternate_totals");
-                const btts = bookmaker?.markets?.find((m: any) => m.key === "btts");
+                if (!h2h) {
+                    console.warn(`Game ${game.id} (${game.home_team} vs ${game.away_team}) is missing 'h2h' market data.`);
+                }
 
                 const h2hOutcomeHome = h2h?.outcomes.find((o: any) => o.name === game.home_team)?.price || 0;
                 const h2hOutcomeAway = h2h?.outcomes.find((o: any) => o.name === game.away_team)?.price || 0;
@@ -126,34 +98,22 @@ Deno.serve(async (req) => {
                     }
                 }
 
-                // Helper to find totals in alternate_totals list OR standard totals
                 const getTotalsOdds = (line: number) => {
-                    const allTotalOutcomes = [
-                        ...(totals?.outcomes || []),
-                        ...(alternateTotals?.outcomes || [])
-                    ];
-
-                    const over = allTotalOutcomes.find((o: any) => o.name === "Over" && o.point === line)?.price || 0;
-                    const under = allTotalOutcomes.find((o: any) => o.name === "Under" && o.point === line)?.price || 0;
-
+                    if (!totals) return null;
+                    const over = totals.outcomes.find((o: any) => o.name === "Over" && o.point === line)?.price || 0;
+                    const under = totals.outcomes.find((o: any) => o.name === "Under" && o.point === line)?.price || 0;
                     if (over === 0 || under === 0) return null;
                     return { over, under };
                 };
 
-                // Helper for the specific custom text requested
                 const getQuestionText = (line: number) => {
-                    // "Will there be 3 or more goals from both teams" (for 2.5) -> logic: line + 0.5?
-                    // User Example: 2.5 -> "Will there be 3 or more goals"
-                    // 1.5 -> "Will there be 2 or more goals"
-                    const targetGoals = Math.ceil(line); // 1.5 -> 2, 2.5 -> 3
+                    const targetGoals = Math.ceil(line);
                     return `Will there be ${targetGoals} or more goals from both teams?`;
                 };
 
                 const odds15 = getTotalsOdds(1.5);
                 const odds25 = getTotalsOdds(2.5);
                 const odds35 = getTotalsOdds(3.5);
-                const odds45 = getTotalsOdds(4.5);
-                const odds55 = getTotalsOdds(5.5);
 
                 const questions = [
                     {
@@ -201,34 +161,7 @@ Deno.serve(async (req) => {
                             { id: `opt_${game.id}_under_3_5`, label: "No", odds: odds35.under }
                         ]
                     } : null,
-                    odds45 ? {
-                        id: "over_4_5_goals",
-                        type: "over_4_5_goals",
-                        text: getQuestionText(4.5),
-                        options: [
-                            { id: `opt_${game.id}_over_4_5`, label: "Yes", odds: odds45.over },
-                            { id: `opt_${game.id}_under_4_5`, label: "No", odds: odds45.under }
-                        ]
-                    } : null,
-                    odds55 ? {
-                        id: "over_5_5_goals",
-                        type: "over_5_5_goals",
-                        text: getQuestionText(5.5),
-                        options: [
-                            { id: `opt_${game.id}_over_5_5`, label: "Yes", odds: odds55.over },
-                            { id: `opt_${game.id}_under_5_5`, label: "No", odds: odds55.under }
-                        ]
-                    } : null,
-                    btts ? {
-                        id: "btts",
-                        type: "btts",
-                        text: "Will both teams score?",
-                        options: [
-                            { id: `opt_${game.id}_btts_yes`, label: "Yes", odds: btts.outcomes.find((o: any) => o.name === "Yes")?.price || 0 },
-                            { id: `opt_${game.id}_btts_no`, label: "No", odds: btts.outcomes.find((o: any) => o.name === "No")?.price || 0 }
-                        ]
-                    } : null
-                ].filter(Boolean);
+                ].filter(q => q && q.options.every(opt => opt.odds > 0)); // Filter out questions with missing odds
 
                 return {
                     id: dbId,
@@ -236,14 +169,13 @@ Deno.serve(async (req) => {
                     home_team: {
                         name: game.home_team,
                         abbreviation: game.home_team.substring(0, 3).toUpperCase(),
-                        // logo? Frontend often hardcodes or uses identifier
                     },
                     away_team: {
                         name: game.away_team,
                         abbreviation: game.away_team.substring(0, 3).toUpperCase()
                     },
                     start_time: game.commence_time,
-                    is_live: false, // API live field logic needed? for now default false or calculate
+                    is_live: false,
                     status: 'scheduled',
                     questions: questions
                 };
