@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
         const { data: existingWithLogos, error: metaError } = await supabase
             .from('team_metadata')
             .select('team_name')
-            .not('logo_url', 'is', null); // The key change: only select teams that HAVE a logo.
+            .not('logo_url', 'is', null);
         if (metaError) throw metaError;
 
         const teamsWithLogosSet = new Set(existingWithLogos?.map(e => e.team_name) || []);
@@ -47,42 +47,50 @@ Deno.serve(async (req) => {
         const teamsToFetch = [...allTeamsInMatches].filter(team => !teamsWithLogosSet.has(team));
         console.log(`Found ${teamsToFetch.length} teams missing logos.`);
 
-        // 4. Loop and Fetch from SportsDB
+        // 4. Loop and Fetch from SportsDB with smarter search
         const updates = [];
 
-        // Rate Limit Safety: 10 items per run is a safe batch size.
-        for (const teamName of teamsToFetch.slice(0, 10)) {
+        for (const teamName of teamsToFetch.slice(0, 10)) { // Process in batches
             console.log(`Searching logo for: ${teamName}`);
-            const searchName = encodeURIComponent(teamName);
-            const url = `${TSDB_BASE_URL}?t=${searchName}`;
+            let teamData = null;
 
-            try {
-                const res = await fetch(url);
-                if (!res.ok) {
-                    console.error(`Failed to fetch for ${teamName}: ${res.statusText}`);
-                    continue;
-                }
-                const data = await res.json();
+            // First attempt: Exact match
+            const exactSearchUrl = `${TSDB_BASE_URL}?t=${encodeURIComponent(teamName)}`;
+            const exactRes = await fetch(exactSearchUrl);
+            const exactData = await exactRes.json();
 
-                if (data.teams && data.teams.length > 0) {
-                    const teamData = data.teams[0];
-                    const logo = teamData.strTeamBadge || teamData.strTeamLogo || null;
-                    
-                    updates.push({
-                        team_name: teamName,
-                        logo_url: logo
-                    });
-
-                    if (!logo) {
-                        console.log(`No logo found for ${teamName} in strTeamBadge or strTeamLogo.`);
+            if (exactData.teams && exactData.teams.length > 0) {
+                teamData = exactData.teams[0];
+            } else {
+                // Second attempt: Simplified name
+                const simplifiedName = teamName.replace(/ FC| AFC| SC| United| City/gi, '').trim();
+                if (simplifiedName.toLowerCase() !== teamName.toLowerCase()) {
+                    console.log(`... exact match failed, trying simplified name: "${simplifiedName}"`);
+                    const simplifiedSearchUrl = `${TSDB_BASE_URL}?t=${encodeURIComponent(simplifiedName)}`;
+                    const simplifiedRes = await fetch(simplifiedSearchUrl);
+                    const simplifiedData = await simplifiedRes.json();
+                    if (simplifiedData.teams && simplifiedData.teams.length > 0) {
+                        teamData = simplifiedData.teams[0];
                     }
-                } else {
-                    console.log(`No logo found for ${teamName}`);
-                    // We still add it with null so we don't search for it again unless the table is cleared.
-                    // Or we can choose not to add it, so it gets retried next time. Let's not add it.
                 }
-            } catch (err) {
-                console.error(`Error processing ${teamName}:`, err);
+            }
+
+            if (teamData) {
+                const logo = teamData.strTeamBadge || teamData.strTeamLogo || null;
+                updates.push({
+                    team_name: teamName, // Always use the original name as the key
+                    logo_url: logo
+                });
+                if (!logo) {
+                    console.log(`Found team for "${teamName}" but no logo URL was present.`);
+                }
+            } else {
+                console.log(`No logo found for "${teamName}" after both attempts.`);
+                // Add a record with a null logo so we don't keep searching for it.
+                updates.push({
+                    team_name: teamName,
+                    logo_url: null
+                });
             }
         }
 
