@@ -11,9 +11,7 @@ export const useMatches = () => {
         try {
             setLoading(true);
             const { data, error } = await supabase
-                .from('matches')
-                .select('*')
-                .order('start_time', { ascending: true });
+                .rpc('get_matches_with_logos');
 
             if (error) {
                 throw error;
