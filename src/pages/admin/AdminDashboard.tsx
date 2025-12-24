@@ -1,4 +1,4 @@
-import React, 'react';
+import React from 'react';
 import AdminWithdrawals from './AdminWithdrawals';
 import AdminMatches from './AdminMatches'; // Import AdminMatches
 import AdminMetadata from './AdminMetadata'; // Import the new AdminMetadata component
