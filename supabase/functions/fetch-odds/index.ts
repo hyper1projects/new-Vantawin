@@ -40,17 +40,6 @@ Deno.serve(async (req) => {
 
         console.log("Starting fetch process for odds...");
 
-        const { data: teamMeta } = await supabaseClient
-            .from('team_metadata')
-            .select('team_name, logo_url');
-
-        const logoMap = new Map();
-        if (teamMeta) {
-            teamMeta.forEach((t: any) => {
-                if (t.logo_url) logoMap.set(t.team_name, t.logo_url);
-            });
-        }
-
         for (const league of leagues) {
             console.log(`Fetching ${league.name}...`);
             const url = `https://api.the-odds-api.com/v4/sports/${league.key}/odds?regions=eu&markets=h2h,totals&apiKey=${API_KEY}`;
@@ -179,12 +168,10 @@ Deno.serve(async (req) => {
                     home_team: {
                         name: game.home_team,
                         abbreviation: game.home_team.substring(0, 3).toUpperCase(),
-                        image: logoMap.get(game.home_team) || null
                     },
                     away_team: {
                         name: game.away_team,
                         abbreviation: game.away_team.substring(0, 3).toUpperCase(),
-                        image: logoMap.get(game.away_team) || null
                     },
                     start_time: game.commence_time,
                     is_live: false,
@@ -205,16 +192,6 @@ Deno.serve(async (req) => {
                 console.error('Supabase Upsert Error:', error);
                 throw error;
             }
-
-            // NEW: Asynchronously trigger the logo population function.
-            console.log("Triggering logo population function to find logos for new teams...");
-            supabaseClient.functions.invoke('populate-team-metadata').then(({ error: invokeError }) => {
-                if (invokeError) {
-                    console.error("Error invoking populate-team-metadata:", invokeError.message);
-                } else {
-                    console.log("Successfully invoked populate-team-metadata function.");
-                }
-            });
 
             const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
             console.log(`Cleaning up matches older than: ${fiveHoursAgo}`);
