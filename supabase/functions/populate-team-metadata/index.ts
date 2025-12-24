@@ -1,8 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// TheSportsDB Free Key is '3'. 
-const TSDB_API_KEY = "3";
-const TSDB_BASE_URL = `https://www.thesportsdb.com/api/v1/json/${TSDB_API_KEY}/searchteams.php`;
+const API_FOOTBALL_KEY = Deno.env.get('API_FOOTBALL_KEY');
+const API_FOOTBALL_HOST = 'v3.football.api-sports.io';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -15,24 +14,28 @@ Deno.serve(async (req) => {
     }
 
     try {
+        if (!API_FOOTBALL_KEY) {
+            throw new Error('API_FOOTBALL_KEY is not set. Please add it to your project secrets.');
+        }
+
         const supabase = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
         // 1. Get all unique team names from your matches.
-        const { data: matches, error: matchError } = await supabase.from('matches').select('home_team, away_team');
+        const { data: matches, error: matchError } = await supabase.from('matches').select('home_team, away_team, league');
         if (matchError) throw matchError;
         if (!matches) return new Response(JSON.stringify({ message: "No matches found" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-        const allTeamsInMatches = new Set<string>();
+        const teamLeagueMap = new Map<string, string>();
         matches.forEach((m: any) => {
-            const homeName = m.home_team?.name || m.home_team;
-            const awayName = m.away_team?.name || m.away_team;
-
-            if (typeof homeName === 'string') allTeamsInMatches.add(homeName);
-            if (typeof awayName === 'string') allTeamsInMatches.add(awayName);
+            const homeName = m.home_team?.name;
+            const awayName = m.away_team?.name;
+            if (homeName) teamLeagueMap.set(homeName, m.league);
+            if (awayName) teamLeagueMap.set(awayName, m.league);
         });
+        const allTeamsInMatches = Array.from(teamLeagueMap.keys());
 
         // 2. Get all teams we ALREADY have logos for.
         const { data: existingWithLogos, error: metaError } = await supabase
@@ -44,63 +47,79 @@ Deno.serve(async (req) => {
         const teamsWithLogosSet = new Set(existingWithLogos?.map(e => e.team_name) || []);
 
         // 3. Find teams that are in matches but are missing a logo.
-        const teamsToFetch = [...allTeamsInMatches].filter(team => !teamsWithLogosSet.has(team));
+        const teamsToFetch = allTeamsInMatches.filter(team => !teamsWithLogosSet.has(team));
         console.log(`Found ${teamsToFetch.length} teams missing logos.`);
 
-        // 4. Loop and Fetch from SportsDB with smarter search
+        if (teamsToFetch.length === 0) {
+            return new Response(JSON.stringify({ message: "All team logos are up to date.", processed: 0 }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+
+        // 4. Loop and Fetch from API-Football
         const updates = [];
-
-        for (const teamName of teamsToFetch.slice(0, 10)) { // Process in batches
+        // Process in batches to avoid hitting API rate limits
+        for (const teamName of teamsToFetch.slice(0, 10)) { 
             console.log(`Searching logo for: ${teamName}`);
-            let teamData = null;
+            
+            const searchUrl = `https://${API_FOOTBALL_HOST}/teams?search=${encodeURIComponent(teamName)}`;
+            
+            const apiResponse = await fetch(searchUrl, {
+                headers: {
+                    'x-rapidapi-host': API_FOOTBALL_HOST,
+                    'x-rapidapi-key': API_FOOTBALL_KEY,
+                },
+            });
 
-            // First attempt: Exact match
-            const exactSearchUrl = `${TSDB_BASE_URL}?t=${encodeURIComponent(teamName)}`;
-            const exactRes = await fetch(exactSearchUrl);
-            const exactData = await exactRes.json();
-
-            if (exactData.teams && exactData.teams.length > 0) {
-                teamData = exactData.teams[0];
-            } else {
-                // Second attempt: Simplified name
-                const simplifiedName = teamName.replace(/ FC| AFC| SC| United| City/gi, '').trim();
-                if (simplifiedName.toLowerCase() !== teamName.toLowerCase()) {
-                    console.log(`... exact match failed, trying simplified name: "${simplifiedName}"`);
-                    const simplifiedSearchUrl = `${TSDB_BASE_URL}?t=${encodeURIComponent(simplifiedName)}`;
-                    const simplifiedRes = await fetch(simplifiedSearchUrl);
-                    const simplifiedData = await simplifiedRes.json();
-                    if (simplifiedData.teams && simplifiedData.teams.length > 0) {
-                        teamData = simplifiedData.teams[0];
-                    }
-                }
+            if (!apiResponse.ok) {
+                console.error(`API-Football request failed for "${teamName}": ${apiResponse.status} ${apiResponse.statusText}`);
+                continue; // Skip this team on API error
             }
 
-            if (teamData) {
-                const logo = teamData.strLogo || teamData.strTeamBadge || null;
-                updates.push({
-                    team_name: teamName, // Always use the original name as the key
-                    logo_url: logo
-                });
-                if (!logo) {
-                    console.log(`Found team for "${teamName}" but no logo URL was present.`);
+            const apiData = await apiResponse.json();
+
+            if (apiData.response && apiData.response.length > 0) {
+                // API-Football can return multiple matches. We need to find the best one.
+                // Let's try to find an exact match first.
+                let bestMatch = apiData.response.find((r: any) => r.team.name.toLowerCase() === teamName.toLowerCase());
+
+                // If no exact match, take the first result as a fallback.
+                if (!bestMatch) {
+                    bestMatch = apiData.response[0];
+                }
+                
+                const { team } = bestMatch;
+                
+                if (team.id && team.logo) {
+                    updates.push({
+                        team_name: teamName, // Use the original name from our DB as the primary key
+                        api_football_id: team.id,
+                        logo_url: team.logo,
+                        league_name: teamLeagueMap.get(teamName) || null, // Store the league for context
+                    });
+                    console.log(`Found logo for "${teamName}" (ID: ${team.id})`);
+                } else {
+                     console.log(`Found team for "${teamName}" but it's missing an ID or logo in the API response.`);
+                     // Insert null so we don't search again
+                     updates.push({ team_name: teamName, logo_url: null });
                 }
             } else {
-                console.log(`No logo found for "${teamName}" after both attempts.`);
-                // Add a record with a null logo so we don't keep searching for it.
-                updates.push({
-                    team_name: teamName,
-                    logo_url: null
-                });
+                console.log(`No logo found for "${teamName}" via API-Football.`);
+                // Insert a record with a null logo so we don't keep searching for it.
+                updates.push({ team_name: teamName, logo_url: null });
             }
         }
 
         // 5. Save to DB
         if (updates.length > 0) {
+            console.log(`Upserting ${updates.length} team metadata records.`);
             const { error } = await supabase.from('team_metadata').upsert(updates, { onConflict: 'team_name' });
-            if (error) throw error;
+            if (error) {
+                console.error("Supabase upsert error:", error);
+                // Don't throw, just log it, so the function can report what it tried to do.
+            }
         }
 
         return new Response(JSON.stringify({
+            message: `Processed ${updates.length} teams. Run again if more are missing.`,
             processed: updates.length,
             teams: updates.map(u => u.team_name)
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
