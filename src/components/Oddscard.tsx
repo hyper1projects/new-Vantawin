@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
-import { getLogoSrc } from '../utils/logoMap';
 import { Team, Game, Question } from '../types/game';
 import NewOddsButton from './NewOddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
@@ -19,15 +18,10 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
 
     if (!team1 || !team2) return null;
 
-    // DEBUG LOG
-    // console.log(`[DEBUG] Oddscard ${game.id} - Team1 Image:`, team1.image);
-    // console.log(`[DEBUG] Oddscard ${game.id} - Team1 LogoIdentifier:`, team1.logoIdentifier);
-
     const [isFavorited, setIsFavorited] = useState(false);
     const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
     const navigate = useNavigate();
 
-    // STRICT: Only find the 'win_match' question (Who will win?)
     const primaryQuestion: Question | undefined = questions.find(q => q.type === 'win_match');
 
     if (!primaryQuestion) return null;
@@ -38,7 +32,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
     };
 
-    // Specific getters for H2H outcomes
     const homeOption = primaryQuestion.options?.find(o => o.label === team1.name || o.id.includes('home') || o.label === 'Home');
     const awayOption = primaryQuestion.options?.find(o => o.label === team2.name || o.id.includes('away') || o.label === 'Away');
 
@@ -59,14 +52,11 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
 
     const handleCardClick = () => {
         console.log("Oddscard: Card clicked. Navigating to Game Details.");
-        // Use window.location as fallback if navigate fails, but we are reverting so just navigate
-        // Actually, previous code used navigate. Wait, previous code used navigate for handleCardClick but NOT for odds button.
-        // I will restore it to exactly how it was in Step 539, which HAD navigate for card click but NOT for odds button.
         navigate(`/games/${game.id}`);
     };
 
     const renderTeam = (team: Team) => {
-        const logoSrc = team.image || getLogoSrc(team.logoIdentifier);
+        const logoSrc = team.image || '/placeholder.svg';
 
         return (
             <div className="flex items-center">
@@ -82,7 +72,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         );
     };
 
-    // Helper strings for selection matching
     const homeSelId = `${primaryQuestion.id}_${homeOption?.id}_${homeOption?.odds.toFixed(2)}`;
     const awaySelId = `${primaryQuestion.id}_${awayOption?.id}_${awayOption?.odds.toFixed(2)}`;
 
@@ -91,7 +80,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
             className="flex flex-col bg-[#0D2C60] rounded-xl p-4 w-full shadow-xl font-sans transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] border border-transparent hover:border-indigo-600/50 cursor-pointer"
             onClick={handleCardClick}
         >
-            {/* Top section */}
             <div className="flex justify-between items-center text-gray-400 text-xs mb-4 border-b border-gray-700/50 pb-2">
                 <span className="text-white text-base font-medium">
                     {primaryQuestion.text}
@@ -116,7 +104,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 </div>
             </div>
 
-            {/* Middle section */}
             <div className="flex justify-between items-center mb-4">
                 <div className="flex flex-col space-y-3">
                     {renderTeam(team1)}
@@ -141,7 +128,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                 </div>
             </div>
 
-            {/* Bottom section */}
             <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
                 <div className="flex items-center space-x-3 font-medium text-gray-400 text-xs">
                     {isLive ? (

@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Game } from '../types/game';
-import { getLogoSrc } from '../utils/logoMap'; // Corrected import path
 
 interface MatchHeaderImageProps {
   game: Game;
@@ -11,7 +10,6 @@ interface MatchHeaderImageProps {
 const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
   const { team1, team2, date, time, league } = game;
 
-  // Format date and time
   const formattedDateTime = `${date} - ${time}`;
 
   return (
@@ -19,22 +17,19 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
       className="relative w-full h-[200px] bg-cover bg-center rounded-[27px] mb-8 flex items-center justify-between px-8"
       style={{ backgroundImage: 'url(/images/Group 1000005769.png)' }}
     >
-      {/* Team 1 */}
       <div className="flex flex-col items-center space-y-2">
-        <img src={team1.image || getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain" />
+        <img src={team1.image || '/placeholder.svg'} alt={team1.name} className="w-16 h-16 object-contain" />
         <span className="text-white text-lg font-bold">{team1.name}</span>
       </div>
 
-      {/* Central Details: League, Date/Time, VS */}
       <div className="flex flex-col items-center justify-center space-y-1">
         <span className="text-vanta-text-light text-sm font-medium">{league}</span>
         <span className="text-vanta-text-light text-xs">{formattedDateTime}</span>
         <span className="text-vanta-neon-blue text-3xl font-bold">VS</span>
       </div>
 
-      {/* Team 2 */}
       <div className="flex flex-col items-center space-y-2">
-        <img src={team2.image || getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain" />
+        <img src={team2.image || '/placeholder.svg'} alt={team2.name} className="w-16 h-16 object-contain" />
         <span className="text-white text-lg font-bold">{team2.name}</span>
       </div>
     </div>

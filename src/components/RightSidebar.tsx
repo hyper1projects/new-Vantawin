@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { getLogoSrc } from '../utils/logoMap'; // Import getLogoSrc
 import { useMatchSelection } from '../context/MatchSelectionContext'; // Import the context hook
 import { useIsMobile } from '../hooks/use-mobile'; // Import useIsMobile
 import { useGatekeeper } from '../hooks/useGatekeeper';
@@ -23,12 +22,10 @@ const RightSidebar = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const isMobile = useIsMobile(); // Check if it's a mobile screen
 
-  // If on mobile, this component should not render its content
   if (isMobile) {
     return null;
   }
 
-  // Reset prediction amount when a new game is selected
   useEffect(() => {
     setPredictionAmount('');
   }, [selectedGame]);
@@ -43,7 +40,6 @@ const RightSidebar = () => {
       return;
     }
 
-    // Validation from BetSlip
     const stake = Number(predictionAmount);
     if (stake < 50 || stake > 200) {
       toast.error("Stake must be 50-200 Vanta");
@@ -58,11 +54,7 @@ const RightSidebar = () => {
     setIsSubmitting(true);
 
     try {
-      // Parsing logic from BetSlip
       const parts = selectedOutcome.split('_');
-      // Format assumption: questionId_optionId_odds
-      // BetSlip used parts[1] as outcomeId. 
-      // If selectedOutcome is "q_opt_odds", then parts[1] is optionId.
       const outcomeId = parts[1];
       const odds = parseFloat(parts[2]);
 
@@ -83,7 +75,7 @@ const RightSidebar = () => {
       setTimeout(() => {
         setShowSuccess(false);
         setSelectedMatch(null, null);
-      }, 2000); // Show success for 2 seconds then reset
+      }, 2000);
 
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred.");
@@ -94,7 +86,6 @@ const RightSidebar = () => {
 
   const quickAddAmountButtons = [100, 200, 500, 1000];
 
-  // Calculate potential win (simple example, could be more complex with actual odds)
   let currentSelectedOdd = 0;
   if (selectedOutcome) {
     const parts = selectedOutcome.split('_');
@@ -112,15 +103,11 @@ const RightSidebar = () => {
   }
   const potentialWinXP = (typeof predictionAmount === 'number' && predictionAmount > 0) ? (predictionAmount * currentSelectedOdd) : 0;
 
-
-  // Helper to get the display text for the selected outcome in the sidebar
   const getSelectedOutcomeDisplayText = () => {
     if (!selectedOutcome || !selectedGame) return '';
 
     const parts = selectedOutcome.split('_');
     if (parts.length >= 3) {
-      // Simple heuristic: Join all but last 2 parts as Question Name, 2nd last is Choice.
-      // We reuse the switch case from before if possible, or just format nicely.
       const choice = parts[parts.length - 2];
       const qId = parts.slice(0, parts.length - 2).join('_');
       return `${qId.replace(/_/g, ' ')}: ${choice}`;
@@ -132,17 +119,16 @@ const RightSidebar = () => {
     <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
       {selectedGame ? (
         <>
-          {/* Logo and Match Code */}
           <div className="flex flex-col items-center mb-4">
             <div className="flex items-center mb-1">
               <img
-                src={selectedGame.team1.image || getLogoSrc(selectedGame.team1.logoIdentifier)}
+                src={selectedGame.team1.image || '/placeholder.svg'}
                 alt={`${selectedGame.team1.name} Logo`}
                 className="w-16 h-16 object-contain mr-6"
               />
               <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
               <img
-                src={selectedGame.team2.image || getLogoSrc(selectedGame.team2.logoIdentifier)}
+                src={selectedGame.team2.image || '/placeholder.svg'}
                 alt={`${selectedGame.team2.name} Logo`}
                 className="w-16 h-16 object-contain ml-6"
               />
@@ -156,7 +142,6 @@ const RightSidebar = () => {
 
           {!showSuccess ? (
             <div className="flex flex-col flex-grow">
-              {/* Selected Outcome Display */}
               <div className="mb-4 text-center">
                 <h4 className="text-lg font-semibold text-vanta-neon-blue uppercase">{getSelectedOutcomeDisplayText()}</h4>
                 {currentSelectedOdd > 0 && (
@@ -164,7 +149,6 @@ const RightSidebar = () => {
                 )}
               </div>
 
-              {/* Amount Selection */}
               <div className="mb-4">
                 <div className="flex flex-col mb-2">
                   <div className="flex justify-between items-center mb-1">
@@ -219,7 +203,6 @@ const RightSidebar = () => {
                 </div>
               </div>
 
-              {/* Potential Win Section */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-3">
                   <h4 className="text-base font-semibold">Potential Win</h4>
