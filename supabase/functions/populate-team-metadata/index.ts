@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
             }
 
             if (teamData) {
-                const logo = teamData.strTeamBadge || teamData.strTeamLogo || null;
+                const logo = teamData.strLogo || teamData.strTeamBadge || null;
                 updates.push({
                     team_name: teamName, // Always use the original name as the key
                     logo_url: logo
