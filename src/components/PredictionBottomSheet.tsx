@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { getLogoSrc } from '../utils/logoMap';
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { useIsMobile } from '../hooks/use-mobile'; // Import the useIsMobile hook
 import { useGatekeeper } from '../hooks/useGatekeeper';
@@ -108,10 +107,11 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
       currentSelectedOdd = parseFloat(parts[parts.length - 1]);
     } else if (parts.length === 1 && selectedGame) {
       const winMatchQuestion = selectedGame.questions.find(q => q.type === 'win_match');
-      if (winMatchQuestion && winMatchQuestion.odds) {
-        if (selectedOutcome === 'team1') currentSelectedOdd = winMatchQuestion.odds.team1 || 0;
-        else if (selectedOutcome === 'draw') currentSelectedOdd = winMatchQuestion.odds.draw || 0;
-        else if (selectedOutcome === 'team2') currentSelectedOdd = winMatchQuestion.odds.team2 || 0;
+      if (winMatchQuestion && (winMatchQuestion as any).odds) {
+        const odds = (winMatchQuestion as any).odds;
+        if (selectedOutcome === 'team1') currentSelectedOdd = odds.team1 || 0;
+        else if (selectedOutcome === 'draw') currentSelectedOdd = odds.draw || 0;
+        else if (selectedOutcome === 'team2') currentSelectedOdd = odds.team2 || 0;
       }
     }
   }
@@ -144,13 +144,13 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
               <div className="flex flex-col items-center mb-4">
                 <div className="flex items-center mb-1">
                   <img
-                    src={selectedGame.team1.image || getLogoSrc(selectedGame.team1.logoIdentifier)}
+                    src={selectedGame.team1.image || '/placeholder.svg'}
                     alt={`${selectedGame.team1.name} Logo`}
                     className="w-12 h-12 object-contain mr-4"
                   />
                   <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
                   <img
-                    src={selectedGame.team2.image || getLogoSrc(selectedGame.team2.logoIdentifier)}
+                    src={selectedGame.team2.image || '/placeholder.svg'}
                     alt={`${selectedGame.team2.name} Logo`}
                     className="w-12 h-12 object-contain ml-4"
                   />
