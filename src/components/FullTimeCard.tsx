@@ -5,6 +5,7 @@ import { Game, Question } from '../types/game'; // Import Question type
 import OddsButton from './OddsButton'; // Changed from NewOddsButton to OddsButton
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { getLogoSrc } from '../utils/logoMap';
+import { useNavigate } from 'react-router-dom';
 
 interface FullTimeCardProps {
   game: Game;
@@ -19,6 +20,8 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
   const homeOption = question.options?.find(o => o.label === team1.name || o.id.includes('home') || o.label === 'Home');
   const awayOption = question.options?.find(o => o.label === team2.name || o.id.includes('away') || o.label === 'Away');
 
+  const navigate = useNavigate();
+
   // Updated handleOddsClick to only accept 'team1' or 'team2' outcomes
   const handleOddsClick = (e: React.MouseEvent, outcome: 'team1' | 'team2') => {
     e.stopPropagation();
@@ -28,6 +31,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
 
     if (option) {
       setSelectedMatch(game, `${question.id}_${outcome}_${option.odds.toFixed(2)}`);
+      navigate('/pools');
     }
   };
 

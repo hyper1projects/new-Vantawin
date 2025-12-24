@@ -2,6 +2,8 @@
 -- Runs automatically after `supabase db reset`
 -- Use this to populate 'Static' data like Pools and Matches for testing.
 
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- 1. Create an Active Pool (Bronze Tier, $5 Entry)
 INSERT INTO public.pools (
     name, 
@@ -82,3 +84,58 @@ INSERT INTO public.payout_structures (rank_start, rank_end, percentage, descript
 (3, 3, 8.0, '3rd Place'),
 (4, 10, 5.0, 'Runners Up') -- Example range
 ON CONFLICT DO NOTHING;
+
+-- 5. Generate Test Users and Entries (Dynamic)
+DO $$
+DECLARE
+    v_pool_id uuid;
+    v_user_id uuid;
+    i integer;
+BEGIN
+    -- Create a specific pool for these bots if it doesn't exist
+    INSERT INTO public.pools (name, description, tier, entry_fee, status, total_pot, start_time, end_time)
+    VALUES ('Bot Battle Royale', 'A test pool populated with AI bots.', 'Bronze', 5, 'ongoing', 50, NOW(), NOW() + interval '7 days')
+    RETURNING id INTO v_pool_id;
+
+    -- Create 10 Bots
+    FOR i IN 1..10 LOOP
+        v_user_id := gen_random_uuid();
+        
+        -- Insert into auth.users 
+        -- This WILL TRIGGER 'on_auth_user_created' which inserts into public.users automatically
+        INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token)
+        VALUES (
+            v_user_id, 
+            '00000000-0000-0000-0000-000000000000',
+            'authenticated',
+            'authenticated',
+            'bot_' || i || '@vantawin.test', 
+            crypt('password123', gen_salt('bf')),
+            now(),
+            now(),
+            now(),
+            '{"provider": "email", "providers": ["email"]}',
+            jsonb_build_object('username', 'bot_user_' || i), -- Pass username here so trigger uses it
+            now(),
+            now(),
+            '',
+            '',
+            '',
+            ''
+        );
+
+        -- Update the automatically created public.users record
+        -- (The trigger creates it with 0 balance, we want 100)
+        UPDATE public.users 
+        SET 
+            first_name = 'Bot',
+            last_name = i::text,
+            real_money_balance = 100
+        WHERE id = v_user_id;
+
+        -- Enter Pool
+        INSERT INTO public.tournament_entries (user_id, pool_id, vanta_balance)
+        VALUES (v_user_id, v_pool_id, 1000);
+        
+    END LOOP;
+END $$;

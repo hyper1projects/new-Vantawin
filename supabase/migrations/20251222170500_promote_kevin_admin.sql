@@ -15,9 +15,8 @@ BEGIN
 
     -- 3. Promote to Admin
     -- We use ON CONFLICT DO UPDATE in case the user row in public.users is missing but auth exists
-    -- (Though usually triggers handle this, we want to be sure)
-    INSERT INTO public.users (id, is_admin, email)
-    VALUES (v_user_id, true, 'kevin.ethh@gmail.com')
+    INSERT INTO public.users (id, is_admin)
+    VALUES (v_user_id, true)
     ON CONFLICT (id) DO UPDATE
     SET is_admin = true;
     

@@ -55,6 +55,9 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
 
     const handleCardClick = () => {
         console.log("Oddscard: Card clicked. Navigating to Game Details.");
+        // Use window.location as fallback if navigate fails, but we are reverting so just navigate
+        // Actually, previous code used navigate. Wait, previous code used navigate for handleCardClick but NOT for odds button.
+        // I will restore it to exactly how it was in Step 539, which HAD navigate for card click but NOT for odds button.
         navigate(`/games/${game.id}`);
     };
 

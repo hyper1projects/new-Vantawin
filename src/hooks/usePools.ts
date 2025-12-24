@@ -13,7 +13,7 @@ export const usePools = () => {
                 setLoading(true);
                 const { data, error } = await supabase
                     .from('pools')
-                    .select('*, pool_participants(count)');
+                    .select('*, tournament_entries(count)');
 
                 if (error) {
                     throw error;
@@ -28,7 +28,7 @@ export const usePools = () => {
                         status: item.status,
                         prizePool: item.total_pot,
                         entryFee: item.entry_fee,
-                        participants: item.pool_participants[0]?.count ?? 0,
+                        participants: item.tournament_entries[0]?.count ?? 0,
                         maxParticipants: item.max_participants,
                         startTime: item.start_time,
                         endTime: item.end_time,

@@ -29,7 +29,7 @@ const PoolDetails: React.FC = () => {
         setIsLoading(true);
         const { data, error } = await supabase
           .from('pools')
-          .select('*, pool_participants(count)')
+          .select('*, tournament_entries(count)')
           .eq('id', poolId)
           .single();
 
@@ -45,7 +45,7 @@ const PoolDetails: React.FC = () => {
             status: data.status,
             prizePool: data.total_pot,
             entryFee: data.entry_fee,
-            participants: data.pool_participants[0]?.count ?? 0,
+            participants: data.tournament_entries[0]?.count ?? 0,
             maxParticipants: data.max_participants,
             startTime: data.start_time,
             endTime: data.end_time,

@@ -2,27 +2,22 @@
 
 import React, { useState } from 'react';
 import Oddscard from './Oddscard';
-import { Game } from '../types/game'; // Ensure Game type is imported
+import { Game } from '../types/game';
 import SectionHeader from './SectionHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useMatchesContext } from '../context/MatchesContext'; // Import centralized game data
-import { allGamesData } from '../data/games'; // Import centralized game data as fallback
-import CollapsibleSection from './CollapsibleSection'; // Import the new CollapsibleSection
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useMatchesContext } from '../context/MatchesContext';
+import CollapsibleSection from './CollapsibleSection';
+import { useNavigate } from 'react-router-dom';
 
 type GameFilter = 'All' | 'Live' | 'Upcoming';
 
 const TopGamesSection: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<GameFilter>('All');
-  const navigate = useNavigate(); // Initialize useNavigate
-  const { games } = useMatchesContext();
+  const navigate = useNavigate();
+  const { games, loading } = useMatchesContext();
 
-  // Fallback to mock data if context games are empty
-  const displayGames = (games && games.length > 0) ? games : allGamesData;
-
-  // Filter games based on the selectedFilter from displayGames
-  const filteredGames = displayGames.filter(game => {
+  const filteredGames = games.filter(game => {
     if (selectedFilter === 'All') {
       return true;
     }
@@ -30,10 +25,10 @@ const TopGamesSection: React.FC = () => {
       return game.isLive;
     }
     if (selectedFilter === 'Upcoming') {
-      return !game.isLive; // Assuming 'Upcoming' means not live
+      return !game.isLive;
     }
     return false;
-  }).slice(0, 10); // Display the first 10 filtered games for "Top Games"
+  }).slice(0, 10);
 
   const getButtonClasses = (filter: GameFilter) => {
     const isSelected = selectedFilter === filter;
@@ -46,12 +41,11 @@ const TopGamesSection: React.FC = () => {
   };
 
   const handleShowMoreClick = () => {
-    navigate('/games/top-games'); // Navigate to the new AllTopGames page
+    navigate('/games/top-games');
   };
 
   return (
     <div className="flex flex-col items-center space-y-2 bg-vanta-blue-medium rounded-[18px] shadow-sm pb-2">
-      {/* Header wrapper div now extends full width */}
       <div className="w-full bg-[#0D2C60] rounded-t-[18px]">
         <SectionHeader title="Top Games" className="w-full" textColor="text-white" />
       </div>
@@ -77,23 +71,27 @@ const TopGamesSection: React.FC = () => {
         </Button>
       </div>
 
-      {/* Wrapper div for Oddscards - now stacking vertically */}
       <div className="w-full flex flex-col space-y-1 px-1">
-        {filteredGames.map((game) => (
-          <div className="w-full" key={game.id}>
-            <Oddscard
-              key={game.id}
-              game={game} // Pass the full game object
-            />
-          </div>
-        ))}
+        {loading ? (
+          <p className="text-vanta-text-light text-center py-4">Loading games...</p>
+        ) : filteredGames.length > 0 ? (
+          filteredGames.map((game) => (
+            <div className="w-full" key={game.id}>
+              <Oddscard
+                key={game.id}
+                game={game}
+              />
+            </div>
+          ))
+        ) : (
+          <p className="text-vanta-text-light text-center py-4">No games found for this filter.</p>
+        )}
       </div>
 
-      {/* Show More Button positioned to bottom right */}
       <div className="w-full flex justify-end px-2 pt-2 pb-1">
         <Button
           className="bg-[#00EEEE] text-[#081028] hover:bg-[#00EEEE] hover:text-[#081028] rounded-[8px] px-4 py-1.5 text-sm"
-          onClick={handleShowMoreClick} // Updated onClick handler
+          onClick={handleShowMoreClick}
         >
           Show More
         </Button>
