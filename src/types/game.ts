@@ -15,6 +15,7 @@ export interface Question {
 
 export interface Team {
     name: string;
+    image?: string;
     logoIdentifier: string;
     abbreviation: string;
 }
@@ -26,8 +27,8 @@ export interface SupabaseMatch {
     start_time: string;      // ISO string from DB (e.g. "2025-12-18T19:00:00Z")
     league: string;
     is_live: boolean;        // DB usually uses snake_case
-    home_team: Team;         // Assuming you store this as JSONB in DB
-    away_team: Team;         // Assuming you store this as JSONB in DB
+    home_team: Team & { image?: string; logo?: string; logoUrl?: string };         // Assuming you store this as JSONB in DB
+    away_team: Team & { image?: string; logo?: string; logoUrl?: string };         // Assuming you store this as JSONB in DB
     questions: Question[];   // The JSONB column we discussed
 }
 
@@ -59,8 +60,16 @@ export const formatMatchFromDB = (match: SupabaseMatch): Game => {
         date: dateObj.toDateString() === new Date().toDateString() ? 'Today' : dateObj.toLocaleDateString(),
 
         // Map DB snake_case to Frontend camelCase
-        team1: { ...match.home_team, logoIdentifier: match.home_team.logoIdentifier || match.home_team.abbreviation || match.home_team.name },
-        team2: { ...match.away_team, logoIdentifier: match.away_team.logoIdentifier || match.away_team.abbreviation || match.away_team.name },
+        team1: {
+            ...match.home_team,
+            logoIdentifier: match.home_team.logoIdentifier || match.home_team.abbreviation || match.home_team.name,
+            image: match.home_team.image || match.home_team.logo || match.home_team.logoUrl
+        },
+        team2: {
+            ...match.away_team,
+            logoIdentifier: match.away_team.logoIdentifier || match.away_team.abbreviation || match.away_team.name,
+            image: match.away_team.image || match.away_team.logo || match.away_team.logoUrl
+        },
         league: match.league,
         isLive: match.is_live,
 

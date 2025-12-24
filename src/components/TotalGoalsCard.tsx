@@ -39,12 +39,12 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game, question }) => {
       {/* Team Logos and Names at the top */}
       <div className="flex items-center justify-center space-x-6 w-full mb-4">
         <div className="flex flex-col items-center">
-          <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
+          <img src={team1.image || getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
         </div>
         <span className="text-2xl font-bold text-gray-400">VS</span>
         <div className="flex flex-col items-center">
-          <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
+          <img src={team2.image || getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
         </div>
       </div>

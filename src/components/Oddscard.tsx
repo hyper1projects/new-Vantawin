@@ -19,6 +19,10 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
 
     if (!team1 || !team2) return null;
 
+    // DEBUG LOG
+    // console.log(`[DEBUG] Oddscard ${game.id} - Team1 Image:`, team1.image);
+    // console.log(`[DEBUG] Oddscard ${game.id} - Team1 LogoIdentifier:`, team1.logoIdentifier);
+
     const [isFavorited, setIsFavorited] = useState(false);
     const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
     const navigate = useNavigate();
@@ -61,18 +65,22 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
         navigate(`/games/${game.id}`);
     };
 
-    const renderTeam = (team: Team) => (
-        <div className="flex items-center">
-            <img
-                src={getLogoSrc(team.logoIdentifier)}
-                alt={team.name}
-                className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0"
-            />
-            <span className="text-white font-semibold truncate text-sm">
-                {team.name}
-            </span>
-        </div>
-    );
+    const renderTeam = (team: Team) => {
+        const logoSrc = team.image || getLogoSrc(team.logoIdentifier);
+
+        return (
+            <div className="flex items-center">
+                <img
+                    src={logoSrc}
+                    alt={team.name}
+                    className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0"
+                />
+                <span className="text-white font-semibold truncate text-sm">
+                    {team.name}
+                </span>
+            </div>
+        );
+    };
 
     // Helper strings for selection matching
     const homeSelId = `${primaryQuestion.id}_${homeOption?.id}_${homeOption?.odds.toFixed(2)}`;

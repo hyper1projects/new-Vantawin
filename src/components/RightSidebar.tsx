@@ -136,13 +136,13 @@ const RightSidebar = () => {
           <div className="flex flex-col items-center mb-4">
             <div className="flex items-center mb-1">
               <img
-                src={getLogoSrc(selectedGame.team1.logoIdentifier)}
+                src={selectedGame.team1.image || getLogoSrc(selectedGame.team1.logoIdentifier)}
                 alt={`${selectedGame.team1.name} Logo`}
                 className="w-16 h-16 object-contain mr-6"
               />
               <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
               <img
-                src={getLogoSrc(selectedGame.team2.logoIdentifier)}
+                src={selectedGame.team2.image || getLogoSrc(selectedGame.team2.logoIdentifier)}
                 alt={`${selectedGame.team2.name} Logo`}
                 className="w-16 h-16 object-contain ml-6"
               />

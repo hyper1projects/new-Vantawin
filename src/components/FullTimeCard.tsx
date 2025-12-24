@@ -54,7 +54,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
       {/* Team Logos/Names and Buttons */}
       <div className="flex items-center justify-center space-x-6 w-full"> {/* Adjusted spacing */}
         <div className="flex flex-col items-center">
-          <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
+          <img src={team1.image || getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
           <OddsButton
             value={homeOption?.odds || 0}
@@ -67,7 +67,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
         <span className="text-2xl font-bold text-vanta-neon-blue mb-2">VS</span> {/* Kept VS for visual separation */}
         {/* The Draw button and its container are now completely removed */}
         <div className="flex flex-col items-center">
-          <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
+          <img src={team2.image || getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
           <OddsButton
             value={awayOption?.odds || 0}

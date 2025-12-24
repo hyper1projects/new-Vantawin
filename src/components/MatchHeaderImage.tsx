@@ -21,7 +21,7 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
     >
       {/* Team 1 */}
       <div className="flex flex-col items-center space-y-2">
-        <img src={getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain" />
+        <img src={team1.image || getLogoSrc(team1.logoIdentifier)} alt={team1.name} className="w-16 h-16 object-contain" />
         <span className="text-white text-lg font-bold">{team1.name}</span>
       </div>
 
@@ -34,7 +34,7 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
 
       {/* Team 2 */}
       <div className="flex flex-col items-center space-y-2">
-        <img src={getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain" />
+        <img src={team2.image || getLogoSrc(team2.logoIdentifier)} alt={team2.name} className="w-16 h-16 object-contain" />
         <span className="text-white text-lg font-bold">{team2.name}</span>
       </div>
     </div>
