@@ -70,11 +70,11 @@ function App() {
               <Route path="/" element={<Layout />}>
                 <Route index element={<Index />} />
                 <Route path="games" element={<Games />} />
-                <Route path="games/:gameId" element={<GameDetails />} />
                 <Route path="games/top-games" element={<AllTopGames />} />
                 <Route path="games/live-games" element={<AllLiveGames />} />
                 <Route path="games/premier-league" element={<AllPremierLeagueGames />} />
                 <Route path="games/la-liga" element={<AllLaLigaGames />} />
+                <Route path="games/:gameId" element={<GameDetails />} />
                 <Route path="pools" element={<Pools />} />
                 <Route path="pools/:poolId" element={<PoolDetails />} />
                 <Route path="terms-of-use" element={<Terms />} />

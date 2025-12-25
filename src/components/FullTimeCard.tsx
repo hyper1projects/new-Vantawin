@@ -5,6 +5,7 @@ import { Game, Question } from '../types/game'; // Import Question type
 import OddsButton from './OddsButton'; // Changed from NewOddsButton to OddsButton
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { useNavigate } from 'react-router-dom';
+import TeamLogo from './TeamLogo';
 
 interface FullTimeCardProps {
   game: Game;
@@ -47,7 +48,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
 
       <div className="flex items-center justify-center space-x-6 w-full">
         <div className="flex flex-col items-center">
-          <img src={team1.image || '/placeholder.svg'} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
+          <TeamLogo teamName={team1.name} league={game.league} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
           <OddsButton
             value={homeOption?.odds || 0}
@@ -59,7 +60,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
         </div>
         <span className="text-2xl font-bold text-vanta-neon-blue mb-2">VS</span>
         <div className="flex flex-col items-center">
-          <img src={team2.image || '/placeholder.svg'} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
+          <TeamLogo teamName={team2.name} league={game.league} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
           <OddsButton
             value={awayOption?.odds || 0}

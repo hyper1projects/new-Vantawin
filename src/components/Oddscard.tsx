@@ -6,6 +6,7 @@ import { Team, Game, Question } from '../types/game';
 import NewOddsButton from './NewOddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { useNavigate } from 'react-router-dom';
+import TeamLogo from './TeamLogo';
 
 interface OddscardProps {
     game: Game;
@@ -56,13 +57,11 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     };
 
     const renderTeam = (team: Team) => {
-        const logoSrc = team.image || '/placeholder.svg';
-
         return (
             <div className="flex items-center">
-                <img
-                    src={logoSrc}
-                    alt={team.name}
+                <TeamLogo
+                    teamName={team.name}
+                    league={game.league}
                     className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0"
                 />
                 <span className="text-white font-semibold truncate text-sm">

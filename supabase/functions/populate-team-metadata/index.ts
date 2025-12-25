@@ -1,19 +1,35 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const API_FOOTBALL_KEY = Deno.env.get('API_FOOTBALL_KEY');
-const API_FOOTBALL_HOST = 'v3.football.api-sports.io';
+// GitHub Repo Config
+const GITHUB_USER = 'luukhopman';
+const GITHUB_REPO = 'football-logos';
+const GITHUB_BRANCH = 'master';
+const CDN_BASE = `https://cdn.jsdelivr.net/gh/${GITHUB_USER}/${GITHUB_REPO}@${GITHUB_BRANCH}/logos`;
+
+// League Mapping
+// Maps VantaWin League Name -> GitHub Repo Folder Name
+const LEAGUE_FOLDERS: { [key: string]: string } = {
+    'Premier League': 'England - Premier League',
+    'La Liga': 'Spain - LaLiga',
+    // Champions League teams are scattered across their domestic leagues.
+    // We will use a search list for them.
+};
+
+// Folders to search for Champions League teams (Big 5 + others)
+const SEARCH_FOLDERS_FOR_CL = [
+    'England - Premier League',
+    'Spain - LaLiga',
+    'Germany - Bundesliga',
+    'Italy - Serie A',
+    'France - Ligue 1',
+    'Netherlands - Eredivisie',
+    'Portugal - Liga Portugal'
+];
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
-
-// Map our league names to the IDs used by API-Football
-const leagueIdMap: { [key: string]: number } = {
-    'Premier League': 39,
-    'La Liga': 140,
-    'Champions League': 2,
-};
 
 Deno.serve(async (req) => {
     if (req.method === 'OPTIONS') {
@@ -21,10 +37,6 @@ Deno.serve(async (req) => {
     }
 
     try {
-        if (!API_FOOTBALL_KEY) {
-            throw new Error('API_FOOTBALL_KEY is not set. Please add it to your project secrets.');
-        }
-
         const supabase = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -61,54 +73,67 @@ Deno.serve(async (req) => {
             return new Response(JSON.stringify({ message: "All team logos are up to date.", processed: 0 }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
 
-        // 4. Loop and Fetch from API-Football
+        // 4. Loop and Search on GitHub
         const updates = [];
-        const currentSeason = new Date().getFullYear();
-
-        // Process in batches to avoid hitting API rate limits
-        for (const teamName of teamsToFetch.slice(0, 10)) { // Batch of 10
+        // Process in batches (Testing with 50)
+        for (const teamName of teamsToFetch.slice(0, 50)) {
             console.log(`Searching logo for: ${teamName}`);
             const leagueName = teamLeagueMap.get(teamName);
-            const leagueId = leagueName ? leagueIdMap[leagueName] : null;
 
-            if (!leagueId) {
-                console.warn(`No league ID mapping for team "${teamName}" in league "${leagueName}". Skipping.`);
-                continue;
-            }
+            let foldersToSearch: string[] = [];
 
-            const searchUrl = `https://${API_FOOTBALL_HOST}/teams?search=${encodeURIComponent(teamName)}&league=${leagueId}&season=${currentSeason}`;
-
-            const apiResponse = await fetch(searchUrl, {
-                headers: {
-                    'x-rapidapi-host': API_FOOTBALL_HOST,
-                    'x-rapidapi-key': API_FOOTBALL_KEY,
-                },
-            });
-
-            if (!apiResponse.ok) {
-                console.error(`API-Football request failed for "${teamName}": ${apiResponse.status} ${apiResponse.statusText}`);
-                continue;
-            }
-
-            const apiData = await apiResponse.json();
-
-            if (apiData.response && apiData.response.length > 0) {
-                const bestMatch = apiData.response[0]; // The first result is usually the best when filtered by league
-                const { team } = bestMatch;
-
-                if (team.id && team.logo) {
-                    updates.push({
-                        team_name: teamName,
-                        api_football_id: team.id,
-                        logo_url: team.logo,
-                        league_name: leagueName,
-                    });
-                    console.log(`Found logo for "${teamName}" (ID: ${team.id})`);
-                } else {
-                    updates.push({ team_name: teamName, logo_url: null });
-                }
+            if (leagueName === 'Champions League') {
+                foldersToSearch = SEARCH_FOLDERS_FOR_CL;
+            } else if (leagueName && LEAGUE_FOLDERS[leagueName]) {
+                foldersToSearch = [LEAGUE_FOLDERS[leagueName]];
             } else {
-                console.log(`No logo found for "${teamName}" in league ID ${leagueId}.`);
+                console.warn(`Unknown league mapping for "${leagueName}". Will search all common folders.`);
+                foldersToSearch = SEARCH_FOLDERS_FOR_CL;
+            }
+
+            let foundUrl: string | null = null;
+
+            // Name variations to try
+            const nameVariations = [
+                teamName, // "Arsenal"
+                `${teamName} FC`, // "Arsenal FC"
+                `${teamName} AFC`, // "Sunderland AFC"
+                teamName.replace(/ FC$/i, ''), // "Arsenal FC" -> "Arsenal"
+                teamName.replace(/ AFC$/i, ''), // "Sunderland AFC" -> "Sunderland"
+            ];
+
+            // Clean variations (trim and unique)
+            const uniqueVariations = [...new Set(nameVariations.map(n => n.trim()))];
+
+            outerLoop:
+            for (const folder of foldersToSearch) {
+                for (const nameVariant of uniqueVariations) {
+                    // Try to fetch HEAD to check existence
+                    const fileName = `${nameVariant}.png`;
+                    // Encode segments
+                    const url = `${CDN_BASE}/${encodeURIComponent(folder)}/${encodeURIComponent(fileName)}`;
+
+                    try {
+                        const response = await fetch(url, { method: 'HEAD' });
+                        if (response.ok) {
+                            foundUrl = url;
+                            console.log(`FOUND: ${url}`);
+                            break outerLoop;
+                        }
+                    } catch (e) {
+                        // Ignore fetch errors
+                    }
+                }
+            }
+
+            if (foundUrl) {
+                updates.push({
+                    team_name: teamName,
+                    logo_url: foundUrl,
+                    league_name: leagueName,
+                });
+            } else {
+                console.log(`No logo found for "${teamName}" in searched folders.`);
                 updates.push({ team_name: teamName, logo_url: null });
             }
         }
@@ -123,8 +148,9 @@ Deno.serve(async (req) => {
         }
 
         return new Response(JSON.stringify({
-            message: `Processed ${updates.length} teams. Run again if more are missing.`,
+            message: `Processed ${updates.length} teams.`,
             processed: updates.length,
+            found: updates.filter(u => u.logo_url).length,
             teams: updates.map(u => u.team_name)
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
