@@ -2,18 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 interface TeamLogoProps {
     teamName: string;
-    league?: string;
+    league?: string; // Kept for potential future use, but not used in logic now
     className?: string;
     alt?: string;
 }
 
-const LEAGUE_FOLDER_MAP: { [key: string]: string } = {
-    'Premier League': 'England - Premier League',
-    'La Liga': 'Spain - LaLiga',
-    'Champions League': 'Champions League',
-};
-
-const LA_LIGA_MAPPING: { [key: string]: string } = {
+// This mapping can still be useful for normalizing team names
+const TEAM_NAME_MAPPING: { [key: string]: string } = {
     'Atletico Madrid': 'Atletico de Madrid',
     'Atlético Madrid': 'Atletico de Madrid',
     'Atlético de Madrid': 'Atletico de Madrid',
@@ -43,73 +38,48 @@ const LA_LIGA_MAPPING: { [key: string]: string } = {
     'Real Oviedo': 'Real Oviedo',
 };
 
-const TeamLogo: React.FC<TeamLogoProps> = ({ teamName, league, className, alt }) => {
-    // Unconditional log to verify mount
-    console.log(`[TeamLogo] Mounting for team: "${teamName}"`);
-
+const TeamLogo: React.FC<TeamLogoProps> = ({ teamName, className, alt }) => {
     const [imgSrc, setImgSrc] = useState<string>('');
-    const [attemps, setAttempts] = useState(0);
-
-    const folder = league && LEAGUE_FOLDER_MAP[league] ? LEAGUE_FOLDER_MAP[league] : (league || 'Other');
-
-    // Define the variations
-    // 1. Mapped name (if exists)
-    // 2. Mapped name unaccented (if exists - handles "regular e" cases)
-    // 3. Direct: "Arsenal.png"
-    // 4. Suffix FC: "Arsenal FC.png"
-    // 5. Remove Suffix FC: "Arsenal" from "Arsenal FC"
-    // 6. Remove Suffix AFC: "Sunderland" from "Sunderland AFC"
-    // 7. Prefix AFC: "AFC Bournemouth" from "Bournemouth"
-    // 8. Ampersand: "Brighton & Hove Albion" from "Brighton and Hove Albion"
-    // 9. Kebab: "arsenal.football-logos.cc.png"
-
-    const kebabName = teamName.toLowerCase().replace(/\s+/g, '-');
-    const withAmpersand = teamName.replace(/\band\b/gi, '&');
-    // Handle "Brighton & Hove Albion" -> "Brighton.HoveAlbion" (derived from withAmpersand)
-    const dotName = withAmpersand.replace(/&/g, '.').replace(/\s/g, '');
-
-    let mappedName = '';
-    if (folder === 'Spain - LaLiga' && LA_LIGA_MAPPING[teamName]) {
-        mappedName = LA_LIGA_MAPPING[teamName];
-    }
+    const [attempts, setAttempts] = useState(0);
 
     // Helper to strip accents (e.g. Atlético -> Atletico)
     const normalizeName = (name: string) => name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+    const mappedName = TEAM_NAME_MAPPING[teamName] || '';
+    const kebabName = teamName.toLowerCase().replace(/\s+/g, '-');
+    const withAmpersand = teamName.replace(/\band\b/gi, '&');
+    const dotName = withAmpersand.replace(/&/g, '.').replace(/\s/g, '');
+
+    // All variants now point to the single /teams/ directory
     const variants = [
         ...(mappedName ? [
-            `/teams/${folder}/${mappedName}.png`,
-            `/teams/${folder}/${normalizeName(mappedName)}.png`
+            `/teams/${mappedName}.png`,
+            `/teams/${normalizeName(mappedName)}.png`
         ] : []),
-        `/teams/${folder}/${teamName}.png`,
-        `/teams/${folder}/${normalizeName(teamName)}.png`,
-        `/teams/${folder}/${teamName} FC.png`,
-        `/teams/${folder}/${teamName.replace(/ FC$/i, '')}.png`,
-        `/teams/${folder}/${teamName.replace(/ AFC$/i, '')}.png`,
-        `/teams/${folder}/AFC ${teamName}.png`,
-        `/teams/${folder}/${withAmpersand}.png`,
-        `/teams/${folder}/${dotName}.png`,
-        `/teams/${folder}/${kebabName}.football-logos.cc.png`
+        `/teams/${teamName}.png`,
+        `/teams/${normalizeName(teamName)}.png`,
+        `/teams/${teamName} FC.png`,
+        `/teams/${teamName.replace(/ FC$/i, '')}.png`,
+        `/teams/${teamName.replace(/ AFC$/i, '')}.png`,
+        `/teams/AFC ${teamName}.png`,
+        `/teams/${withAmpersand}.png`,
+        `/teams/${dotName}.png`,
+        `/teams/${kebabName}.football-logos.cc.png`
     ];
 
     useEffect(() => {
-        // Debug logging
-        if (['Brighton', 'Bournemouth', 'Atletico', 'Alaves', 'Betis', 'Oviedo'].some(s => teamName.includes(s))) {
-            console.log(`[TeamLogo] Debug for "${teamName}"`);
-            console.log(`[TeamLogo] League: "${league}" -> Folder: "${folder}"`);
-            console.log(`[TeamLogo] Mapped Name: "${mappedName}"`);
-            console.log(`[TeamLogo] Variants:`, variants);
-        }
         setAttempts(0);
+        // Start with the first variant
         setImgSrc(variants[0]);
-    }, [teamName, league]);
+    }, [teamName]);
 
     const handleError = () => {
-        const nextAttempt = attemps + 1;
+        const nextAttempt = attempts + 1;
         if (nextAttempt < variants.length) {
             setAttempts(nextAttempt);
             setImgSrc(variants[nextAttempt]);
         } else {
+            // If all variants fail, use a placeholder
             setImgSrc('/placeholder.svg');
         }
     };
