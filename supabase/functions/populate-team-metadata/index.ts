@@ -8,6 +8,13 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Map our league names to the IDs used by API-Football
+const leagueIdMap: { [key: string]: number } = {
+    'Premier League': 39,
+    'La Liga': 140,
+    'Champions League': 2,
+};
+
 Deno.serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
@@ -23,7 +30,7 @@ Deno.serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        // 1. Get all unique team names from your matches.
+        // 1. Get all unique team names and their leagues from your matches.
         const { data: matches, error: matchError } = await supabase.from('matches').select('home_team, away_team, league');
         if (matchError) throw matchError;
         if (!matches) return new Response(JSON.stringify({ message: "No matches found" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -56,12 +63,21 @@ Deno.serve(async (req) => {
 
         // 4. Loop and Fetch from API-Football
         const updates = [];
+        const currentSeason = new Date().getFullYear();
+
         // Process in batches to avoid hitting API rate limits
-        for (const teamName of teamsToFetch.slice(0, 10)) { 
+        for (const teamName of teamsToFetch.slice(0, 10)) { // Batch of 10
             console.log(`Searching logo for: ${teamName}`);
-            
-            const searchUrl = `https://${API_FOOTBALL_HOST}/teams?search=${encodeURIComponent(teamName)}`;
-            
+            const leagueName = teamLeagueMap.get(teamName);
+            const leagueId = leagueName ? leagueIdMap[leagueName] : null;
+
+            if (!leagueId) {
+                console.warn(`No league ID mapping for team "${teamName}" in league "${leagueName}". Skipping.`);
+                continue;
+            }
+
+            const searchUrl = `https://${API_FOOTBALL_HOST}/teams?search=${encodeURIComponent(teamName)}&league=${leagueId}&season=${currentSeason}`;
+
             const apiResponse = await fetch(searchUrl, {
                 headers: {
                     'x-rapidapi-host': API_FOOTBALL_HOST,
@@ -71,39 +87,28 @@ Deno.serve(async (req) => {
 
             if (!apiResponse.ok) {
                 console.error(`API-Football request failed for "${teamName}": ${apiResponse.status} ${apiResponse.statusText}`);
-                continue; // Skip this team on API error
+                continue;
             }
 
             const apiData = await apiResponse.json();
 
             if (apiData.response && apiData.response.length > 0) {
-                // API-Football can return multiple matches. We need to find the best one.
-                // Let's try to find an exact match first.
-                let bestMatch = apiData.response.find((r: any) => r.team.name.toLowerCase() === teamName.toLowerCase());
-
-                // If no exact match, take the first result as a fallback.
-                if (!bestMatch) {
-                    bestMatch = apiData.response[0];
-                }
-                
+                const bestMatch = apiData.response[0]; // The first result is usually the best when filtered by league
                 const { team } = bestMatch;
-                
+
                 if (team.id && team.logo) {
                     updates.push({
-                        team_name: teamName, // Use the original name from our DB as the primary key
+                        team_name: teamName,
                         api_football_id: team.id,
                         logo_url: team.logo,
-                        league_name: teamLeagueMap.get(teamName) || null, // Store the league for context
+                        league_name: leagueName,
                     });
                     console.log(`Found logo for "${teamName}" (ID: ${team.id})`);
                 } else {
-                     console.log(`Found team for "${teamName}" but it's missing an ID or logo in the API response.`);
-                     // Insert null so we don't search again
-                     updates.push({ team_name: teamName, logo_url: null });
+                    updates.push({ team_name: teamName, logo_url: null });
                 }
             } else {
-                console.log(`No logo found for "${teamName}" via API-Football.`);
-                // Insert a record with a null logo so we don't keep searching for it.
+                console.log(`No logo found for "${teamName}" in league ID ${leagueId}.`);
                 updates.push({ team_name: teamName, logo_url: null });
             }
         }
@@ -114,7 +119,6 @@ Deno.serve(async (req) => {
             const { error } = await supabase.from('team_metadata').upsert(updates, { onConflict: 'team_name' });
             if (error) {
                 console.error("Supabase upsert error:", error);
-                // Don't throw, just log it, so the function can report what it tried to do.
             }
         }
 
