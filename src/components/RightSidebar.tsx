@@ -9,6 +9,7 @@ import { useIsMobile } from '../hooks/use-mobile'; // Import useIsMobile
 import { useGatekeeper } from '../hooks/useGatekeeper';
 import { useNavigate } from 'react-router-dom';
 import { placeBet } from '@/services/bettingService';
+import TeamLogo from './TeamLogo'; // Import the new TeamLogo component
 
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from 'lucide-react';
@@ -121,14 +122,14 @@ const RightSidebar = () => {
         <>
           <div className="flex flex-col items-center mb-4">
             <div className="flex items-center mb-1">
-              <img
-                src={selectedGame.team1.image || '/placeholder.svg'}
+              <TeamLogo
+                teamName={selectedGame.team1.name}
                 alt={`${selectedGame.team1.name} Logo`}
                 className="w-16 h-16 object-contain mr-6"
               />
               <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
-              <img
-                src={selectedGame.team2.image || '/placeholder.svg'}
+              <TeamLogo
+                teamName={selectedGame.team2.name}
                 alt={`${selectedGame.team2.name} Logo`}
                 className="w-16 h-16 object-contain ml-6"
               />
@@ -205,6 +206,13 @@ const RightSidebar = () => {
 
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-base font-semibold">Points Multiplier</h4>
+                  <span className="text-vanta-neon-blue text-base font-bold">1.2x</span> {/* Placeholder value */}
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex justify-between items-center">
                   <h4 className="text-base font-semibold">Potential Win</h4>
                   <span className="text-yellow-400 text-xl font-bold">{potentialWinXP.toFixed(2)} XP</span>
                 </div>

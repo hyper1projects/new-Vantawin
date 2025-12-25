@@ -61,7 +61,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
             <div className="flex items-center">
                 <TeamLogo
                     teamName={team.name}
-                    league={game.league}
                     className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0"
                 />
                 <span className="text-white font-semibold truncate text-sm">

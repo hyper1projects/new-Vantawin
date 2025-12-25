@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Game } from '../types/game';
+import TeamLogo from './TeamLogo'; // Import the new TeamLogo component
 
 interface MatchHeaderImageProps {
   game: Game;
@@ -18,7 +19,7 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
       style={{ backgroundImage: 'url(/images/Group 1000005769.png)' }}
     >
       <div className="flex flex-col items-center space-y-2">
-        <img src={team1.image || '/placeholder.svg'} alt={team1.name} className="w-16 h-16 object-contain" />
+        <TeamLogo teamName={team1.name} alt={team1.name} className="w-16 h-16 object-contain" />
         <span className="text-white text-lg font-bold">{team1.name}</span>
       </div>
 
@@ -29,7 +30,7 @@ const MatchHeaderImage: React.FC<MatchHeaderImageProps> = ({ game }) => {
       </div>
 
       <div className="flex flex-col items-center space-y-2">
-        <img src={team2.image || '/placeholder.svg'} alt={team2.name} className="w-16 h-16 object-contain" />
+        <TeamLogo teamName={team2.name} alt={team2.name} className="w-16 h-16 object-contain" />
         <span className="text-white text-lg font-bold">{team2.name}</span>
       </div>
     </div>

@@ -4,6 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import { cn } from '../lib/utils'; // Assuming cn utility for tailwind-merge
 import { Game } from '../types/game'; // Import Game type
+import TeamLogo from './TeamLogo'; // Import the new TeamLogo component
 
 interface MatchCardProps {
   game: Game; // Pass the full game object
@@ -23,12 +24,12 @@ const MatchCard: React.FC<MatchCardProps> = ({ game }) => {
           {/* Team Logos and Names Row */}
           <div className="flex items-center justify-between w-full px-2">
             <div className="flex flex-col items-center w-1/3">
-              <img src={game.team1.image || '/placeholder.svg'} alt={game.team1.name} className="w-12 h-12 object-contain mb-1" />
+              <TeamLogo teamName={game.team1.name} alt={game.team1.name} className="w-12 h-12 object-contain mb-1" />
               <span className="text-[10px] font-medium text-center">{game.team1.name}</span>
             </div>
             <span className="text-lg font-bold text-gray-400">VS</span>
             <div className="flex flex-col items-center w-1/3">
-              <img src={game.team2.image || '/placeholder.svg'} alt={game.team2.name} className="w-12 h-12 object-contain mb-1" />
+              <TeamLogo teamName={game.team2.name} alt={game.team2.name} className="w-12 h-12 object-contain mb-1" />
               <span className="text-[10px] font-medium text-center">{game.team2.name}</span>
             </div>
           </div>

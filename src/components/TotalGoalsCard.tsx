@@ -4,6 +4,7 @@ import React from 'react';
 import { Game, Question } from '../types/game'; // Import Question type
 import OddsButton from './OddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
+import TeamLogo from './TeamLogo'; // Import the new TeamLogo component
 
 interface TotalGoalsCardProps {
   game: Game;
@@ -35,12 +36,12 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game, question }) => {
     <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
       <div className="flex items-center justify-center space-x-6 w-full mb-4">
         <div className="flex flex-col items-center">
-          <img src={team1.image || '/placeholder.svg'} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
+          <TeamLogo teamName={team1.name} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
         </div>
         <span className="text-2xl font-bold text-gray-400">VS</span>
         <div className="flex flex-col items-center">
-          <img src={team2.image || '/placeholder.svg'} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
+          <TeamLogo teamName={team2.name} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
         </div>
       </div>

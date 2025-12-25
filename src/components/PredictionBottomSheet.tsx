@@ -8,6 +8,7 @@ import { useMatchSelection } from '../context/MatchSelectionContext';
 import { useIsMobile } from '../hooks/use-mobile'; // Import the useIsMobile hook
 import { useGatekeeper } from '../hooks/useGatekeeper';
 import { placeBet } from '@/services/bettingService';
+import TeamLogo from './TeamLogo'; // Import the new TeamLogo component
 import {
   Drawer,
   DrawerContent,
@@ -143,14 +144,14 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
               {/* Logo and Match Code */}
               <div className="flex flex-col items-center mb-4">
                 <div className="flex items-center mb-1">
-                  <img
-                    src={selectedGame.team1.image || '/placeholder.svg'}
+                  <TeamLogo
+                    teamName={selectedGame.team1.name}
                     alt={`${selectedGame.team1.name} Logo`}
                     className="w-12 h-12 object-contain mr-4"
                   />
                   <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
-                  <img
-                    src={selectedGame.team2.image || '/placeholder.svg'}
+                  <TeamLogo
+                    teamName={selectedGame.team2.name}
                     alt={`${selectedGame.team2.name} Logo`}
                     className="w-12 h-12 object-contain ml-4"
                   />
