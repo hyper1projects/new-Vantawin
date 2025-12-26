@@ -1,46 +1,106 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, TrendingUp, Trophy } from 'lucide-react';
 
 interface LeaderboardEntry {
     entry_id: string;
+    user_id: string; // Added for correct matching
     username: string;
     total_xp: number;
     rank: number;
     vanta_balance: number;
+    est_payout?: number;
+}
+// ... (rest of imports/interface)
+
+
+interface PayoutStructure {
+    rank_start: number;
+    rank_end: number;
+    percentage: number;
 }
 
 export default function LiveLeaderboard({ poolId, currentUserId }: { poolId: string, currentUserId?: string }) {
     const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [cutoffRank, setCutoffRank] = useState(0);
+    const [netPot, setNetPot] = useState(0);
+    const [payouts, setPayouts] = useState<PayoutStructure[]>([]);
 
     useEffect(() => {
-        if (poolId) {
-            fetchLeaderboard();
-            // Refresh every 30 seconds
-            const interval = setInterval(fetchLeaderboard, 30000);
-            return () => clearInterval(interval);
-        }
+        let intervalId: NodeJS.Timeout;
+
+        const fetchData = async () => {
+            if (!poolId) return;
+            setLoading(true);
+            try {
+                // 1. Fetch Pool Info (Pot & Tier)
+                const { data: poolData } = await supabase.from('pools').select('total_pot, tier').eq('id', poolId).single();
+                if (!poolData) throw new Error('Pool not found');
+
+                // 2. Fetch Rake
+                const { data: rakeData } = await supabase.from('rake_structures').select('percentage').eq('tier', poolData.tier).single();
+                const rake = rakeData?.percentage || 10;
+
+                // 3. Calculate Net Pot
+                const pot = poolData.total_pot || 0;
+                const net = pot * (1 - (rake / 100));
+                setNetPot(net);
+
+                // 4. Fetch Payout Structure
+                const { data: payoutData } = await supabase.from('payout_structures').select('*').order('rank_start', { ascending: true });
+                setPayouts(payoutData || []);
+
+                // 5. Initial Leaderboard Fetch
+                await fetchLeaderboard(net, payoutData || []);
+
+                // 6. Setup Interval
+                intervalId = setInterval(() => fetchLeaderboard(net, payoutData || []), 30000);
+
+            } catch (err) {
+                console.error('Error init leaderboard:', err);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
     }, [poolId]);
 
-    async function fetchLeaderboard() {
+    async function fetchLeaderboard(currentNetPot: number, currentPayouts: PayoutStructure[]) {
         try {
             const { data, error } = await supabase
-                .from('leaderboard_view') // Correct View Name
+                .from('leaderboard_view')
                 .select('*')
                 .eq('pool_id', poolId)
-                .order('rank', { ascending: true }) // Correct Column Name
+                .order('rank', { ascending: true })
+                .order('rank', { ascending: true })
                 .limit(100);
+
+            console.log('Leaderboard Fetch:', { poolId, count: data?.length, error }); // DEBUG LOG
 
             if (error) throw error;
 
             if (data) {
-                setEntries(data);
-                // Calculate the Top 25% Cutoff
-                const totalParticipants = data.length;
-                setCutoffRank(Math.ceil(totalParticipants * 0.25));
+                // Calculate Payouts for each entry
+                const enhancedEntries = data.map((entry: any) => {
+                    const rank = entry.rank;
+                    const payoutRow = currentPayouts.find(p => rank >= p.rank_start && rank <= p.rank_end);
+                    let est_payout = 0;
+                    if (payoutRow) {
+                        est_payout = currentNetPot * (payoutRow.percentage / 100);
+                    }
+                    return { ...entry, est_payout };
+                });
+
+                setEntries(enhancedEntries);
+
+                // Determine Cutoff (Max rank in payout table)
+                const maxRank = Math.max(...currentPayouts.map(p => p.rank_end), 0);
+                setCutoffRank(maxRank);
             }
         } catch (err) {
             console.error('Error fetching leaderboard:', err);
@@ -53,16 +113,27 @@ export default function LiveLeaderboard({ poolId, currentUserId }: { poolId: str
 
     return (
         <div className="w-full bg-vanta-grey-dark rounded-xl overflow-hidden shadow-2xl border border-white/10">
+            {/* DEBUG OVERLAY */}
+            <div className="bg-red-900/50 p-2 text-xs text-white font-mono border-b border-red-500">
+                [DEBUG] PoolID: {poolId || 'MISSING'} | Entries: {entries.length} | Loading: {String(loading)} | NetPot: {netPot}
+            </div>
 
             {/* Header */}
             <div className="bg-white/5 p-4 border-b border-white/10 flex justify-between items-center">
-                <h2 className="text-xl font-bold text-white flex items-center">
-                    <Trophy className="w-5 h-5 mr-2 text-yellow-500" />
-                    Live Standings
-                </h2>
-                <span className="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded border border-emerald-400/20">
-                    Top {cutoffRank} Get Paid
-                </span>
+                <div>
+                    <h2 className="text-xl font-bold text-white flex items-center">
+                        <Trophy className="w-5 h-5 mr-2 text-yellow-500" />
+                        Live Standings
+                    </h2>
+                    <div className="text-xs text-gray-400 mt-1">
+                        Net Prize Pool: <span className="text-emerald-400 font-mono">${netPot.toFixed(2)}</span>
+                    </div>
+                </div>
+                <div className="flex flex-col items-end">
+                    <span className="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded border border-emerald-400/20 mb-1">
+                        Top {cutoffRank} Get Paid
+                    </span>
+                </div>
             </div>
 
             {/* List */}
@@ -71,19 +142,7 @@ export default function LiveLeaderboard({ poolId, currentUserId }: { poolId: str
                     <div className="p-8 text-center text-gray-500">No bets placed yet. Be the first!</div>
                 ) : (
                     entries.map((entry) => {
-                        const isMe = currentUserId ? entry.entry_id === currentUserId : false; // Check against entry_id (assuming currentUserId passed is actually user_id, wait. entry_id is UUID of entry. currentUserId is likely auth.uid(). We need to check relation.)
-                        // The view 'leaderboard_view' has 'username' but not 'user_id' explicitly selected in the top level.
-                        // Let's check the view definition again in step 458.
-                        // It selects: e.id as entry_id, u.username, e.total_xp...
-                        // It DOES NOT select u.id or e.user_id.
-                        // Component props say 'currentUserId'. If that is auth.uid(), we can't match it against entry.entry_id.
-                        // We should match against username OR update the view to include user_id.
-                        // Updating the view is cleaner.
-
-                        // NOTE: For now, I'll rely on View modification or just rendering.
-                        // BUT, the component won't highlight "YOU" correctly if I don't fix this.
-                        // I will Assume the view returns user_id or I should highlight by username matches if unique? No.
-
+                        const isMe = currentUserId ? entry.user_id === currentUserId : false;
                         const isWinner = entry.rank <= cutoffRank;
 
                         return (
@@ -123,7 +182,11 @@ export default function LiveLeaderboard({ poolId, currentUserId }: { poolId: str
                                                 {entry.username || 'Anonymous'} {isMe && '(You)'}
                                             </div>
                                             <div className="text-xs text-gray-500">
-                                                {isWinner ? <span className="text-emerald-500">In the money</span> : `${cutoffRank - entry.rank} spots to payout`}
+                                                {isWinner ?
+                                                    <span className="text-emerald-500 font-bold">
+                                                        Est. ${entry.est_payout?.toFixed(2)}
+                                                    </span>
+                                                    : `${cutoffRank - entry.rank + 1} spots to payout`}
                                             </div>
                                         </div>
                                     </div>

@@ -30,6 +30,7 @@ export const usePools = () => {
                         entryFee: item.entry_fee,
                         participants: item.tournament_entries[0]?.count ?? 0,
                         maxParticipants: item.max_participants,
+                        minParticipants: item.min_participants,
                         startTime: item.start_time,
                         endTime: item.end_time,
                         image: item.image_url,

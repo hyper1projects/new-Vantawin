@@ -6,10 +6,10 @@ import { cn } from '../lib/utils'; // For conditional class merging
 interface LeaderboardEntry {
   rank: number;
   playerName: string;
-  xp: number; // Changed from 'score' to 'xp'
-  winRate: number; // New field
-  prizeNaira: number; // New field
-  isCurrentUser?: boolean; // Optional: to highlight the current user
+  xp: number;
+  winRate: number;
+  prizeNaira: number;
+  isCurrentUser?: boolean;
 }
 
 interface LeaderboardTableProps {
@@ -33,7 +33,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, className 
       <div className="space-y-4">
         {entries.map((entry) => (
           <div
-            key={entry.rank}
+            key={`${entry.rank}-${entry.playerName}`}
             className={cn(
               "grid grid-cols-5 gap-4 items-center py-2 px-3 rounded-lg",
               entry.isCurrentUser ? "bg-vanta-accent-dark-blue border border-vanta-neon-blue" : "hover:bg-[#012A5E]"
@@ -44,10 +44,16 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, className 
                 {entry.rank}
               </span>
             </div>
-            <span className="text-base">{entry.playerName}</span>
-            <span className="text-base text-right text-vanta-neon-blue">{entry.xp.toLocaleString()}</span>
-            <span className="text-base text-right">{entry.winRate.toFixed(1)}%</span>
-            <span className="text-base text-right text-green-400">₦{entry.prizeNaira.toLocaleString()}</span>
+            <span className="text-base truncate">{entry.playerName}</span>
+            <span className="text-base text-right text-vanta-neon-blue">
+                {(entry.xp ?? 0).toLocaleString()}
+            </span>
+            <span className="text-base text-right">
+                {(entry.winRate ?? 0).toFixed(1)}%
+            </span>
+            <span className="text-base text-right text-green-400">
+                ₦{(entry.prizeNaira ?? 0).toLocaleString()}
+            </span>
           </div>
         ))}
       </div>

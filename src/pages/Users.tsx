@@ -6,8 +6,9 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import ProfileCard from '../components/ProfileCard';
-import WinLossRatioCard from '../components/WinLossRatioCard';
+import WalletOverviewCard from '../components/WalletOverviewCard';
 import UserTabs from '../components/UserTabs';
+import { useUserStats } from '../hooks/useUserStats';
 import { format } from 'date-fns';
 
 const Users: React.FC = () => {
@@ -35,13 +36,8 @@ const Users: React.FC = () => {
   }
 
   // Dummy data for profile stats (replace with actual data from backend later)
-  const userStats = {
-    rank: '#21',
-    gamesPlayed: 21,
-    winRate: 80,
-    wins: 7,
-    // avatarUrl is now fetched from AuthContext
-  };
+  // Fetch real user stats
+  const { gamesPlayed, wins, winRate, rank } = useUserStats();
 
   // Format joined date
   const joinedDate = user.created_at ? format(new Date(user.created_at), 'MMM yyyy') : 'N/A';
@@ -52,13 +48,13 @@ const Users: React.FC = () => {
         <ProfileCard
           username={username || 'Guest'}
           joinedDate={joinedDate}
-          rank={userStats.rank}
-          gamesPlayed={userStats.gamesPlayed}
-          winRate={userStats.winRate}
-          wins={userStats.wins}
+          rank={rank}
+          gamesPlayed={gamesPlayed}
+          winRate={winRate}
+          wins={wins}
           avatarUrl={avatarUrl || '/images/profile/Profile.png'} // Use avatarUrl from context
         />
-        <WinLossRatioCard />
+        <WalletOverviewCard showViewWallet={true} />
       </div>
       <UserTabs />
     </div>

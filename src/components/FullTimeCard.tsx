@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Game, Question } from '../types/game'; // Import Question type
-import OddsButton from './OddsButton'; // Changed from NewOddsButton to OddsButton
+import NewOddsButton from './NewOddsButton'; // Changed from OddsButton to NewOddsButton
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { useNavigate } from 'react-router-dom';
 import TeamLogo from './TeamLogo';
@@ -28,8 +28,7 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
     else if (outcome === 'team2') option = awayOption;
 
     if (option) {
-      setSelectedMatch(game, `${question.id}_${outcome}_${option.odds.toFixed(2)}`);
-      navigate('/pools');
+      setSelectedMatch(game, `${question.id}_${option.id}_${option.odds.toFixed(2)}`);
     }
   };
 
@@ -50,24 +49,24 @@ const FullTimeCard: React.FC<FullTimeCardProps> = ({ game, question }) => {
         <div className="flex flex-col items-center">
           <TeamLogo teamName={team1.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team1.name}</span>
-          <OddsButton
+          <NewOddsButton
             value={homeOption?.odds || 0}
             label={team1.abbreviation}
             onClick={(e) => handleOddsClick(e, 'team1')}
-            isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_team1_${team1Odd}`}
-            className="rounded-[12px] px-6 py-2 mt-2"
+            isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_${homeOption?.id}_${team1Odd}`}
+          // Removed className prop as NewOddsButton might not accept it or handles it differently
           />
         </div>
         <span className="text-2xl font-bold text-vanta-neon-blue mb-2">VS</span>
         <div className="flex flex-col items-center">
           <TeamLogo teamName={team2.name} className="w-16 h-16 object-contain mb-2" />
           <span className="text-lg font-semibold">{team2.name}</span>
-          <OddsButton
+          <NewOddsButton
             value={awayOption?.odds || 0}
             label={team2.abbreviation}
             onClick={(e) => handleOddsClick(e, 'team2')}
-            isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_team2_${team2Odd}`}
-            className="rounded-[12px] px-6 py-2 mt-2"
+            isSelected={selectedGame?.id === game.id && selectedOutcome === `${question.id}_${awayOption?.id}_${team2Odd}`}
+          // Removed className prop
           />
         </div>
       </div>

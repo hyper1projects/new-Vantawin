@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
@@ -31,33 +32,70 @@ export default function MyGamesTab() {
     useEffect(() => {
         if (user) {
             fetchBets();
-        } else {
-            setLoading(false);
         }
     }, [user]);
 
     async function fetchBets() {
-        if (!user) {
-            setLoading(false);
-            return;
-        }
         try {
             setLoading(true);
-            const { data, error } = await supabase.functions.invoke('get-my-bets');
 
-            if (error) throw error;
+            // 1. Get all entry IDs for this user
+            const { data: entries, error: entryError } = await supabase
+                .from('tournament_entries')
+                .select('id')
+                .eq('user_id', user?.id);
 
-            setBets(data || []);
+            console.log('MyGamesTab: Entries fetch result:', { entries, entryError });
 
+            if (entryError) throw entryError;
+
+            if (!entries || entries.length === 0) {
+                console.log('MyGamesTab: No entries found for user', user?.id);
+                setBets([]);
+                return;
+            }
+
+            const entryIds = entries.map(e => e.id);
+            console.log('MyGamesTab: Fetching bets for entry IDs:', entryIds);
+
+            // 2. Fetch bets for these entries
+            const { data: betsData, error: betsError } = await supabase
+                .from('bets')
+                .select(`
+                    *,
+                    match:matches(*)
+                `)
+                .in('entry_id', entryIds)
+                .order('created_at', { ascending: false });
+
+            console.log('MyGamesTab: Bets fetch result:', { betsData, betsError });
+
+            if (betsError) throw betsError;
+
+            if (betsData) {
+                setBets(betsData as any);
+            }
         } catch (err) {
-            console.error('Error fetching bets via function:', err);
-            setBets([]);
+            console.error('Error fetching bets:', err);
         } finally {
             setLoading(false);
         }
     }
 
+    const getQuestionName = (bet: Bet) => {
+        if (!bet.match?.questions) return 'Match Result';
+
+        const questions = Array.isArray(bet.match.questions)
+            ? bet.match.questions
+            : JSON.parse(JSON.stringify(bet.match.questions));
+
+        const question = questions.find((q: any) => q.id === bet.question_id);
+        return question?.text || 'Match Result';
+    };
+
     const getSelectionName = (bet: Bet) => {
+        // Find question and option label from match questions JSON
+        // questions structure: [ { id: 'q1', options: [ {id: 'o1', label: 'Home'} ] } ]
         if (!bet.match?.questions) return bet.option_id;
 
         const questions = Array.isArray(bet.match.questions)
@@ -85,7 +123,7 @@ export default function MyGamesTab() {
         return (
             <div className="bg-vanta-blue-medium p-8 rounded-[27px] text-center text-vanta-text-light">
                 <p className="text-lg">No games played yet.</p>
-                <p className="text-sm text-gray-400 mt-2">Join a pool and place some bets!</p>
+                <p className="text-sm text-gray-400 mt-2">Join a pool and verify your predictions!</p>
             </div>
         );
     }
@@ -99,13 +137,13 @@ export default function MyGamesTab() {
                 const isPending = bet.status === 'pending';
 
                 return (
-                    <div key={bet.id} className="bg-vanta-blue-medium p-5 rounded-[20px] border border-white/5 hover:border-white/10 transition-colors">
+                    <div key={bet.id} className="bg-vanta-blue-medium p-5 rounded-[20px] border border-vanta-neon-blue/10 hover:border-vanta-neon-blue/30 transition-colors">
                         <div className="flex justify-between items-start mb-3">
                             <div>
                                 <div className="text-xs font-mono text-gray-400 mb-1">
                                     {format(new Date(bet.match.start_time), 'MMM d, HH:mm')} • {bet.match.league}
                                 </div>
-                                <h4 className="font-bold text-lg text-white">
+                                <h4 className="font-bold text-lg text-vanta-text-light">
                                     {getTeamName(bet.match.home_team)} vs {getTeamName(bet.match.away_team)}
                                 </h4>
                             </div>
@@ -126,13 +164,14 @@ export default function MyGamesTab() {
                         <div className="grid grid-cols-3 gap-4 bg-black/20 p-3 rounded-xl">
                             <div>
                                 <div className="text-xs text-gray-500 uppercase tracking-tighter">Your Pick</div>
+                                <div className="text-[10px] text-gray-400 font-medium mb-0.5">{getQuestionName(bet)}</div>
                                 <div className="font-medium text-vanta-neon-blue truncate" title={getSelectionName(bet)}>
                                     {getSelectionName(bet)}
                                 </div>
                             </div>
                             <div>
                                 <div className="text-xs text-gray-500 uppercase tracking-tighter">Wager</div>
-                                <div className="font-medium text-white">
+                                <div className="font-medium text-vanta-text-light">
                                     {bet.stake_vanta} Vanta
                                 </div>
                             </div>

@@ -4,46 +4,47 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
 import { Reward } from '../types/reward'; // Import the new Reward type
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 type RewardFilter = 'all' | 'bonuses' | 'referrals' | 'promotions';
 
-const dummyRewards: Reward[] = [
-  {
-    id: 'rwd-1',
-    date: '2024-07-25 14:30',
-    type: 'bonus',
-    amount: 500,
-    status: 'claimed',
-    description: 'Welcome Bonus',
-  },
-  {
-    id: 'rwd-2',
-    date: '2024-07-24 10:00',
-    type: 'referral',
-    amount: 200,
-    status: 'claimed',
-    description: 'Friend Referral Bonus',
-  },
-  {
-    id: 'rwd-3',
-    date: '2024-07-23 18:00',
-    type: 'promotion',
-    amount: 1000,
-    status: 'pending',
-    description: 'Weekend Promo Win',
-  },
-  {
-    id: 'rwd-4',
-    date: '2024-07-22 09:00',
-    type: 'bonus',
-    amount: 150,
-    status: 'expired',
-    description: 'Daily Login Bonus',
-  },
-];
+
 
 const RewardsHistory: React.FC = () => {
+  const { user } = useAuth();
   const [activeRewardFilter, setActiveRewardFilter] = useState<RewardFilter>('all');
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchRewards = async () => {
+      if (!user) return;
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('rewards_log')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching rewards:', error);
+      } else if (data) {
+        const mappedRewards: Reward[] = data.map((item: any) => ({
+          id: item.id,
+          date: new Date(item.created_at).toLocaleString(),
+          type: item.type as any,
+          amount: item.amount,
+          status: item.status as any,
+          description: item.description || ''
+        }));
+        setRewards(mappedRewards);
+      }
+      setIsLoading(false);
+    };
+
+    fetchRewards();
+  }, [user]);
 
   const getRewardFilterButtonClasses = (filter: RewardFilter) => {
     const isActive = activeRewardFilter === filter;
@@ -55,7 +56,7 @@ const RewardsHistory: React.FC = () => {
     );
   };
 
-  const filteredRewards = dummyRewards.filter(reward => {
+  const filteredRewards = rewards.filter(reward => {
     if (activeRewardFilter === 'all') return true;
     if (activeRewardFilter === 'bonuses' && reward.type === 'bonus') return true;
     if (activeRewardFilter === 'referrals' && reward.type === 'referral') return true;

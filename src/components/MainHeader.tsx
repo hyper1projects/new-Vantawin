@@ -5,6 +5,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'; // Import use
 import { Search, AlertCircle, LogOut, ArrowDownToLine, ArrowUpToLine, Gift, User, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import GameSearch from './GameSearch';
+import { createPayment } from '@/services/paymentService';
+import PaymentRedirectModal from './PaymentRedirectModal';
+import DepositOptionsModal from './DepositOptionsModal';
+import DepositDetailsModal from './DepositDetailsModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,9 +28,41 @@ import { useAuth } from '../context/AuthContext';
 const sportsCategories = ['Football', 'Basketball', 'Tennis', 'Esports'];
 
 const MainHeader: React.FC = () => {
-  const { user, signOut, isLoading, isTelegram, telegramUser, displayName, avatarUrl } = useAuth();
+  const { user, signOut, isLoading, isTelegram, telegramUser, displayName, avatarUrl, balance } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+
+  const [isRedirecting, setIsRedirecting] = React.useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = React.useState(false);
+
+  const handleDepositClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsOptionsOpen(true);
+  };
+
+  const handleCryptoSelect = () => {
+    setIsOptionsOpen(false);
+    setIsDetailsOpen(true);
+  };
+
+  const handlePaymentProceed = async (amount: number) => {
+    setIsDetailsOpen(false);
+    try {
+      setIsRedirecting(true);
+      console.log(`Initiating payment: ${amount} USD`);
+      const response = await createPayment('Wallet Top-Up', amount, '00000000-0000-0000-0000-000000000000');
+      if (response && response.invoice_url) {
+        window.location.href = response.invoice_url;
+      } else {
+        throw new Error('No invoice URL received');
+      }
+    } catch (error) {
+      console.error('Deposit error:', error);
+      toast.error('Failed to initiate deposit. Please try again.');
+      setIsRedirecting(false);
+    }
+  };
 
   const location = useLocation();
   const currentPath = location.pathname;
@@ -49,14 +86,14 @@ const MainHeader: React.FC = () => {
       toast.error('Failed to log out.');
     }
   };
-  
+
   const displayEmail = isTelegram && telegramUser
     ? telegramUser.username ? `@${telegramUser.username}` : `User ID: ${telegramUser.id}`
     : user?.email || '';
 
-  const userAvatar = isTelegram && telegramUser?.photoUrl 
-    ? telegramUser.photoUrl 
-    : avatarUrl || '/placeholder.svg';
+  const userAvatar = isTelegram && telegramUser?.photoUrl
+    ? telegramUser.photoUrl
+    : avatarUrl;
 
   if (isLoading) {
     return null;
@@ -73,43 +110,39 @@ const MainHeader: React.FC = () => {
           </Link>
           {/* Hide sports categories and "How to play" on mobile */}
           <div className="hidden md:flex items-center space-x-6">
-          {sportsCategories.map((category) => (
-            <Link 
-              key={category} 
-              to={`/games?category=${category.toLowerCase().replace('.', '')}`}
-            >
-              <Button
-                variant="ghost"
-                className={cn(
-                  `font-medium text-sm p-0 h-auto`,
-                  isActive(category) 
-                    ? 'bg-vanta-neon-blue text-vanta-blue-dark' // Active state: neon blue background, dark blue text
-                    : 'text-[#B4B2C0] hover:bg-vanta-accent-dark-blue hover:text-white' // Inactive hover state: dark accent blue background, white text
-                )}
+            {sportsCategories.map((category) => (
+              <Link
+                key={category}
+                to={`/games?category=${category.toLowerCase().replace('.', '')}`}
               >
-                {category}
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    `font-medium text-sm p-0 h-auto`,
+                    isActive(category)
+                      ? 'bg-vanta-neon-blue text-vanta-blue-dark' // Active state: neon blue background, dark blue text
+                      : 'text-[#B4B2C0] hover:bg-vanta-accent-dark-blue hover:text-white' // Inactive hover state: dark accent blue background, white text
+                  )}
+                >
+                  {category}
+                </Button>
+              </Link>
+            ))}
+            <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
+              <AlertCircle size={18} className="text-[#00EEEE]" />
+              <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
+                How to play
               </Button>
             </Link>
-          ))}
-          <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
-            <AlertCircle size={18} className="text-[#00EEEE]" />
-            <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
-              How to play
-            </Button>
-          </Link>
-        </div>
+          </div>
         </div>
 
         {/* Right-aligned group: Search Bar + Auth/User Section */}
         <div className="flex items-center ml-auto space-x-4">
           {/* Hide Search Bar on mobile */}
-          <div className="hidden md:flex relative bg-[#053256] rounded-[14px] h-10 items-center w-64">
-            <Search className="absolute left-3 text-[#00EEEE]" size={18} />
-            <Input
-              type="text"
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 rounded-[14px] bg-transparent border-none text-white placeholder-white/70 focus:ring-0"
-            />
+          {/* Hide Search Bar on mobile */}
+          <div className="hidden md:flex">
+            <GameSearch />
           </div>
 
           {/* Auth/User Section - always visible, but adjust spacing for mobile */}
@@ -117,7 +150,7 @@ const MainHeader: React.FC = () => {
             {user ? (
               <>
                 {/* Deposit Button - always visible */}
-                <Link to="/wallet">
+                <Link to="#" onClick={handleDepositClick}>
                   <Button className="bg-vanta-neon-blue text-vanta-blue-dark rounded-[14px] px-4 py-2 font-bold text-sm hover:bg-vanta-neon-blue/80 h-auto"> {/* Adjusted padding for mobile */}
                     Deposit
                   </Button>
@@ -125,7 +158,7 @@ const MainHeader: React.FC = () => {
 
                 {/* Wallet Balance - always visible */}
                 <Link to="/wallet" className="flex items-center justify-center bg-[#01112D] border border-vanta-neon-blue rounded-[14px] px-3 py-2 cursor-pointer hover:bg-[#01112D]/80 transition-colors h-auto"> {/* Adjusted padding for mobile */}
-                  <span className="text-vanta-text-light text-sm font-semibold">₦ 0.00</span> {/* Reduced font size for mobile */}
+                  <span className="text-vanta-text-light text-sm font-semibold">$ {balance.toFixed(2)}</span> {/* Reduced font size for mobile */}
                 </Link>
 
                 {/* Avatar and Dropdown Trigger - always visible */}
@@ -133,8 +166,8 @@ const MainHeader: React.FC = () => {
                   <Link to="/users">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={userAvatar} alt={displayName} />
-                      <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-xs">
-                        {displayName.substring(0, 2).toUpperCase()}
+                      <AvatarFallback className="bg-[#016F8A] text-[#00EEEE] text-xs">
+                        {displayName ? displayName.substring(0, 2).toUpperCase() : 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Link>
@@ -155,11 +188,11 @@ const MainHeader: React.FC = () => {
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator className="bg-vanta-accent-dark-blue" />
                       <DropdownMenuGroup>
-                        <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
-                          <Link to="/wallet">
+                        <DropdownMenuItem onClick={handleDepositClick} className="cursor-pointer hover:bg-vanta-accent-dark-blue">
+                          <div className="flex items-center">
                             <ArrowDownToLine className="mr-2 h-4 w-4" />
                             <span>Deposit</span>
-                          </Link>
+                          </div>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild className="cursor-pointer hover:bg-vanta-accent-dark-blue">
                           <Link to="/wallet">
@@ -191,13 +224,13 @@ const MainHeader: React.FC = () => {
               </>
             ) : (
               <>
-                <Button 
+                <Button
                   onClick={() => navigate('/login')} // Navigate to login page
                   className="bg-transparent text-white border border-[#00EEEE] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/10 h-auto"
                 >
                   Login
                 </Button>
-                <Button 
+                <Button
                   onClick={() => navigate('/register')} // Navigate to register page
                   className="bg-[#00EEEE] text-[#081028] rounded-[14px] px-4 py-2 font-bold text-xs hover:bg-[#00EEEE]/80 h-auto"
                 >
@@ -208,6 +241,18 @@ const MainHeader: React.FC = () => {
           </div>
         </div>
       </div>
+      <PaymentRedirectModal isOpen={isRedirecting} />
+      <DepositOptionsModal
+        isOpen={isOptionsOpen}
+        onClose={() => setIsOptionsOpen(false)}
+        onSelectCrypto={handleCryptoSelect}
+        onSelectFiat={() => { }}
+      />
+      <DepositDetailsModal
+        isOpen={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+        onConfirm={handlePaymentProceed}
+      />
     </>
   );
 };

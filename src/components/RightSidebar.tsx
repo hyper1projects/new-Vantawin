@@ -12,7 +12,7 @@ import { placeBet } from '@/services/bettingService';
 import TeamLogo from './TeamLogo'; // Import the new TeamLogo component
 
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from 'lucide-react';
+import { ChevronRight, Loader2, X } from 'lucide-react';
 
 const RightSidebar = () => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
@@ -114,7 +114,7 @@ const RightSidebar = () => {
     }
   };
 
-  const quickAddAmountButtons = [100, 200, 500, 1000];
+  const quickAddAmountButtons = [10, 20, 50, 100];
 
   let currentSelectedOdd = 0;
   if (selectedOutcome) {
@@ -133,37 +133,148 @@ const RightSidebar = () => {
   }
   const potentialWinXP = (typeof predictionAmount === 'number' && predictionAmount > 0) ? (predictionAmount * currentSelectedOdd) : 0;
 
+  const renderSelectedOutcome = () => {
+    if (!selectedOutcome || !selectedGame) return null;
+
+    if (selectedGame.questions) {
+      for (const q of selectedGame.questions) {
+        if (!q.options) continue;
+        for (const o of q.options) {
+          const compositeKey = `${q.id}_${o.id}_${o.odds.toFixed(2)}`;
+          // Debug logs
+          if (compositeKey === selectedOutcome) {
+            console.log('Selected Outcome Match Found:', {
+              questionType: q.type,
+              questionText: q.text,
+              optionLabel: o.label,
+              team1: selectedGame.team1.name,
+              team2: selectedGame.team2.name
+            });
+          }
+          if (compositeKey === selectedOutcome) {
+            let label = o.label;
+            let side = '';
+            let teamName = '';
+
+            if (label === 'Home' || label === '1' || o.id === 'home' || o.id === 'team1') {
+              teamName = selectedGame.team1.name;
+              side = 'Home';
+            } else if (label === 'Away' || label === '2' || o.id === 'away' || o.id === 'team2') {
+              teamName = selectedGame.team2.name;
+              side = 'Away';
+            } else {
+              teamName = label; // Fallback or Draw
+            }
+
+            const isWinMatch = q.type === 'win_match' ||
+              (q.text && q.text.toLowerCase().includes('win')) ||
+              q.text === 'Full Time Result';
+
+            if (isWinMatch && side) {
+              return (
+                <div className="text-[#93B5EF] text-sm font-medium text-center px-4 py-2 border border-[#93B5EF]/20 rounded-md bg-[#016F8A]/20 flex items-center justify-center gap-2">
+                  <span>{teamName}</span>
+                </div>
+              );
+            } else {
+              return (
+                <div className="text-[#93B5EF] text-sm font-medium text-center px-4 py-2 border border-[#93B5EF]/20 rounded-md bg-[#016F8A]/20">
+                  {(q.text || q.type)}: {label}
+                </div>
+              );
+            }
+          }
+        }
+      }
+    }
+
+    // Fallback
+    // Fallback: Parse manually and force style
+    console.warn("Falling back to manual parse for:", selectedOutcome);
+
+    let sideGuess = '';
+    let teamNameGuess = '';
+
+    // Attempt to parse side from string if loop failed
+    const lower = selectedOutcome.toLowerCase();
+    if (lower.includes('home') || lower.includes('team1') || lower.includes('_1_')) {
+      sideGuess = 'HOME';
+      teamNameGuess = selectedGame?.team1?.name || 'Home';
+    } else if (lower.includes('away') || lower.includes('team2') || lower.includes('_2_')) {
+      sideGuess = 'AWAY';
+      teamNameGuess = selectedGame?.team2?.name || 'Away';
+    }
+
+    if (sideGuess && (lower.includes('win') || lower.includes('match') || selectedGame)) {
+      return (
+        <div className="bg-[#016F8A] rounded-md px-4 py-2 text-[#93B5EF] font-bold text-lg flex items-center justify-center gap-2 shadow-sm border border-[#93B5EF]/20">
+          <span>{teamNameGuess}</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="bg-[#016F8A] rounded-md px-4 py-2 text-[#93B5EF] font-bold text-lg flex items-center justify-center gap-2 shadow-sm border border-[#93B5EF]/20">
+        {selectedOutcome.split('_').slice(0, -1).join(' ').replace(/_/g, ' ')}
+      </div>
+    );
+  };
+
   const getSelectedOutcomeDisplayText = () => {
     if (!selectedOutcome || !selectedGame) return '';
 
+    // Robust finding by reconstructing keys
+    if (selectedGame.questions) {
+      for (const q of selectedGame.questions) {
+        if (!q.options) continue;
+        for (const o of q.options) {
+          const compositeKey = `${q.id}_${o.id}_${o.odds.toFixed(2)}`;
+          if (compositeKey === selectedOutcome) {
+            let label = o.label;
+            if (label === 'Home' || label === '1' || o.id === 'home' || o.id === 'team1') label = selectedGame.team1.name;
+            if (label === 'Away' || label === '2' || o.id === 'away' || o.id === 'team2') label = selectedGame.team2.name;
+
+            // Fallback for question text if missing
+            const questionText = q.text || q.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `${questionText}: ${label}`;
+          }
+        }
+      }
+    }
+
+    // Fallback if iteration fails (legacy keys?)
     const parts = selectedOutcome.split('_');
     if (parts.length >= 3) {
-      const choice = parts[parts.length - 2];
       const qId = parts.slice(0, parts.length - 2).join('_');
-      return `${qId.replace(/_/g, ' ')}: ${choice}`;
+      const optionId = parts[parts.length - 2];
+      return `${qId}: ${optionId}`;
     }
     return selectedOutcome;
   };
+
+  const isLow = typeof predictionAmount === 'number' && predictionAmount > 0 && predictionAmount < 50;
+  const isHigh = typeof predictionAmount === 'number' && predictionAmount > 200;
+  const hasError = isLow || isHigh;
 
   return (
     <div className="h-full w-full bg-vanta-blue-medium text-vanta-text-light flex flex-col z-40 font-outfit p-4">
       {selectedGame ? (
         <>
-          <div className="flex flex-col items-center mb-4">
-            <div className="flex items-center mb-1">
+          <div className="flex flex-col items-center mb-4 w-full">
+            <div className="flex items-center justify-center mb-1 w-full">
               <TeamLogo
                 teamName={selectedGame.team1.name}
                 alt={`${selectedGame.team1.name} Logo`}
-                className="w-16 h-16 object-contain mr-6"
+                className="w-12 h-12 object-contain mr-6"
               />
               <span className="text-base font-bold text-vanta-text-light">{selectedGame.team1.name.substring(0, 3).toUpperCase()} vs {selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
               <TeamLogo
                 teamName={selectedGame.team2.name}
                 alt={`${selectedGame.team2.name} Logo`}
-                className="w-16 h-16 object-contain ml-6"
+                className="w-12 h-12 object-contain ml-6"
               />
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-center w-full">
               <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team1.name.substring(0, 3).toUpperCase()}</span>
               <span className="bg-vanta-blue-dark text-vanta-text-dark text-[0.6rem] px-1.5 py-0.5 rounded-sm mx-1">{selectedGame.isLive ? 'Live' : 'FT'}</span>
               <span className="bg-[#017890] text-[#00EEEE] opacity-70 font-semibold text-[0.6rem] px-1.5 py-0.5 rounded-sm">{selectedGame.team2.name.substring(0, 3).toUpperCase()}</span>
@@ -173,32 +284,27 @@ const RightSidebar = () => {
           {!showSuccess ? (
             <div className="flex flex-col flex-grow">
               <div className="mb-4 text-center">
-                <h4 className="text-lg font-semibold text-vanta-neon-blue uppercase">{getSelectedOutcomeDisplayText()}</h4>
-                {currentSelectedOdd > 0 && (
-                  <span className="text-sm text-gray-400">Odds: {currentSelectedOdd.toFixed(2)}</span>
-                )}
+                {renderSelectedOutcome()}
               </div>
+              {/* Odds display removed */}
 
               <div className="mb-4">
                 <div className="flex flex-col mb-2">
                   <div className="flex justify-between items-center mb-1">
-                    <h4 className="text-sm font-semibold text-white">Amount</h4>
-                    <span className="text-xs text-vanta-neon-blue font-mono">
-                      Bal: {vantaBalance?.toLocaleString()}
-                    </span>
+                    <h4 className="text-sm font-semibold text-vanta-text-light">Amount</h4>
+                    <div className="flex items-center px-2 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-md shadow-sm">
+                      <img src="/images/vanta-coin.png" alt="Bal" className="w-4 h-4 mr-1.5 object-contain" />
+                      <span className="text-xs text-yellow-500 font-bold font-mono">
+                        {vantaBalance?.toLocaleString()}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-[#00EEEE]">Min: 50 | Max: 200</span>
-                    <button
-                      onClick={() => setPredictionAmount('')}
-                      className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer"
-                    >
-                      Clear
-                    </button>
+                    {/* Min/Max label removed */}
                   </div>
-                  <div className="flex items-center bg-[#0B1E3D] rounded-lg px-4 py-3 border border-[#1a3a5c]">
-                    <span className="text-[#00EEEE] text-2xl font-bold mr-2">₦</span>
+                  <div className={`flex items-center bg-[#0B1E3D] rounded-lg px-4 py-3 border transition-colors ${hasError ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'border-[#1a3a5c]'}`}>
+                    <img src="/images/vanta-coin.png" alt="Vanta" className="w-10 h-10 mr-2 object-contain" />
                     <Input
                       type="number"
                       value={predictionAmount}
@@ -208,26 +314,31 @@ const RightSidebar = () => {
                           setPredictionAmount('');
                         } else {
                           const newValue = Number(value);
-                          if (newValue > 200) {
-                            setPredictionAmount(200);
-                            toast.info("Maximum bet is 200 Vanta");
-                          } else {
-                            setPredictionAmount(newValue < 0 ? 0 : newValue);
-                          }
+                          setPredictionAmount(newValue);
                         }
                       }}
                       disabled={isSubmitting}
                       className="flex-1 text-right bg-transparent border-none text-[#00EEEE] text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="0"
+                      placeholder="50-200"
                     />
+                    {predictionAmount !== '' && (
+                      <button onClick={() => setPredictionAmount('')} className="ml-2 text-gray-500 hover:text-white transition-colors">
+                        <X size={16} />
+                      </button>
+                    )}
                   </div>
+                  {hasError && (
+                    <div className="text-red-500 text-xs mt-1 font-medium">
+                      {isLow ? "This amount is too low" : "This amount is too high"}
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-1 justify-end">
                   {quickAddAmountButtons.map((amount) => (
                     <Button
                       key={amount}
                       variant="outline"
-                      className="bg-vanta-blue-dark border-vanta-accent-dark-blue text-vanta-text-light text-[0.6rem] px-1.5 py-0.5 h-8 flex-1 min-w-[0]"
+                      className="bg-vanta-blue-dark border-vanta-accent-dark-blue text-vanta-text-light text-[0.6rem] px-1.5 py-0.5 h-8 flex-1 min-w-[0] hover:bg-[#016F8A] hover:border-[#016F8A] hover:text-white"
                       onClick={() => setPredictionAmount(prevAmount => {
                         const currentAmount = typeof prevAmount === 'number' ? prevAmount : 0;
                         return currentAmount + amount;
@@ -242,7 +353,7 @@ const RightSidebar = () => {
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-3">
                   <h4 className="text-base font-semibold">Points Multiplier</h4>
-                  <span className="text-vanta-neon-blue text-base font-bold">1.2x</span> {/* Placeholder value */}
+                  <span className="text-vanta-neon-blue text-base font-bold">{currentSelectedOdd.toFixed(2)}x</span>
                 </div>
               </div>
 
@@ -256,7 +367,7 @@ const RightSidebar = () => {
               <Button
                 className="w-full py-3 text-lg font-bold bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] rounded-[12px] mt-auto"
                 onClick={hasEntry ? handlePredict : () => navigate('/pools')}
-                disabled={isSubmitting || typeof predictionAmount !== 'number' || predictionAmount < 50 || predictionAmount > 200}
+                disabled={isSubmitting || (hasEntry && (typeof predictionAmount !== 'number' || predictionAmount < 50 || predictionAmount > 200))}
               >
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (hasEntry ? "Predict Now" : "Join Pool")}
               </Button>
@@ -268,7 +379,7 @@ const RightSidebar = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-white">Prediction Placed!</h3>
+              <h3 className="text-xl font-bold text-vanta-neon-blue">Prediction Placed!</h3>
               <p className="text-gray-400 text-sm mb-4">Good luck!</p>
 
               <div className="flex flex-col w-full px-8 gap-3 mt-4">
@@ -284,7 +395,7 @@ const RightSidebar = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full bg-transparent border-[#0B2C63] text-gray-300 hover:text-white hover:bg-[#0B2C63]/50 hover:border-[#0B2C63]"
+                  className="w-full bg-transparent border-[#0B2C63] text-gray-300 hover:text-vanta-neon-blue hover:bg-[#0B2C63]/50 hover:border-[#0B2C63]"
                   onClick={() => {
                     setShowSuccess(false);
                     setSelectedMatch(null, null);
@@ -301,8 +412,9 @@ const RightSidebar = () => {
           <p className="text-lg font-semibold mb-2">No game selected</p>
           <p className="text-sm">Click on any game to start predicting!</p>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

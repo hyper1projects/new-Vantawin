@@ -30,6 +30,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { MatchSelectionProvider } from './context/MatchSelectionContext';
 import { AuthContextProvider, useAuth } from './context/AuthContext';
 import PoolDetails from './pages/PoolDetails';
+import RewardsHub from './pages/RewardsHub';
 import { Navigate } from 'react-router-dom';
 import { MatchesProvider } from './context/MatchesContext';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -89,6 +90,7 @@ function App() {
                   <Route path="wallet" element={<Wallet />} />
                   <Route path="leaderboard" element={<Leaderboard />} />
                   <Route path="users" element={<Users />} />
+                  <Route path="rewards" element={<RewardsHub />} />
                   <Route path="users/insights" element={<Insights />} />
                   <Route path="users/edit-profile" element={<EditProfile />} />
                 </Route>

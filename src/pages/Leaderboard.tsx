@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import LeaderboardTable from '../components/LeaderboardTable';
@@ -12,21 +14,33 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        // 1. Get active pool ID
-        const { data: poolId, error: poolError } = await supabase.rpc('get_active_pool_id', { p_tier: 'free' }); // Default to free or pass tier? Assuming global for now
+        setIsLoading(true);
+        // 0. Get current user for highlighting
+        const { data: { user } } = await supabase.auth.getUser();
 
-        // Note: Leaderboard View should be queried by pool_id.
-        // If poolId is null, maybe show last week? Or empty?
-        // Let's query the latest pool if current is null?
+        // 1. Get active pool ID (Try to get ANY active pool first by passing null)
+        // If you specifically want a tier, pass it, otherwise null finds the soonest active one.
+        const { data: poolId, error: poolError } = await supabase.rpc('get_active_pool_id', { p_tier: null });
+
+        if (poolError) {
+          console.error("Error fetching active pool:", poolError);
+        }
 
         let targetPoolId = poolId;
+
+        // 2. Fallback: If no active pool, get the most recent pool (ended or upcoming)
         if (!targetPoolId) {
-          // Fallback: Get most recent pool
-          const { data: recentPool } = await supabase.from('pools').select('id').order('start_time', { ascending: false }).limit(1).single();
+          const { data: recentPool } = await supabase
+            .from('pools')
+            .select('id')
+            .order('start_time', { ascending: false })
+            .limit(1)
+            .single();
           targetPoolId = recentPool?.id;
         }
 
         if (targetPoolId) {
+          console.log("Fetching leaderboard for pool:", targetPoolId);
           const { data: entries, error } = await supabase
             .from('leaderboard_view')
             .select('*')
@@ -35,16 +49,20 @@ const Leaderboard = () => {
 
           if (error) throw error;
 
-          // Map to component format
-          const mappedEntries = entries.map((e: any) => ({
-            rank: e.rank,
-            playerName: e.username,
-            xp: e.total_xp,
-            winRate: e.win_rate,
-            prizeNaira: 0, // Prize is calc at end? Or we can estimate? For now 0.
-            isCurrentUser: false // We can check `auth.uid()` vs `e.user_id` if view had user_id
-          }));
-          setLeaderboardEntries(mappedEntries);
+          if (entries) {
+            // Map to component format with safety checks
+            const mappedEntries = entries.map((e: any) => ({
+              rank: e.rank || 0,
+              playerName: e.username || 'Anonymous',
+              xp: Number(e.total_xp) || 0,
+              winRate: Number(e.win_rate) || 0,
+              prizeNaira: 0, // Placeholder
+              isCurrentUser: user ? e.user_id === user.id : false
+            }));
+            setLeaderboardEntries(mappedEntries);
+          }
+        } else {
+            console.log("No pools found to display leaderboard.");
         }
 
       } catch (error) {
@@ -56,19 +74,18 @@ const Leaderboard = () => {
 
     fetchLeaderboard();
 
-    // Subscribe to realtime updates
+    // Subscribe to realtime updates for leaderboard changes
     const channel = supabase
       .channel('leaderboard_updates')
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to INSERT, UPDATE, DELETE
+          event: '*',
           schema: 'public',
           table: 'tournament_entries'
         },
-        (payload) => {
-          console.log('Leaderboard update received!', payload);
-          // Simple strategy: Just refetch the sorted view to get correct ranks
+        () => {
+          // Refetch on any change
           fetchLeaderboard();
         }
       )
@@ -99,8 +116,9 @@ const Leaderboard = () => {
           <LeaderboardTable entries={remainingPlayers} />
         </>
       ) : (
-        <div className="text-center text-gray-400 mt-10">
-          <p>No rankings yet for this week. Be the first to bet!</p>
+        <div className="text-center text-gray-400 mt-10 p-8 bg-[#011B47] rounded-[18px]">
+          <p className="text-lg">No rankings available yet.</p>
+          <p className="text-sm mt-2">Join a pool and place bets to appear on the leaderboard!</p>
         </div>
       )}
     </div>

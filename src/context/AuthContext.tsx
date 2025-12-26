@@ -32,12 +32,14 @@ interface AuthContextType {
   telegramUser: TelegramUser | null;
   telegramId: number | null;
   walletAddress: string | null;
+  balance: number;
+  shardsBalance: number;
   displayName: string;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
-  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null }>;
+  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number }>;
   updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; wallet_address?: string; avatar_url?: string; telegram_id?: number }) => Promise<{ error: any }>;
 }
 
@@ -59,6 +61,8 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [telegramId, setTelegramId] = useState<number | null>(null);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number>(0);
+  const [shardsBalance, setShardsBalance] = useState<number>(0);
   const [displayName, setDisplayName] = useState<string>('Guest');
   const navigate = useNavigate();
 
@@ -82,7 +86,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, []);
 
-  const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null } | null) => {
+  const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number; shardsBalance: number } | null) => {
     setUsername(profile?.username || null);
     setFirstName(profile?.firstName || null);
     setLastName(profile?.lastName || null);
@@ -92,32 +96,37 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setAvatarUrl(profile?.avatarUrl || null);
     setTelegramId(profile?.telegramId || null);
     setWalletAddress(profile?.walletAddress || null);
+    setBalance(profile?.balance || 0);
+    setShardsBalance(profile?.shardsBalance || 0);
 
     if (!isTelegram) {
       setDisplayName(profile?.username || `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim() || 'Guest');
     }
   };
 
-  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null }> => {
+  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number; shardsBalance: number }> => {
     const { data, error } = await supabase
       .from('users') // NOTE: Changed from 'profiles' to 'users' based on schema migration 20251220110000. IF profiles is alias, ok. But migration said 'users'.
-      .select('username, first_name, last_name, mobile_number, date_of_birth, gender, wallet_address, avatar_url, telegram_id')
+      .select('username, first_name, last_name, phone_number, date_of_birth, gender, wallet_address, avatar_url, telegram_id, real_money_balance, shards_balance')
       .eq('id', userId)
       .single();
 
     if (error && error.code !== 'PGRST116') { // Ignore 'PGRST116' (no rows found)
-      console.error('Error fetching user profile:', error);
+      console.error('Error fetching user profile:', JSON.stringify(error, null, 2));
     }
+    console.log('Fetched user profile data:', data); // DEBUG LOG
     return {
       username: data?.username || null,
       firstName: data?.first_name || null,
       lastName: data?.last_name || null,
-      mobileNumber: data?.mobile_number || null,
+      mobileNumber: data?.phone_number || null,
       dateOfBirth: data?.date_of_birth || null,
       gender: data?.gender || null,
       walletAddress: data?.wallet_address || null,
       avatarUrl: data?.avatar_url || null,
       telegramId: data?.telegram_id || null,
+      balance: data?.real_money_balance || 0,
+      shardsBalance: data?.shards_balance || 0,
     };
   };
 
@@ -239,6 +248,36 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, [initData, webApp]);
 
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('users-balance-update')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'users',
+          filter: `id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('Balance update received:', payload);
+          if (payload.new && typeof payload.new.real_money_balance === 'number') {
+            setBalance(payload.new.real_money_balance);
+          }
+          if (payload.new && typeof payload.new.shards_balance === 'number') {
+            setShardsBalance(payload.new.shards_balance);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const updateUserProfile = async (userId: string, updates: any) => {
     const { error } = await supabase.from('users').update(updates).eq('id', userId);
     if (!error) {
@@ -265,7 +304,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   const value = {
-    session, user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, avatarUrl, walletAddress,
+    session, user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, avatarUrl, walletAddress, balance, shardsBalance,
     isLoading, isTelegram, telegramUser, telegramId, displayName,
     signIn, signUp, signOut, resetPasswordForEmail, fetchUserProfile, updateUserProfile
   };

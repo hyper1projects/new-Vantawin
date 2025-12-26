@@ -43,12 +43,16 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
     }
   };
 
-  // Function to format prize pool into K's
+  // Function to format prize pool
   const formatPrizePool = (amount: number) => {
+    if (!amount) return '0';
     if (amount >= 1000000) {
       return `${(amount / 1000000).toFixed(1)}M`;
     }
-    return `${(amount / 1000).toFixed(0)}K`;
+    if (amount >= 1000) {
+      return `${(amount / 1000).toFixed(1)}K`; // Changed to 1 decimal for better precision
+    }
+    return amount.toString();
   };
 
   return (

@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
-import RewardsHistory from './RewardsHistory'; // Re-import the RewardsHistory component
+import RewardsHistory from './RewardsHistory';
+import TransactionList from './TransactionList';
 
 type MainTab = 'transactions' | 'rewards'; // Re-added 'rewards'
 type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'refunds';
@@ -39,36 +40,7 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
   const renderTabContent = () => {
     switch (activeMainTab) {
       case 'transactions':
-        return (
-          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full flex-grow flex flex-col">
-            <div className="flex space-x-6 mb-6 border-b border-gray-700 pb-4">
-              <Button variant="ghost" className={getTransactionFilterButtonClasses('all')} onClick={() => setActiveTransactionFilter('all')}>
-                All Transactions
-              </Button>
-              <Button variant="ghost" className={getTransactionFilterButtonClasses('deposits')} onClick={() => setActiveTransactionFilter('deposits')}>
-                Deposits
-              </Button>
-              <Button variant="ghost" className={getTransactionFilterButtonClasses('withdrawals')} onClick={() => setActiveTransactionFilter('withdrawals')}>
-                Withdrawals
-              </Button>
-              <Button variant="ghost" className={getTransactionFilterButtonClasses('refunds')} onClick={() => setActiveTransactionFilter('refunds')}>
-                Refunds
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-5 gap-4 text-sm font-semibold text-gray-400 mb-4">
-              <span>Time</span>
-              <span>Type</span>
-              <span>Amount</span>
-              <span>Status</span>
-              <span className="text-right">After Balance</span>
-            </div>
-
-            <div className="text-center text-gray-400 text-lg mt-12 flex-grow flex items-center justify-center">
-              Nothing to show yet
-            </div>
-          </div>
-        );
+        return <TransactionList />;
       case 'rewards': // Re-added rewards case
         return (
           <RewardsHistory />

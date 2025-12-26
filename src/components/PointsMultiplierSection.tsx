@@ -39,7 +39,7 @@ const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ class
             {gamesWithBestOdds.length > 0 ? (
               gamesWithBestOdds.map((game) => (
                 <div key={game.id} className="flex-shrink-0">
-                  <MatchCard game={game} />
+                  <MatchCard game={game} useAbbreviations={true} />
                 </div>
               ))
             ) : (

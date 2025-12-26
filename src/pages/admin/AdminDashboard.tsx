@@ -1,10 +1,11 @@
 import React from 'react';
 import AdminWithdrawals from './AdminWithdrawals';
-import AdminMatches from './AdminMatches'; // Import AdminMatches
-import AdminMetadata from './AdminMetadata'; // Import the new AdminMetadata component
+import AdminMatches from './AdminMatches';
+import AdminMetadata from './AdminMetadata';
+import AdminPools from './AdminPools';
 
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = React.useState<'operations' | 'withdrawals'>('operations');
+    const [activeTab, setActiveTab] = React.useState<'operations' | 'withdrawals' | 'pools'>('operations');
 
     return (
         <div className="min-h-screen bg-vanta-dark text-white p-6 pb-20 md:pb-6 ml-0 md:ml-64">
@@ -19,17 +20,26 @@ export default function AdminDashboard() {
                 <button
                     onClick={() => setActiveTab('operations')}
                     className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'operations'
-                            ? 'text-vanta-neon-blue border-b-2 border-vanta-neon-blue'
-                            : 'text-gray-400 hover:text-white'
+                        ? 'text-vanta-neon-blue border-b-2 border-vanta-neon-blue'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                 >
                     Operations
                 </button>
                 <button
+                    onClick={() => setActiveTab('pools')}
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'pools'
+                        ? 'text-vanta-neon-blue border-b-2 border-vanta-neon-blue'
+                        : 'text-gray-400 hover:text-white'
+                        }`}
+                >
+                    Pools
+                </button>
+                <button
                     onClick={() => setActiveTab('withdrawals')}
                     className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'withdrawals'
-                            ? 'text-vanta-neon-blue border-b-2 border-vanta-neon-blue'
-                            : 'text-gray-400 hover:text-white'
+                        ? 'text-vanta-neon-blue border-b-2 border-vanta-neon-blue'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                 >
                     Withdrawals
@@ -42,6 +52,7 @@ export default function AdminDashboard() {
                     <AdminMatches />
                 </div>
             )}
+            {activeTab === 'pools' && <AdminPools />}
             {activeTab === 'withdrawals' && <AdminWithdrawals />}
         </div>
     );
