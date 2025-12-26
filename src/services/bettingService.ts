@@ -9,7 +9,8 @@ export interface PlaceBetResponse {
 export const placeBet = async (
     matchId: string,
     poolId: string,
-    outcome: string,
+    questionId: string,
+    optionId: string,
     stake: number,
     odds: number,
     matchData: any
@@ -18,7 +19,8 @@ export const placeBet = async (
         body: {
             match_id: matchId,
             pool_id: poolId,
-            outcome,
+            question_id: questionId,
+            option_id: optionId,
             stake,
             odds,
             match_data: matchData

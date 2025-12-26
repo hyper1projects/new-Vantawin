@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, ImageDown, Save } from 'lucide-react';
 import { toast } from 'sonner';
+import TeamLogo from '@/components/TeamLogo';
 
 interface TeamMetadata {
     team_name: string;
@@ -32,7 +33,7 @@ const TeamRow = ({ team, onUpdate }: { team: TeamMetadata, onUpdate: () => void 
     return (
         <tr className="border-b border-white/10 hover:bg-white/5">
             <td className="p-3 flex items-center gap-3">
-                <img src={logoUrl || '/placeholder.svg'} alt={team.team_name} className="w-8 h-8 object-contain rounded-full bg-black/20 p-1" />
+                <TeamLogo teamName={team.team_name} alt={team.team_name} className="w-8 h-8 object-contain rounded-full bg-black/20 p-1" />
                 <div>
                     <div className="font-medium">{team.team_name}</div>
                     <div className="text-xs text-gray-400">{team.league_name || 'N/A'}</div>

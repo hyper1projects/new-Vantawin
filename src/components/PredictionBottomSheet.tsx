@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { useMatchSelection } from '../context/MatchSelectionContext';
 import { useIsMobile } from '../hooks/use-mobile'; // Import the useIsMobile hook
 import { useGatekeeper } from '../hooks/useGatekeeper';
@@ -27,7 +28,7 @@ interface PredictionBottomSheetProps {
 
 const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, onOpenChange }) => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
-  const { hasEntry, poolId, vantaBalance } = useGatekeeper();
+  const { hasEntry, poolId, vantaBalance, checkEntryStatus } = useGatekeeper();
   const [predictionAmount, setPredictionAmount] = useState<number | ''>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -64,26 +65,53 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
     setIsSubmitting(true);
 
     try {
-      // Parsing logic from BetSlip
-      const parts = selectedOutcome.split('_');
-      // Format assumption: questionId_optionId_odds
-      // BetSlip used parts[1] as outcomeId. 
-      // If selectedOutcome is "q_opt_odds", then parts[1] is optionId.
-      const outcomeId = parts[1];
-      const odds = parseFloat(parts[2]);
+      // Robust parsing by checking against actual game data
+      let questionId = '';
+      let optionId = '';
+      let odds = 0;
+      let outcomeLabel = '';
 
-      const outcomeLabel = outcomeId.includes('home') ? selectedGame.team1.name : (outcomeId.includes('away') ? selectedGame.team2.name : outcomeId);
+      if (selectedGame && selectedGame.questions) {
+        // Iterate through questions and options to find the matching composite ID
+        // Composite key format from Oddscard: `${question.id}_${option.id}_${option.odds.toFixed(2)}`
+        for (const q of selectedGame.questions) {
+          if (!q.options) continue;
+          for (const o of q.options) {
+            const compositeKey = `${q.id}_${o.id}_${o.odds.toFixed(2)}`;
+            if (compositeKey === selectedOutcome) {
+              questionId = q.id;
+              optionId = o.id;
+              odds = o.odds;
+              outcomeLabel = o.label;
+              break;
+            }
+          }
+          if (questionId) break;
+        }
+      }
+
+      // Fallback (Legacy)
+      if (!questionId) {
+        console.warn("Strict match failed for selectedOutcome:", selectedOutcome);
+        const parts = selectedOutcome.split('_');
+        odds = parseFloat(parts[parts.length - 1]);
+        optionId = parts.length > 2 ? parts[parts.length - 2] : parts[1];
+        questionId = parts.slice(0, parts.length - 2).join('_');
+        outcomeLabel = optionId;
+      }
 
       const result = await placeBet(
         selectedGame.id,
         poolId,
-        outcomeLabel,
+        questionId,
+        optionId,
         stake,
         odds,
         selectedGame
       );
 
       toast.success(`Bet Placed! New Balance: ${result.new_balance} Vanta`);
+      await checkEntryStatus(); // Refresh balance
       setPredictionAmount('');
       setShowSuccess(true);
       setTimeout(() => {
@@ -130,14 +158,39 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
 
         {selectedGame ? (
           showSuccess ? (
-            <div className="flex flex-col items-center justify-center p-10 space-y-4 h-64">
+            <div className="flex flex-col items-center justify-center p-10 space-y-4 h-auto min-h-[16rem]">
               <div className="h-20 w-20 bg-vanta-neon-green/20 rounded-full flex items-center justify-center">
                 <svg className="w-10 h-10 text-vanta-neon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-white">Bet Placed!</h3>
-              <p className="text-gray-400 text-sm">Good luck!</p>
+              <h3 className="text-xl font-bold text-white">Prediction Placed!</h3>
+              <p className="text-gray-400 text-sm mb-4">Good luck!</p>
+
+              <div className="flex flex-col w-full px-4 gap-3 mt-2">
+                <Button
+                  className="w-full bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] font-bold"
+                  onClick={() => {
+                    setShowSuccess(false);
+                    setSelectedMatch(null, null);
+                    onOpenChange(false);
+                    navigate('/users');
+                  }}
+                >
+                  View My Games
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent border-[#0B2C63] text-gray-300 hover:text-white hover:bg-[#0B2C63]/50 hover:border-[#0B2C63]"
+                  onClick={() => {
+                    setShowSuccess(false);
+                    setSelectedMatch(null, null);
+                    onOpenChange(false);
+                  }}
+                >
+                  Make Another Prediction
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col flex-grow p-4 overflow-y-auto">
@@ -200,9 +253,15 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
                           setPredictionAmount('');
                         } else {
                           const newValue = Number(value);
-                          setPredictionAmount(newValue < 0 ? 0 : newValue);
+                          if (newValue > 200) {
+                            setPredictionAmount(200);
+                            toast.info("Maximum bet is 200 Vanta");
+                          } else {
+                            setPredictionAmount(newValue < 0 ? 0 : newValue);
+                          }
                         }
                       }}
+                      disabled={isSubmitting}
                       className="flex-1 text-right bg-transparent border-none text-[#00EEEE] text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder="0"
                     />
@@ -243,7 +302,7 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
                   onClick={hasEntry ? handlePredict : () => {
                     window.location.href = '/pools';
                   }}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || typeof predictionAmount !== 'number' || predictionAmount < 50 || predictionAmount > 200}
                 >
                   {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (hasEntry ? "Predict Now" : "Join Pool")}
                 </Button>

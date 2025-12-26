@@ -16,7 +16,7 @@ import { Loader2 } from 'lucide-react';
 
 const RightSidebar = () => {
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
-  const { hasEntry, poolId, vantaBalance } = useGatekeeper();
+  const { hasEntry, poolId, vantaBalance, checkEntryStatus } = useGatekeeper();
   const navigate = useNavigate();
   const [predictionAmount, setPredictionAmount] = useState<number | ''>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,28 +55,57 @@ const RightSidebar = () => {
     setIsSubmitting(true);
 
     try {
-      const parts = selectedOutcome.split('_');
-      const outcomeId = parts[1];
-      const odds = parseFloat(parts[2]);
+      // Robust parsing by checking against actual game data
+      let questionId = '';
+      let optionId = '';
+      let odds = 0;
+      let outcomeLabel = '';
 
-      const outcomeLabel = outcomeId.includes('home') ? selectedGame.team1.name : (outcomeId.includes('away') ? selectedGame.team2.name : outcomeId);
+      if (selectedGame && selectedGame.questions) {
+        // Iterate through questions and options to find the matching composite ID
+        // Composite key format from Oddscard: `${question.id}_${option.id}_${option.odds.toFixed(2)}`
+        for (const q of selectedGame.questions) {
+          if (!q.options) continue;
+          for (const o of q.options) {
+            const compositeKey = `${q.id}_${o.id}_${o.odds.toFixed(2)}`;
+            if (compositeKey === selectedOutcome) {
+              questionId = q.id;
+              optionId = o.id;
+              odds = o.odds;
+              outcomeLabel = o.label;
+              break;
+            }
+          }
+          if (questionId) break;
+        }
+      }
+
+      // Fallback (Legacy) - if strict matching fails (rare)
+      if (!questionId) {
+        console.warn("Strict match failed for selectedOutcome:", selectedOutcome);
+        const parts = selectedOutcome.split('_');
+        odds = parseFloat(parts[parts.length - 1]);
+        // Best guess implementation
+        optionId = parts.length > 2 ? parts[parts.length - 2] : parts[1];
+        questionId = parts.slice(0, parts.length - 2).join('_');
+        outcomeLabel = optionId;
+      }
 
       const result = await placeBet(
         selectedGame.id,
         poolId,
-        outcomeLabel,
+        questionId,
+        optionId,
         stake,
         odds,
         selectedGame
       );
 
-      toast.success(`Bet Placed! New Balance: ${result.new_balance} Vanta`);
+      toast.success(`Prediction Placed! New Balance: ${result.new_balance} Vanta`);
+      await checkEntryStatus(); // Refresh balance
       setPredictionAmount('');
       setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-        setSelectedMatch(null, null);
-      }, 2000);
+      // Timeout removed to allow user choice via buttons
 
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred.");
@@ -179,9 +208,15 @@ const RightSidebar = () => {
                           setPredictionAmount('');
                         } else {
                           const newValue = Number(value);
-                          setPredictionAmount(newValue < 0 ? 0 : newValue);
+                          if (newValue > 200) {
+                            setPredictionAmount(200);
+                            toast.info("Maximum bet is 200 Vanta");
+                          } else {
+                            setPredictionAmount(newValue < 0 ? 0 : newValue);
+                          }
                         }
                       }}
+                      disabled={isSubmitting}
                       className="flex-1 text-right bg-transparent border-none text-[#00EEEE] text-2xl font-bold p-0 focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder="0"
                     />
@@ -221,7 +256,7 @@ const RightSidebar = () => {
               <Button
                 className="w-full py-3 text-lg font-bold bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] rounded-[12px] mt-auto"
                 onClick={hasEntry ? handlePredict : () => navigate('/pools')}
-                disabled={isSubmitting}
+                disabled={isSubmitting || typeof predictionAmount !== 'number' || predictionAmount < 50 || predictionAmount > 200}
               >
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (hasEntry ? "Predict Now" : "Join Pool")}
               </Button>
@@ -233,8 +268,31 @@ const RightSidebar = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-white">Bet Placed!</h3>
-              <p className="text-gray-400 text-sm">Good luck!</p>
+              <h3 className="text-xl font-bold text-white">Prediction Placed!</h3>
+              <p className="text-gray-400 text-sm mb-4">Good luck!</p>
+
+              <div className="flex flex-col w-full px-8 gap-3 mt-4">
+                <Button
+                  className="w-full bg-[#00EEEE] hover:bg-[#00CCCC] text-[#081028] font-bold"
+                  onClick={() => {
+                    setShowSuccess(false);
+                    setSelectedMatch(null, null);
+                    navigate('/users');
+                  }}
+                >
+                  View My Games
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent border-[#0B2C63] text-gray-300 hover:text-white hover:bg-[#0B2C63]/50 hover:border-[#0B2C63]"
+                  onClick={() => {
+                    setShowSuccess(false);
+                    setSelectedMatch(null, null);
+                  }}
+                >
+                  Make Another Prediction
+                </Button>
+              </div>
             </div>
           )}
         </>

@@ -12,6 +12,13 @@ const TeamLogo: React.FC<TeamLogoProps> = ({ teamName, className, alt }) => {
     // If it's not found, default to the placeholder image.
     const logoSrc = teamLogoMap[teamName] || '/placeholder.svg';
 
+    // Debugging logo lookup
+    if (!teamLogoMap[teamName]) {
+        console.warn(`[TeamLogo] Missing map entry for: "${teamName}". Using placeholder.`);
+    } else {
+        // console.log(`[TeamLogo] Found: "${teamName}" -> "${logoSrc}"`);
+    }
+
     return (
         <img
             src={logoSrc}
@@ -19,7 +26,10 @@ const TeamLogo: React.FC<TeamLogoProps> = ({ teamName, className, alt }) => {
             className={className}
             // As a final fallback, if the mapped image file is somehow missing,
             // this will prevent a broken image icon from showing.
-            onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg'; }}
+            onError={(e) => {
+                console.error(`[TeamLogo] Failed to load image: ${logoSrc}`);
+                (e.target as HTMLImageElement).src = '/placeholder.svg';
+            }}
         />
     );
 };

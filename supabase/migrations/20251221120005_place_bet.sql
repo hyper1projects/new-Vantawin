@@ -81,6 +81,9 @@ BEGIN
         'pending'
     );
 
+    -- Debug Log
+    RAISE NOTICE 'Bet placed for User % in Pool % with stake %', v_user_id, v_pool_id, p_stake;
+
     RETURN jsonb_build_object(
         'success', true, 
         'message', 'Bet placed successfully!',
