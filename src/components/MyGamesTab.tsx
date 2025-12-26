@@ -37,28 +37,43 @@ export default function MyGamesTab() {
     }, [user]);
 
     async function fetchBets() {
+        if (!user) {
+            setLoading(false);
+            return;
+        }
         try {
             setLoading(true);
 
-            // RLS on the 'bets' table automatically filters for the current user,
-            // so we can query it directly without fetching entry IDs first.
+            // Step 1: Get all tournament entry IDs for the current user
+            const { data: entriesData, error: entriesError } = await supabase
+                .from('tournament_entries')
+                .select('id')
+                .eq('user_id', user.id);
+
+            if (entriesError) throw entriesError;
+
+            if (!entriesData || entriesData.length === 0) {
+                setBets([]);
+                setLoading(false);
+                return;
+            }
+
+            const entryIds = entriesData.map(entry => entry.id);
+
+            // Step 2: Fetch bets associated with those entry IDs
             const { data: betsData, error: betsError } = await supabase
                 .from('bets')
-                .select(`
-                    *,
-                    match:matches(*)
-                `)
+                .select('*, match:matches(*)')
+                .in('entry_id', entryIds)
                 .order('created_at', { ascending: false });
 
             if (betsError) throw betsError;
 
-            if (betsData) {
-                setBets(betsData as any);
-            } else {
-                setBets([]);
-            }
+            setBets(betsData || []);
+
         } catch (err) {
             console.error('Error fetching bets:', err);
+            setBets([]); // Clear bets on error
         } finally {
             setLoading(false);
         }
