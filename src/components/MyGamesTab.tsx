@@ -43,37 +43,15 @@ export default function MyGamesTab() {
         }
         try {
             setLoading(true);
+            const { data, error } = await supabase.functions.invoke('get-my-bets');
 
-            // Step 1: Get all tournament entry IDs for the current user
-            const { data: entriesData, error: entriesError } = await supabase
-                .from('tournament_entries')
-                .select('id')
-                .eq('user_id', user.id);
+            if (error) throw error;
 
-            if (entriesError) throw entriesError;
-
-            if (!entriesData || entriesData.length === 0) {
-                setBets([]);
-                setLoading(false);
-                return;
-            }
-
-            const entryIds = entriesData.map(entry => entry.id);
-
-            // Step 2: Fetch bets associated with those entry IDs
-            const { data: betsData, error: betsError } = await supabase
-                .from('bets')
-                .select('*, match:matches(*)')
-                .in('entry_id', entryIds)
-                .order('created_at', { ascending: false });
-
-            if (betsError) throw betsError;
-
-            setBets(betsData || []);
+            setBets(data || []);
 
         } catch (err) {
-            console.error('Error fetching bets:', err);
-            setBets([]); // Clear bets on error
+            console.error('Error fetching bets via function:', err);
+            setBets([]);
         } finally {
             setLoading(false);
         }
