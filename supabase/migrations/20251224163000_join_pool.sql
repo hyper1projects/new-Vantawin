@@ -67,6 +67,10 @@ BEGIN
     UPDATE public.users
     SET real_money_balance = real_money_balance - v_pool_fee
     WHERE id = p_user_id;
+
+    -- Log Transaction
+    INSERT INTO public.transactions (user_id, type, amount, description, reference_id)
+    VALUES (p_user_id, 'entry_fee', -v_pool_fee, 'Joined Pool: ' || p_pool_id, p_pool_id);
     
     -- Create Entry
     INSERT INTO public.tournament_entries (user_id, pool_id, vanta_balance)

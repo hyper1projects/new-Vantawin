@@ -98,13 +98,20 @@ BEGIN
              );
         END LOOP;
 
-        -- Update XP Manual Sync
-        UPDATE public.tournament_entries
-        SET total_xp = (
-            SELECT COALESCE(SUM(earned_xp), 0)
+        -- Update XP and Stats Manual Sync
+        WITH stats AS (
+            SELECT 
+                COALESCE(SUM(earned_xp), 0) as xp,
+                COUNT(*) as bets,
+                COUNT(*) FILTER (WHERE status = 'win') as wins
             FROM public.bets
             WHERE entry_id = v_entry_id
         )
+        UPDATE public.tournament_entries
+        SET 
+            total_xp = (SELECT xp FROM stats),
+            total_bets = (SELECT bets FROM stats),
+            total_wins = (SELECT wins FROM stats)
         WHERE id = v_entry_id;
 
     END LOOP;

@@ -34,12 +34,15 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
   const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
 
-  // Reset prediction amount when a new game is selected or drawer opens/closes
+  // Reset prediction amount and refresh entry status when drawer opens
   useEffect(() => {
+    if (isOpen) {
+      checkEntryStatus(); // Refresh status to ensure we know if user joined a pool
+    }
     if (!isOpen || !selectedGame) {
       setPredictionAmount('');
     }
-  }, [selectedGame, isOpen]);
+  }, [selectedGame, isOpen, checkEntryStatus]);
 
   const handlePredict = async () => {
     if (!selectedGame) {
@@ -300,7 +303,6 @@ const PredictionBottomSheet: React.FC<PredictionBottomSheetProps> = ({ isOpen, o
                 </div>
               </div>
 
-              {/* Selected Outcome Display */}
               {/* Selected Outcome Display */}
               <div className="mb-4 text-center">
                 {renderSelectedOutcome()}

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import CollapsibleSection from './CollapsibleSection';
 import { useNavigate } from 'react-router-dom';
 import { useMatchesContext } from '../context/MatchesContext'; // Import useMatchesContext
+import { GameCardSkeleton } from './skeletons/GameCardSkeleton';
 
 const LaLigaSection: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const LaLigaSection: React.FC = () => {
       <CollapsibleSection title="La Liga Matches" count={laLigaGames.length} defaultOpen={true}>
         <div className="w-full flex flex-col space-y-4 px-4 pt-4">
           {loading ? (
-            <p className="text-vanta-text-light text-center py-8">Loading La Liga games...</p>
+            [...Array(3)].map((_, i) => <GameCardSkeleton key={i} />)
           ) : laLigaGames.length > 0 ? (
             laLigaGames.map((game) => (
               <Oddscard key={game.id} game={game} />

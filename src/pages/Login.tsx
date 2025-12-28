@@ -9,8 +9,9 @@ import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState(''); // Changed to email for Supabase signInWithPassword
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState(false);
   const navigate = useNavigate();
   const { signIn } = useAuth(); // Use signIn from AuthContext
 
@@ -22,13 +23,25 @@ const Login: React.FC = () => {
       return;
     }
 
+    // Email format validation
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError(true);
+      return;
+    }
+
     const { error } = await signIn(email, password);
 
     if (!error) {
       toast.success('Login successful! Redirecting to home...');
-      navigate('/'); // Redirect to home after successful login
+      navigate('/');
     } else {
-      toast.error(error.message || 'Login failed. Please check your credentials.');
+      console.error("Login error:", error);
+      // Determine error message
+      if (error.message.includes("Invalid login credentials")) {
+        toast.error("Wrong password or user doesn't exist. Please sign up.");
+      } else {
+        toast.error(error.message || 'Login failed. Please check your credentials.');
+      }
     }
   };
 
@@ -43,13 +56,17 @@ const Login: React.FC = () => {
             </Label>
             <Input
               id="email"
-              type="email" // Changed type to email
+              type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError(false);
+              }}
+              className={`bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12 ${emailError ? "border-red-500" : ""}`}
               required
             />
+            {emailError && <p className="text-red-500 text-sm mt-1">Invalid email format</p>}
           </div>
           <div>
             <Label htmlFor="password" className="text-vanta-text-light text-base font-semibold mb-2 block">

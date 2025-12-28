@@ -120,17 +120,25 @@ const MainHeader: React.FC = () => {
                   className={cn(
                     `font-medium text-sm p-0 h-auto`,
                     isActive(category)
-                      ? 'bg-vanta-neon-blue text-vanta-blue-dark' // Active state: neon blue background, dark blue text
-                      : 'text-[#B4B2C0] hover:bg-vanta-accent-dark-blue hover:text-white' // Inactive hover state: dark accent blue background, white text
+                      ? 'bg-transparent text-[#00EEEE] hover:bg-transparent hover:text-[#00EEEE]/70 transition-colors'
+                      : 'text-[#B4B2C0] hover:bg-transparent hover:text-[#03B3C2] transition-colors'
                   )}
                 >
                   {category}
                 </Button>
               </Link>
             ))}
-            <Link to="/how-it-works" className="flex items-center space-x-1 ml-4">
-              <AlertCircle size={18} className="text-[#00EEEE]" />
-              <Button variant="ghost" className="text-[#02A7B4] font-medium text-sm hover:bg-transparent p-0 h-auto">
+            <Link to="/how-it-works" className="flex items-center space-x-1 ml-4 group">
+              <AlertCircle size={18} className={cn("transition-colors", currentPath === '/how-it-works' ? "text-[#00EEEE] group-hover:text-[#00EEEE]/70" : "text-[#B4B2C0] group-hover:text-[#03B3C2]")} />
+              <Button
+                variant="ghost"
+                className={cn(
+                  "font-medium text-sm p-0 h-auto transition-colors",
+                  currentPath === '/how-it-works'
+                    ? "bg-transparent text-[#00EEEE] hover:bg-transparent group-hover:text-[#00EEEE]/70"
+                    : "text-[#B4B2C0] hover:bg-transparent group-hover:text-[#03B3C2]"
+                )}
+              >
                 How to play
               </Button>
             </Link>
@@ -173,7 +181,7 @@ const MainHeader: React.FC = () => {
                   </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-white">
+                      <Button variant="ghost" className="h-8 w-8 rounded-full p-0 flex items-center justify-center text-gray-400 hover:text-[#016F8A] hover:bg-transparent transition-colors">
                         <ChevronDown size={14} />
                       </Button>
                     </DropdownMenuTrigger>
@@ -240,7 +248,7 @@ const MainHeader: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
+      </div >
       <PaymentRedirectModal isOpen={isRedirecting} />
       <DepositOptionsModal
         isOpen={isOptionsOpen}

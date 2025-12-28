@@ -27,12 +27,14 @@ Deno.serve(async (req) => {
         )
 
         // 3. Parse Request
-        const { match_id, question_id, option_id, stake, odds } = await req.json();
+        const { pool_id, match_id, question_id, option_id, stake, odds } = await req.json();
 
         // 4. Call Database RPC
         // The RPC 'place_bet' is SECURITY DEFINER, so it has permissions to write to bets/entries
         // but it uses auth.uid() to verify the user identity.
+        // [UPDATED] Pass the pool_id from the frontend to ensure we bet in the correct pool context.
         const { data, error } = await supabase.rpc('place_bet', {
+            p_pool_id: pool_id,
             p_match_id: match_id,
             p_question_id: question_id,
             p_option_id: option_id,

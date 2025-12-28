@@ -78,6 +78,7 @@ function App() {
                 <Route path="games/:gameId" element={<GameDetails />} />
                 <Route path="pools" element={<Pools />} />
                 <Route path="pools/:poolId" element={<PoolDetails />} />
+                <Route path="leaderboard" element={<Leaderboard />} />
                 <Route path="terms-of-use" element={<Terms />} />
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="help" element={<Help />} />
@@ -88,7 +89,7 @@ function App() {
                 {/* Protected routes for regular users */}
                 <Route element={<ProtectedRoute />}>
                   <Route path="wallet" element={<Wallet />} />
-                  <Route path="leaderboard" element={<Leaderboard />} />
+
                   <Route path="users" element={<Users />} />
                   <Route path="rewards" element={<RewardsHub />} />
                   <Route path="users/insights" element={<Insights />} />

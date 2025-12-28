@@ -9,15 +9,19 @@ import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 
 const SignUp: React.FC = () => {
-  const [email, setEmail] = useState(''); // Changed from phoneNumber to email
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [emailError, setEmailError] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
   const { signUp } = useAuth(); // Use signUp from AuthContext
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitted(true);
+
     // Basic validation
     if (!email || !username || !password || !confirmPassword) {
       toast.error('Please fill in all fields.');
@@ -25,13 +29,22 @@ const SignUp: React.FC = () => {
     }
     // Simple email format validation
     if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError(true); // Set error state
       toast.error('Please enter a valid email address.');
       return;
     }
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters long.');
+
+    // Strict password validation
+    const hasMinLength = password.length > 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasSpecialChar) {
+      toast.error('Password does not meet requirements.');
       return;
     }
+
     if (password !== confirmPassword) {
       toast.error('Passwords do not match.');
       return;
@@ -50,7 +63,12 @@ const SignUp: React.FC = () => {
         navigate('/login');
       }
     } else {
-      toast.error(error.message || 'Sign up failed. Please try again.');
+      console.error("Sign Up Error:", error);
+      if (error.message.includes("User already registered") || error.message.includes("violates unique constraint")) {
+        toast.error("User already exists. Please login instead.");
+      } else {
+        toast.error(error.message || 'Sign up failed. Please try again.');
+      }
     }
   };
 
@@ -60,16 +78,22 @@ const SignUp: React.FC = () => {
         <h1 className="text-3xl font-bold text-center text-vanta-neon-blue mb-6">Sign Up</h1>
         <form onSubmit={handleSignUp} className="space-y-6">
           <div>
-            <Label htmlFor="email" className="text-vanta-text-light text-base font-semibold mb-2 block">Email</Label> {/* Changed label */}
+            <Label htmlFor="email" className="text-vanta-text-light text-base font-semibold mb-2 block">Email</Label>
             <Input
               id="email"
-              type="email" // Changed type to email
-              placeholder="e.g., user@example.com" // Updated placeholder
+              type="email"
+              placeholder="e.g., user@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12"
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError(false); // Clear error on change
+              }}
+              className={`bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12 ${emailError ? 'border-red-500 focus:border-red-500' : ''}`}
               required
             />
+            {emailError && (
+              <p className="text-red-500 text-sm mt-1">Invalid email address format</p>
+            )}
           </div>
           <div>
             <Label htmlFor="username" className="text-vanta-text-light text-base font-semibold mb-2 block">Username</Label>
@@ -94,6 +118,21 @@ const SignUp: React.FC = () => {
               className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus:ring-vanta-neon-blue focus:border-vanta-neon-blue rounded-[14px] h-12"
               required
             />
+            {/* Password Validation Rules */}
+            <div className="mt-2 space-y-1 text-sm">
+              <p className={password.length > 8 ? "text-green-500" : (isSubmitted ? "text-red-500" : "text-gray-500")}>
+                • More than 8 characters
+              </p>
+              <p className={/[A-Z]/.test(password) ? "text-green-500" : (isSubmitted ? "text-red-500" : "text-gray-500")}>
+                • At least one uppercase letter
+              </p>
+              <p className={/[a-z]/.test(password) ? "text-green-500" : (isSubmitted ? "text-red-500" : "text-gray-500")}>
+                • At least one lowercase letter
+              </p>
+              <p className={/[!@#$%^&*(),.?":{}|<>]/.test(password) ? "text-green-500" : (isSubmitted ? "text-red-500" : "text-gray-500")}>
+                • At least one special character
+              </p>
+            </div>
           </div>
           <div>
             <Label htmlFor="confirmPassword" className="text-vanta-text-light text-base font-semibold mb-2 block">Confirm Password</Label>

@@ -12,6 +12,7 @@ export interface Pool {
   entryFee: number;
   participants: number; // Count from pool_participants
   maxParticipants?: number; // DB: max_participants
+  guaranteedPot?: number; // DB: guaranteed_pot
   minParticipants?: number; // DB: min_participants
   startTime: string; // ISO
   endTime: string; // ISO

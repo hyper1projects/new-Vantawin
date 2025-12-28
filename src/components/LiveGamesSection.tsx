@@ -6,6 +6,7 @@ import CollapsibleSection from "./CollapsibleSection";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useMatchesContext } from "../context/MatchesContext"; // Import useMatchesContext
+import { GameCardSkeleton } from "./skeletons/GameCardSkeleton";
 
 const LiveGamesSection: React.FC = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const LiveGamesSection: React.FC = () => {
       <CollapsibleSection title="Live Predictions" count={liveGamesCount} defaultOpen={true}>
         <div className="w-full flex flex-col space-y-4 px-4 pt-4">
 
-          {loading && <p className="text-center text-vanta-text-light">Loading...</p>}
+          {loading && [...Array(3)].map((_, i) => <GameCardSkeleton key={i} />)}
 
           {!loading && liveGames.length === 0 && (
             <p className="text-center text-vanta-text-light">No live games available.</p>

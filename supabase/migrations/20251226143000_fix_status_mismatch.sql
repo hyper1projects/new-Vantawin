@@ -2,6 +2,7 @@
 -- Standardizing on 'win' and 'loss' to match the bets table constraint.
 
 -- 1. Update Leaderboard View
+DROP VIEW IF EXISTS public.leaderboard_view CASCADE;
 CREATE OR REPLACE VIEW public.leaderboard_view AS
 WITH bet_stats AS (
     SELECT 

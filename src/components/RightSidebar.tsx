@@ -28,8 +28,11 @@ const RightSidebar = () => {
   }
 
   useEffect(() => {
+    if (selectedGame) {
+      checkEntryStatus(); // Refresh status when a game is selected to ensure pool info is current
+    }
     setPredictionAmount('');
-  }, [selectedGame]);
+  }, [selectedGame, checkEntryStatus]);
 
   const handlePredict = async () => {
     if (!selectedGame) {
@@ -218,38 +221,6 @@ const RightSidebar = () => {
         {selectedOutcome.split('_').slice(0, -1).join(' ').replace(/_/g, ' ')}
       </div>
     );
-  };
-
-  const getSelectedOutcomeDisplayText = () => {
-    if (!selectedOutcome || !selectedGame) return '';
-
-    // Robust finding by reconstructing keys
-    if (selectedGame.questions) {
-      for (const q of selectedGame.questions) {
-        if (!q.options) continue;
-        for (const o of q.options) {
-          const compositeKey = `${q.id}_${o.id}_${o.odds.toFixed(2)}`;
-          if (compositeKey === selectedOutcome) {
-            let label = o.label;
-            if (label === 'Home' || label === '1' || o.id === 'home' || o.id === 'team1') label = selectedGame.team1.name;
-            if (label === 'Away' || label === '2' || o.id === 'away' || o.id === 'team2') label = selectedGame.team2.name;
-
-            // Fallback for question text if missing
-            const questionText = q.text || q.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            return `${questionText}: ${label}`;
-          }
-        }
-      }
-    }
-
-    // Fallback if iteration fails (legacy keys?)
-    const parts = selectedOutcome.split('_');
-    if (parts.length >= 3) {
-      const qId = parts.slice(0, parts.length - 2).join('_');
-      const optionId = parts[parts.length - 2];
-      return `${qId}: ${optionId}`;
-    }
-    return selectedOutcome;
   };
 
   const isLow = typeof predictionAmount === 'number' && predictionAmount > 0 && predictionAmount < 50;

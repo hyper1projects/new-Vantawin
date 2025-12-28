@@ -15,17 +15,32 @@ export const placeBet = async (
     odds: number,
     matchData: any
 ): Promise<PlaceBetResponse> => {
+    const payload = {
+        match_id: matchId,
+        pool_id: poolId,
+        question_id: questionId,
+        option_id: optionId,
+        stake,
+        odds
+        // match_data removed to prevent circular reference errors
+    };
+
+    console.log('💰 Placing Bet Payload:', payload);
+
     const { data, error } = await supabase.functions.invoke('place-bet', {
-        body: {
-            match_id: matchId,
-            pool_id: poolId,
-            question_id: questionId,
-            option_id: optionId,
-            stake,
-            odds,
-            match_data: matchData
-        }
+        body: payload
     });
+
+    if (error) {
+        console.error('❌ Bet Placement Error (Edge Function):', error);
+        // Try to parse if it's a JSON response buried in the error
+        if (error instanceof Error) {
+            console.error('Error Message:', error.message);
+        }
+        throw new Error(error.message || "Failed to place bet.");
+    }
+
+    console.log('✅ Bet Placement Success:', data);
 
     if (error) throw new Error(error.message);
     return data;

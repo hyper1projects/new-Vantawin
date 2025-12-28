@@ -8,6 +8,7 @@ import PaymentRedirectModal from './PaymentRedirectModal';
 import DepositOptionsModal from './DepositOptionsModal';
 import DepositDetailsModal from './DepositDetailsModal';
 import { useAuth } from '@/context/AuthContext';
+import { WalletBalanceSkeleton } from './skeletons/WalletBalanceSkeleton';
 
 interface WalletOverviewCardProps {
   showViewWallet?: boolean;
@@ -19,7 +20,7 @@ const WalletOverviewCard: React.FC<WalletOverviewCardProps> = ({ showViewWallet 
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const navigate = useNavigate();
-  const { balance } = useAuth();
+  const { balance, isLoading } = useAuth();
   console.log('WalletOverviewCard balance:', balance); // DEBUG LOG
   const currentBalance = balance;
 
@@ -91,8 +92,14 @@ const WalletOverviewCard: React.FC<WalletOverviewCardProps> = ({ showViewWallet 
 
       {/* Balance Display Section */}
       <div className="mb-12 text-left">
-        <p className="text-5xl font-bold text-white mb-2">{formattedBalance}</p>
-        <p className="text-base text-gray-400">Today</p>
+        {isLoading ? (
+          <WalletBalanceSkeleton />
+        ) : (
+          <>
+            <p className="text-5xl font-bold text-white mb-2">{formattedBalance}</p>
+            <p className="text-base text-gray-400">Today</p>
+          </>
+        )}
       </div>
 
       {/* Action Buttons Section */}

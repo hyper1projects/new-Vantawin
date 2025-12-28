@@ -23,33 +23,27 @@ Deno.serve(async (req) => {
         const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
         if (userError || !user) throw new Error('Unauthorized')
 
-        // 1. Get Active Pool
-        const { data: poolId, error: poolError } = await supabaseClient
-            .rpc('get_active_pool_id')
+        // 1. Get User's Active Entry
+        // [UPDATED] Check specifically for THIS user's entry, not just a global pool.
+        const { data: entryData, error: rpcError } = await supabaseClient
+            .rpc('get_user_active_entry', { p_user_id: user.id })
 
-        if (poolError) throw poolError
-        if (!poolId) {
+        if (rpcError) throw rpcError
+
+        if (!entryData) {
+            // If user has no entry, we might still want to know if there is a global pool to join?
+            // For the gatekeeper, false is enough.
             return new Response(
-                JSON.stringify({ has_entry: false, message: 'No active pool found' }),
+                JSON.stringify({ has_entry: false, message: 'No active entry found' }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
-        // 2. Check for Entry
-        const { data: entry, error: entryError } = await supabaseClient
-            .from('tournament_entries')
-            .select('vanta_balance')
-            .eq('user_id', user.id)
-            .eq('pool_id', poolId)
-            .maybeSingle()
-
-        if (entryError) throw entryError
-
         return new Response(
             JSON.stringify({
-                has_entry: !!entry,
-                vanta_balance: entry?.vanta_balance || 0,
-                pool_id: poolId
+                has_entry: true,
+                vanta_balance: entryData.vanta_balance || 0,
+                pool_id: entryData.pool_id
             }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )

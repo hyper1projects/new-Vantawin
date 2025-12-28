@@ -6,7 +6,7 @@ import { useTransactions, Transaction } from '@/hooks/useTransactions';
 import { format } from 'date-fns';
 import { Loader2, ArrowUpRight, ArrowDownLeft, Trophy } from 'lucide-react';
 
-type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'winnings';
+type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'payouts' | 'fees';
 
 export default function TransactionList() {
     const [filter, setFilter] = useState<TransactionFilter>('all');
@@ -15,7 +15,7 @@ export default function TransactionList() {
     const getFilterButtonClasses = (f: TransactionFilter) => {
         const isActive = filter === f;
         return cn(
-            "relative text-base font-semibold pb-2 transition-colors",
+            "relative text-base font-semibold pb-2 transition-colors whitespace-nowrap",
             isActive
                 ? "text-vanta-neon-blue after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-vanta-neon-blue"
                 : "text-gray-400 hover:text-white"
@@ -26,7 +26,8 @@ export default function TransactionList() {
         if (filter === 'all') return true;
         if (filter === 'deposits') return t.type === 'deposit';
         if (filter === 'withdrawals') return t.type === 'withdrawal';
-        if (filter === 'winnings') return t.type === 'winning';
+        if (filter === 'payouts') return t.type === 'payout'; // Was 'winnings'
+        if (filter === 'fees') return t.type === 'entry_fee';
         return true;
     });
 
@@ -48,7 +49,8 @@ export default function TransactionList() {
         switch (type) {
             case 'deposit': return <ArrowDownLeft size={16} className="text-emerald-400" />;
             case 'withdrawal': return <ArrowUpRight size={16} className="text-red-400" />;
-            case 'winning': return <Trophy size={16} className="text-yellow-400" />;
+            case 'payout': return <Trophy size={16} className="text-yellow-400" />;
+            case 'entry_fee': return <ArrowUpRight size={16} className="text-blue-400" />;
             default: return null;
         }
     };
@@ -59,7 +61,7 @@ export default function TransactionList() {
 
     return (
         <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full flex-grow flex flex-col">
-            <div className="flex space-x-6 mb-6 border-b border-gray-700 pb-4 overflow-x-auto">
+            <div className="flex space-x-6 mb-6 border-b border-gray-700 pb-4 overflow-x-auto scrollbar-hide">
                 <Button variant="ghost" className={getFilterButtonClasses('all')} onClick={() => setFilter('all')}>
                     All
                 </Button>
@@ -69,8 +71,11 @@ export default function TransactionList() {
                 <Button variant="ghost" className={getFilterButtonClasses('withdrawals')} onClick={() => setFilter('withdrawals')}>
                     Withdrawals
                 </Button>
-                <Button variant="ghost" className={getFilterButtonClasses('winnings')} onClick={() => setFilter('winnings')}>
+                <Button variant="ghost" className={getFilterButtonClasses('payouts')} onClick={() => setFilter('payouts')}>
                     Winnings
+                </Button>
+                <Button variant="ghost" className={getFilterButtonClasses('fees')} onClick={() => setFilter('fees')}>
+                    Entry Fees
                 </Button>
             </div>
 
@@ -89,17 +94,17 @@ export default function TransactionList() {
                     filteredTransactions.map((tx) => (
                         <div key={tx.id} className="grid grid-cols-5 gap-4 items-center py-3 px-2 hover:bg-white/5 rounded-lg transition-colors border-b border-gray-800/50 last:border-0">
                             <div className="text-sm text-gray-300">
-                                {format(new Date(tx.date), 'MMM d, HH:mm')}
+                                {format(new Date(tx.created_at), 'MMM d, HH:mm')}
                             </div>
                             <div className="flex items-center gap-2 capitalize text-sm font-medium">
                                 {getIcon(tx.type)}
-                                {tx.type}
+                                {tx.type.replace('_', ' ')}
                             </div>
                             <div className="text-sm text-gray-400 truncate" title={tx.description}>
                                 {tx.description || '-'}
                             </div>
-                            <div className={`font-mono font-medium ${tx.type === 'withdrawal' ? 'text-red-400' : 'text-emerald-400'}`}>
-                                {tx.type === 'withdrawal' ? '-' : '+'}$ {Math.abs(tx.amount).toFixed(2)}
+                            <div className={`font-mono font-medium ${['withdrawal', 'entry_fee'].includes(tx.type) ? 'text-red-400' : 'text-emerald-400'}`}>
+                                {['withdrawal', 'entry_fee'].includes(tx.type) ? '-' : '+'}$ {Math.abs(tx.amount).toFixed(2)}
                             </div>
                             <div className={`text-right text-xs uppercase font-bold tracking-wider ${getStatusColor(tx.status)}`}>
                                 {tx.status}

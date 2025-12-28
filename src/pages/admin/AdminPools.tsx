@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminPoolList from './AdminPoolList';
+import AdminPoolConsolidation from './AdminPoolConsolidation';
 
 export default function AdminPools() {
     const [loading, setLoading] = useState(false);
@@ -95,6 +96,7 @@ export default function AdminPools() {
                 <TabsList className="bg-white/5 border-white/10">
                     <TabsTrigger value="create">Create Pool</TabsTrigger>
                     <TabsTrigger value="manage">Manage Pools</TabsTrigger>
+                    <TabsTrigger value="tools">Tools</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="create">
@@ -274,6 +276,10 @@ export default function AdminPools() {
 
                 <TabsContent value="manage">
                     <AdminPoolList />
+                </TabsContent>
+
+                <TabsContent value="tools">
+                    <AdminPoolConsolidation />
                 </TabsContent>
             </Tabs>
         </div>

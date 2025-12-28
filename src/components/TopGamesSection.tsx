@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useMatchesContext } from '../context/MatchesContext';
 import CollapsibleSection from './CollapsibleSection';
 import { useNavigate } from 'react-router-dom';
+import { GameCardSkeleton } from './skeletons/GameCardSkeleton';
 
 type GameFilter = 'All' | 'Live' | 'Upcoming';
 
@@ -73,7 +74,7 @@ const TopGamesSection: React.FC = () => {
 
       <div className="w-full flex flex-col space-y-1 px-1">
         {loading ? (
-          <p className="text-vanta-text-light text-center py-4">Loading games...</p>
+          [...Array(3)].map((_, i) => <div className="w-full" key={i}><GameCardSkeleton /></div>)
         ) : filteredGames.length > 0 ? (
           filteredGames.map((game) => (
             <div className="w-full" key={game.id}>

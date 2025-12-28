@@ -5,7 +5,8 @@ import Oddscard from './Oddscard';
 import { Button } from '@/components/ui/button';
 import CollapsibleSection from './CollapsibleSection';
 import { useNavigate } from 'react-router-dom';
-import { useMatchesContext } from '../context/MatchesContext'; // Import useMatchesContext
+import { useMatchesContext } from "../context/MatchesContext"; // Import useMatchesContext
+import { GameCardSkeleton } from "./skeletons/GameCardSkeleton";
 
 const PremierLeagueSection: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const PremierLeagueSection: React.FC = () => {
       <CollapsibleSection title="Premier League Matches" count={premierLeagueGames.length} defaultOpen={true}>
         <div className="w-full flex flex-col space-y-4 px-4 pt-4">
           {loading ? (
-            <p className="text-vanta-text-light text-center py-8">Loading games...</p>
+            [...Array(3)].map((_, i) => <GameCardSkeleton key={i} />)
           ) : premierLeagueGames.length > 0 ? (
             premierLeagueGames.map((game) => (
               <Oddscard

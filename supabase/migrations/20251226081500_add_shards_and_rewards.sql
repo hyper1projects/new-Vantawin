@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS public.rewards_log (
 ALTER TABLE public.rewards_log ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can view their own rewards
+-- Policy: Users can view their own rewards
+DROP POLICY IF EXISTS "Users can view own rewards" ON public.rewards_log;
 CREATE POLICY "Users can view own rewards" ON public.rewards_log
     FOR SELECT
     USING (auth.uid() = user_id);
