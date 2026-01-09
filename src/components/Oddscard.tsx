@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
+import React from 'react';
 import { Team, Game, Question } from '../types/game';
 import NewOddsButton from './NewOddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
@@ -19,19 +18,12 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
 
     if (!team1 || !team2) return null;
 
-    const [isFavorited, setIsFavorited] = useState(false);
     const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
     const navigate = useNavigate();
 
     const primaryQuestion: Question | undefined = questions.find(q => q.type === 'win_match');
 
     if (!primaryQuestion) return null;
-
-    const handleFavoriteClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsFavorited(!isFavorited);
-        console.log(`Game ${isFavorited ? 'unfavorited' : 'favorited'}!`);
-    };
 
     const homeOption = primaryQuestion.options?.find(o => o.label === team1.name || o.id.includes('home') || o.label === 'Home');
     const awayOption = primaryQuestion.options?.find(o => o.label === team2.name || o.id.includes('away') || o.label === 'Away');
@@ -57,14 +49,19 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
     };
 
     const renderTeam = (team: Team) => {
+        // Abbreviate team names longer than 15 characters
+        const displayName = team.name.length > 15
+            ? team.name.substring(0, 15) + '...'
+            : team.name;
+
         return (
-            <div className="flex items-center">
+            <div className="flex items-center min-w-0 max-w-full">
                 <TeamLogo
                     teamName={team.name}
                     className="w-6 h-6 mr-2 rounded-full object-contain bg-white/10 p-0.5 flex-shrink-0"
                 />
-                <span className="text-white font-semibold truncate text-sm">
-                    {team.name}
+                <span className="text-white font-semibold text-sm overflow-hidden" title={team.name}>
+                    {displayName}
                 </span>
             </div>
         );
@@ -83,15 +80,6 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
                     {primaryQuestion.text}
                 </span>
                 <div className="flex items-center space-x-2">
-                    <button
-                        onClick={handleFavoriteClick}
-                        className="p-1 rounded-full hover:bg-[#1a4280] transition-colors"
-                    >
-                        <Star
-                            className={`w-4 h-4 transition-colors ${isFavorited ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500 hover:text-yellow-400'}`}
-                            fill={isFavorited ? 'currentColor' : 'none'}
-                        />
-                    </button>
                     <a
                         href={`/games/${game.id}`}
                         className="text-gray-300 text-sm hover:underline font-medium"
@@ -103,12 +91,12 @@ const Oddscard: React.FC<OddscardProps> = ({ game }) => {
             </div>
 
             <div className="flex justify-between items-center mb-4">
-                <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-3 min-w-0 flex-1">
                     {renderTeam(team1)}
                     {renderTeam(team2)}
                 </div>
 
-                <div className="flex flex-col items-end space-y-2">
+                <div className="flex flex-col items-end space-y-2 flex-shrink-0">
                     <div className='flex space-x-2'>
                         <NewOddsButton
                             value={homeOption?.odds || 0}

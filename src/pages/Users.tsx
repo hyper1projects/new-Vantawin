@@ -43,8 +43,16 @@ const Users: React.FC = () => {
   const joinedDate = user.created_at ? format(new Date(user.created_at), 'MMM yyyy') : 'N/A';
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div className="p-3 md:p-4 max-w-7xl mx-auto">
+      {/* Page Header */}
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <span className="w-1 h-6 bg-vanta-neon-blue rounded-full"></span>
+          Profile
+        </h1>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
         <ProfileCard
           username={username || 'Guest'}
           joinedDate={joinedDate}
@@ -52,7 +60,7 @@ const Users: React.FC = () => {
           gamesPlayed={gamesPlayed}
           winRate={winRate}
           wins={wins}
-          avatarUrl={avatarUrl || '/images/profile/Profile.png'} // Use avatarUrl from context
+          avatarUrl={avatarUrl} // Use avatarUrl from context
         />
         <WalletOverviewCard showViewWallet={true} />
       </div>

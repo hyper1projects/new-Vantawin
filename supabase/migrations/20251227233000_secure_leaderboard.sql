@@ -3,6 +3,7 @@
 -- Purpose: Fix 'Security Definer View' lint and ensure secure aggregation of bet stats.
 
 -- 1. Create the RPC function (Secure)
+DROP FUNCTION IF EXISTS public.get_pool_leaderboard(uuid);
 CREATE OR REPLACE FUNCTION public.get_pool_leaderboard(p_pool_id UUID)
 RETURNS TABLE (
     pool_id UUID,

@@ -24,11 +24,11 @@ const ProfileSettingsTab: React.FC = () => {
   const [currentDateOfBirth, setCurrentDateOfBirth] = useState<Date | undefined>(undefined);
   const [currentGender, setCurrentGender] = useState<string>('');
   const [currentWalletAddress, setCurrentWalletAddress] = useState<string>('');
-  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string>('/images/profile/Profile.png'); // Default avatar
+  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null); // Default to null (initials)
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (user && !isLoading) {
+    if (user?.id) {
       const loadProfile = async () => {
         const profile = await fetchUserProfile(user.id);
         setCurrentUsername(profile.username || '');
@@ -38,7 +38,7 @@ const ProfileSettingsTab: React.FC = () => {
         setCurrentDateOfBirth(profile.dateOfBirth ? new Date(profile.dateOfBirth) : undefined);
         setCurrentGender(profile.gender || '');
         setCurrentWalletAddress(profile.walletAddress || '');
-        setCurrentAvatarUrl(profile.avatarUrl || '/images/profile/Profile.png');
+        setCurrentAvatarUrl(profile.avatarUrl); // Will correspond to null if not set
       };
       loadProfile();
     }
@@ -90,12 +90,15 @@ const ProfileSettingsTab: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 p-6">
       <div className="flex items-center space-x-6 mb-6">
-        <Avatar className="h-24 w-24">
-          <AvatarImage src={currentAvatarUrl} alt={currentUsername} />
-          <AvatarFallback className="bg-vanta-neon-blue text-vanta-blue-dark text-3xl">
-            {currentUsername ? currentUsername.substring(0, 2).toUpperCase() : 'UN'}
-          </AvatarFallback>
-        </Avatar>
+        <div className="h-24 w-24 rounded-full overflow-hidden bg-vanta-neon-blue flex items-center justify-center border-4 border-vanta-blue-dark outline outline-2 outline-vanta-neon-blue">
+          {currentAvatarUrl ? (
+            <img src={currentAvatarUrl} alt={currentUsername} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-vanta-blue-dark font-bold text-3xl">
+              {currentUsername ? currentUsername.substring(0, 2).toUpperCase() : 'UN'}
+            </span>
+          )}
+        </div>
         <Button variant="outline" className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 rounded-[14px] py-2 px-4 text-sm flex items-center space-x-2">
           <Upload size={18} />
           <span>Upload</span>

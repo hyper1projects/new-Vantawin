@@ -7,10 +7,13 @@ export const usePools = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [myPoolIds, setMyPoolIds] = useState<string[]>([]);
+
     useEffect(() => {
         const fetchPools = async () => {
             try {
                 setLoading(true);
+                // 1. Fetch All Pools
                 const { data, error } = await supabase
                     .from('pools')
                     .select('*, tournament_entries(count)');
@@ -41,6 +44,21 @@ export const usePools = () => {
                     setPools(mappedPools);
                 }
 
+                // 2. Fetch User's Joined Pool IDs
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const { data: myEntries, error: entryError } = await supabase
+                        .from('tournament_entries')
+                        .select('pool_id')
+                        .eq('user_id', user.id);
+
+                    if (!entryError && myEntries) {
+                        setMyPoolIds(myEntries.map((e: any) => e.pool_id));
+                    }
+                } else {
+                    setMyPoolIds([]);
+                }
+
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -51,5 +69,5 @@ export const usePools = () => {
         fetchPools();
     }, []);
 
-    return { pools, loading, error };
+    return { pools, myPoolIds, loading, error };
 };

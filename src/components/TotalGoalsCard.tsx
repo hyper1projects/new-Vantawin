@@ -1,18 +1,16 @@
 "use client";
 
 import React from 'react';
-import { Game, Question } from '../types/game'; // Import Question type
+import { Game, Question } from '../types/game';
 import OddsButton from './OddsButton';
 import { useMatchSelection } from '../context/MatchSelectionContext';
-import TeamLogo from './TeamLogo'; // Import the new TeamLogo component
 
 interface TotalGoalsCardProps {
   game: Game;
-  question: Question; // Now accepts a specific question
+  question: Question;
 }
 
 const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game, question }) => {
-  const { team1, team2 } = game;
   const { selectedGame, selectedOutcome, setSelectedMatch } = useMatchSelection();
 
   const questionText = question.text;
@@ -33,43 +31,34 @@ const TotalGoalsCard: React.FC<TotalGoalsCardProps> = ({ game, question }) => {
   };
 
   return (
-    <div className="bg-vanta-blue-medium rounded-[27px] p-6 shadow-lg text-vanta-text-light w-full flex flex-col items-center justify-center space-y-4">
-      <div className="flex items-center justify-center space-x-6 w-full mb-4">
-        <div className="flex flex-col items-center">
-          <TeamLogo teamName={team1.name} alt={team1.name} className="w-16 h-16 object-contain mb-2" />
-          <span className="text-lg font-semibold">{team1.name}</span>
-        </div>
-        <span className="text-2xl font-bold text-gray-400">VS</span>
-        <div className="flex flex-col items-center">
-          <TeamLogo teamName={team2.name} alt={team2.name} className="w-16 h-16 object-contain mb-2" />
-          <span className="text-lg font-semibold">{team2.name}</span>
-        </div>
+    <div className="bg-vanta-blue-medium/50 backdrop-blur-sm border border-vanta-accent-dark-blue/30 rounded-xl p-6 hover:border-purple-400/50 transition-all duration-300">
+      {/* Badge */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="bg-purple-500/10 text-purple-400 text-xs px-3 py-1.5 rounded-full font-semibold border border-purple-400/30">
+          Total Goals
+        </span>
       </div>
 
-      <div className="w-full text-center mb-2">
-        <span className="bg-vanta-blue-dark text-vanta-text-dark text-xs px-2 py-1 rounded-md font-semibold">Total Goals</span>
-      </div>
+      {/* Question */}
+      <h3 className="text-white text-lg font-bold mb-6">{questionText}</h3>
 
-      <div className="w-full space-y-4">
-        <div className="flex flex-col items-center space-y-2">
-          <h3 className="text-xl font-bold text-white text-center">{questionText}</h3>
-          <div className="flex items-center justify-center space-x-6 w-full">
-            <OddsButton
-              value={yesOdd}
-              label="Yes"
-              onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
-              isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_${yesOption?.id}_${yesOdd.toFixed(2)}`}
-              className="rounded-[12px] px-6 py-2 mt-2"
-            />
-            <OddsButton
-              value={noOdd}
-              label="No"
-              onClick={(e) => handleOddsClick(e, 'no', noOdd)}
-              isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_${noOption?.id}_${noOdd.toFixed(2)}`}
-              className="rounded-[12px] px-6 py-2 mt-2"
-            />
-          </div>
-        </div>
+      {/* Options */}
+      <div className="flex items-center justify-center gap-4">
+        <OddsButton
+          value={yesOdd}
+          label="Yes"
+          onClick={(e) => handleOddsClick(e, 'yes', yesOdd)}
+          isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_${yesOption?.id}_${yesOdd.toFixed(2)}`}
+          className="rounded-[12px] px-6 py-2 transition-all hover:scale-105 active:scale-95"
+        />
+        <span className="text-gray-600 font-bold">OR</span>
+        <OddsButton
+          value={noOdd}
+          label="No"
+          onClick={(e) => handleOddsClick(e, 'no', noOdd)}
+          isSelected={selectedGame?.id === game.id && selectedOutcome === `${questionId}_${noOption?.id}_${noOdd.toFixed(2)}`}
+          className="rounded-[12px] px-6 py-2 transition-all hover:scale-105 active:scale-95"
+        />
       </div>
     </div>
   );

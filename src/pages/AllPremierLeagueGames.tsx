@@ -38,7 +38,7 @@ const AllPremierLeagueGames: React.FC = () => {
       "size-sm rounded-[12px]",
       isSelected
         ? "bg-[#00EEEE] text-[#081028]"
-        : "bg-[#0B295B] text-white hover:text-[#00EEEE] hover:bg-[#0B295B]"
+        : "bg-[#0B295B] text-white"
     );
   };
 
@@ -55,24 +55,42 @@ const AllPremierLeagueGames: React.FC = () => {
       <SectionHeader title="All Premier League Games" className="mb-6" textColor="text-vanta-text-light" />
 
       <div className="flex space-x-1 w-full justify-start px-1 -mt-2 mb-4 border-b border-gray-700 pb-1">
-        <Button
+        <button
           onClick={() => setSelectedFilter('All')}
-          className={getButtonClasses('All')}
+          className={cn(
+            "h-11 px-3 text-sm rounded-[12px] font-semibold transition-colors border-0 outline-none cursor-pointer",
+            "focus:outline-none focus-visible:outline-none [-webkit-tap-highlight-color:transparent]",
+            selectedFilter === 'All'
+              ? "bg-[#00EEEE] text-[#081028]"
+              : "bg-[#0B295B] text-white"
+          )}
         >
           All
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => setSelectedFilter('Live')}
-          className={getButtonClasses('Live')}
+          className={cn(
+            "h-11 px-3 text-sm rounded-[12px] font-semibold transition-colors border-0 outline-none cursor-pointer",
+            "focus:outline-none focus-visible:outline-none [-webkit-tap-highlight-color:transparent]",
+            selectedFilter === 'Live'
+              ? "bg-[#00EEEE] text-[#081028]"
+              : "bg-[#0B295B] text-white"
+          )}
         >
           Live
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => setSelectedFilter('Upcoming')}
-          className={getButtonClasses('Upcoming')}
+          className={cn(
+            "h-11 px-3 text-sm rounded-[12px] font-semibold transition-colors border-0 outline-none cursor-pointer",
+            "focus:outline-none focus-visible:outline-none [-webkit-tap-highlight-color:transparent]",
+            selectedFilter === 'Upcoming'
+              ? "bg-[#00EEEE] text-[#081028]"
+              : "bg-[#0B295B] text-white"
+          )}
         >
           Upcoming
-        </Button>
+        </button>
       </div>
 
       <div className="w-full flex flex-col space-y-4 px-1">

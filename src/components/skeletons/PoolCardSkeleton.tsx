@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const PoolCardSkeleton = () => {
     return (
-        <div className="flex-none w-[300px] bg-vanta-blue-medium rounded-[20px] p-5 relative overflow-hidden border border-white/5">
+        <div className="w-full bg-vanta-blue-medium rounded-[20px] p-5 relative overflow-hidden border border-white/5">
             {/* Header */}
             <div className="flex justify-between items-start mb-4 relative z-10">
                 <div className="flex flex-col space-y-2">

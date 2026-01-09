@@ -13,23 +13,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useAuth } from '../context/AuthContext'; // Assuming useAuth might be needed for password change
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const SecuritySettingsTab: React.FC = () => {
-  const { user } = useAuth(); // To potentially integrate with Supabase auth for password changes
-  
+  const { user, updatePassword, deactivateAccount, deleteAccount } = useAuth();
+
   // State for Change Password section
-  const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  // State for 2FA Authentication section
-  const [newPin, setNewPin] = useState('');
-  const [requirePinFor, setRequirePinFor] = useState<string>('card_withdrawals');
-  const [isCreatingPin, setIsCreatingPin] = useState(false);
+  // State for 2FA Email Verification section
   const [email2FASwitch, setEmail2FASwitch] = useState(false);
-  const [verify2FAEmail, setVerify2FAEmail] = useState('');
   const [isSendingOtp, setIsSendingOtp] = useState(false);
 
   // State for Delete/Deactivate Account section
@@ -37,10 +43,12 @@ const SecuritySettingsTab: React.FC = () => {
   const [deletionReason, setDeletionReason] = useState<string>('');
   const [isDeactivating, setIsDeactivating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!oldPassword || !newPassword || !confirmNewPassword) {
+    if (!newPassword || !confirmNewPassword) {
       toast.error('Please fill in all password fields.');
       return;
     }
@@ -54,40 +62,44 @@ const SecuritySettingsTab: React.FC = () => {
     }
 
     setIsChangingPassword(true);
-    // In a real application, you would call a Supabase function here to update the password
-    // e.g., const { error } = await supabase.auth.updateUser({ password: newPassword });
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-    setIsChangingPassword(false);
-
-    toast.success('Password updated successfully!');
-    setOldPassword('');
-    setNewPassword('');
-    setConfirmNewPassword('');
-  };
-
-  const handleCreatePin = async () => {
-    if (!newPin || newPin.length !== 4 || !/^\d+$/.test(newPin)) {
-      toast.error('Please enter a valid 4-digit PIN.');
-      return;
+    try {
+      const { error } = await updatePassword(newPassword);
+      if (error) {
+        toast.error(error.message || 'Failed to update password');
+      } else {
+        toast.success('Password updated successfully!');
+        setNewPassword('');
+        setConfirmNewPassword('');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An unexpected error occurred');
+    } finally {
+      setIsChangingPassword(false);
     }
-    setIsCreatingPin(true);
-    // Simulate API call to create/confirm PIN
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsCreatingPin(false);
-    toast.success('PIN created/confirmed successfully!');
-    setNewPin('');
   };
 
   const handleSendOtp = async () => {
-    if (!verify2FAEmail || !/\S+@\S+\.\S+/.test(verify2FAEmail)) {
-      toast.error('Please enter a valid email address for 2FA verification.');
+    if (!user?.email) {
+      toast.error('No email address found for your account.');
       return;
     }
+
     setIsSendingOtp(true);
-    // Simulate API call to send OTP
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsSendingOtp(false);
-    toast.success('OTP sent to your email!');
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: user.email,
+      });
+
+      if (error) {
+        toast.error(error.message || 'Failed to send verification email');
+      } else {
+        toast.success('Verification email sent! Please check your inbox.');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An unexpected error occurred');
+    } finally {
+      setIsSendingOtp(false);
+    }
   };
 
   const handleDeactivateAccount = async () => {
@@ -95,12 +107,25 @@ const SecuritySettingsTab: React.FC = () => {
       toast.error('Please select a reason for deactivation.');
       return;
     }
+    setShowDeactivateDialog(true);
+  };
+
+  const confirmDeactivation = async () => {
     setIsDeactivating(true);
-    // Simulate API call to deactivate account
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsDeactivating(false);
-    toast.success('Account deactivation request submitted.');
-    setDeactivationReason('');
+    setShowDeactivateDialog(false);
+    try {
+      const { error } = await deactivateAccount(deactivationReason);
+      if (error) {
+        toast.error(error.message || 'Failed to deactivate account');
+      } else {
+        toast.success('Account deactivated successfully. You will be signed out.');
+        setDeactivationReason('');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An unexpected error occurred');
+    } finally {
+      setIsDeactivating(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -108,12 +133,25 @@ const SecuritySettingsTab: React.FC = () => {
       toast.error('Please select a reason for account deletion.');
       return;
     }
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeletion = async () => {
     setIsDeleting(true);
-    // Simulate API call to delete account
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsDeleting(false);
-    toast.success('Account deletion request submitted.');
-    setDeletionReason('');
+    setShowDeleteDialog(false);
+    try {
+      const { error } = await deleteAccount(deletionReason);
+      if (error) {
+        toast.error(error.message || 'Failed to delete account');
+      } else {
+        toast.success('Account deleted successfully. You will be signed out.');
+        setDeletionReason('');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An unexpected error occurred');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -122,27 +160,29 @@ const SecuritySettingsTab: React.FC = () => {
       <div>
         <h3 className="text-xl font-bold text-white mb-4">Change Password</h3>
         <form onSubmit={handlePasswordChange} className="space-y-4">
-          <div>
-            <Label htmlFor="oldPassword" className="text-vanta-text-light text-base font-semibold mb-2 block">Old Password</Label>
-            <Input
-              id="oldPassword"
-              type="password"
-              placeholder="Enter old password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
-              required
-            />
-          </div>
           <div className="flex items-end space-x-4">
             <div className="flex-grow">
               <Label htmlFor="newPassword" className="text-vanta-text-light text-base font-semibold mb-2 block">New Password</Label>
               <Input
                 id="newPassword"
                 type="password"
-                placeholder="Enter new password"
+                placeholder="Enter new password (min 6 characters)"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
+                required
+              />
+            </div>
+          </div>
+          <div className="flex items-end space-x-4">
+            <div className="flex-grow">
+              <Label htmlFor="confirmNewPassword" className="text-vanta-text-light text-base font-semibold mb-2 block">Confirm New Password</Label>
+              <Input
+                id="confirmNewPassword"
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
                 className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
                 required
               />
@@ -153,7 +193,7 @@ const SecuritySettingsTab: React.FC = () => {
               className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
               disabled={isChangingPassword}
             >
-              {isChangingPassword ? 'Confirming...' : 'Confirm'}
+              {isChangingPassword ? 'Updating...' : 'Update Password'}
             </Button>
           </div>
         </form>
@@ -163,44 +203,11 @@ const SecuritySettingsTab: React.FC = () => {
       <div>
         <h3 className="text-xl font-bold text-white mb-4">2FA Authentication</h3>
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="newPin" className="text-vanta-text-light text-base font-semibold mb-2 block">Create New PIN</Label>
-            <Input
-              id="newPin"
-              type="password" // Use password type for PIN for masking
-              maxLength={4}
-              placeholder="Enter 4-digit PIN"
-              value={newPin}
-              onChange={(e) => setNewPin(e.target.value)}
-              className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
-            />
-          </div>
-          <div className="flex items-end space-x-4">
-            <div className="flex-grow">
-              <Label htmlFor="requirePinFor" className="text-vanta-text-light text-base font-semibold mb-2 block">Require Pin for</Label>
-              <Select value={requirePinFor} onValueChange={setRequirePinFor}>
-                <SelectTrigger id="requirePinFor" className="w-full bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12">
-                  <SelectValue placeholder="Select an option" />
-                </SelectTrigger>
-                <SelectContent className="bg-vanta-blue-medium border-vanta-accent-dark-blue text-vanta-text-light">
-                  <SelectItem value="card_withdrawals">Card Deposits / New Withdrawals</SelectItem>
-                  <SelectItem value="all_transactions">All Transactions</SelectItem>
-                  <SelectItem value="never">Never</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex items-center justify-between pt-4">
+            <div>
+              <Label htmlFor="email-2fa-switch" className="text-vanta-text-light text-base font-semibold block">Email 2-Step Verification</Label>
+              <p className="text-gray-400 text-sm mt-1">Add an extra layer of security to your account</p>
             </div>
-            <Button
-              variant="outline"
-              className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
-              onClick={handleCreatePin}
-              disabled={isCreatingPin}
-            >
-              {isCreatingPin ? 'Confirming...' : 'Confirm'}
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-between pt-4 border-t border-gray-700/50">
-            <Label htmlFor="email-2fa-switch" className="text-vanta-text-light text-base font-semibold">Email 2 Step Verification</Label>
             <div className="flex items-center space-x-2">
               <span className="text-gray-400 text-sm">{email2FASwitch ? 'ON' : 'OFF'}</span>
               <Switch
@@ -213,25 +220,17 @@ const SecuritySettingsTab: React.FC = () => {
           </div>
 
           {email2FASwitch && (
-            <div className="flex items-end space-x-4 mt-4">
-              <div className="flex-grow">
-                <Label htmlFor="verify2FAEmail" className="text-vanta-text-light text-base font-semibold mb-2 block">Verify 2FA Email</Label>
-                <Input
-                  id="verify2FAEmail"
-                  type="email"
-                  placeholder="Enter email for 2FA"
-                  value={verify2FAEmail}
-                  onChange={(e) => setVerify2FAEmail(e.target.value)}
-                  className="bg-[#01112D] border-vanta-accent-dark-blue text-white placeholder-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-vanta-neon-blue rounded-[14px] h-12"
-                />
-              </div>
+            <div className="mt-4 p-4 bg-vanta-blue-medium/30 rounded-[14px] border border-vanta-accent-dark-blue">
+              <p className="text-vanta-text-light text-sm mb-3">
+                Your email: <span className="font-semibold text-vanta-neon-blue">{user?.email || 'Not available'}</span>
+              </p>
               <Button
                 variant="outline"
-                className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base"
+                className="bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue hover:text-vanta-blue-dark rounded-[14px] px-6 py-2 h-12 font-bold text-base w-full"
                 onClick={handleSendOtp}
-                disabled={isSendingOtp}
+                disabled={isSendingOtp || !user?.email}
               >
-                {isSendingOtp ? 'Sending...' : 'Send OTP'}
+                {isSendingOtp ? 'Sending...' : 'Send Verification Email'}
               </Button>
             </div>
           )}
@@ -292,6 +291,51 @@ const SecuritySettingsTab: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialogs */}
+      <AlertDialog open={showDeactivateDialog} onOpenChange={setShowDeactivateDialog}>
+        <AlertDialogContent className="bg-vanta-blue-medium border-vanta-accent-dark-blue">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Deactivate Account?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Your account will be temporarily deactivated. You can reactivate it by contacting support. Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-vanta-accent-dark-blue text-white hover:bg-vanta-accent-dark-blue">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeactivation}
+              className="bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/80"
+            >
+              Yes, Deactivate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="bg-vanta-blue-medium border-vanta-accent-dark-blue">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Account Permanently?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              This action cannot be undone. Your account data will be permanently deleted and anonymized. Are you absolutely sure?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-vanta-accent-dark-blue text-white hover:bg-vanta-accent-dark-blue">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeletion}
+              className="bg-red-500 text-white hover:bg-red-600"
+            >
+              Yes, Delete Permanently
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

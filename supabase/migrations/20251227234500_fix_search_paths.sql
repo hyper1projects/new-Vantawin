@@ -37,9 +37,7 @@ ALTER FUNCTION public.update_payout_batch_timestamp() SET search_path = public;
 -- 6. Leaderboard
 ALTER FUNCTION public.get_pool_leaderboard(uuid) SET search_path = public;
 
--- 7. Simulation / Testing
--- Verified: simulate_bot_activity(uuid, integer)
-ALTER FUNCTION public.simulate_bot_activity(uuid, integer) SET search_path = public;
+
 
 -- 8. Triggers
 ALTER FUNCTION public.handle_new_user() SET search_path = public;

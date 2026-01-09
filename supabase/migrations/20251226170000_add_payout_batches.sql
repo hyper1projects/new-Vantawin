@@ -28,6 +28,7 @@ ALTER TABLE public.payout_batches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.payout_batch_items ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies (Admins Only)
+DROP POLICY IF EXISTS "Admins can view all payout batches" ON public.payout_batches;
 CREATE POLICY "Admins can view all payout batches"
     ON public.payout_batches FOR SELECT
     USING (
@@ -37,6 +38,7 @@ CREATE POLICY "Admins can view all payout batches"
         )
     );
 
+DROP POLICY IF EXISTS "Admins can insert payout batches" ON public.payout_batches;
 CREATE POLICY "Admins can insert payout batches"
     ON public.payout_batches FOR INSERT
     WITH CHECK (
@@ -46,6 +48,7 @@ CREATE POLICY "Admins can insert payout batches"
         )
     );
 
+DROP POLICY IF EXISTS "Admins can update payout batches" ON public.payout_batches;
 CREATE POLICY "Admins can update payout batches"
     ON public.payout_batches FOR UPDATE
     USING (
@@ -56,6 +59,7 @@ CREATE POLICY "Admins can update payout batches"
     );
 
 -- Items Policies
+DROP POLICY IF EXISTS "Admins can view all payout items" ON public.payout_batch_items;
 CREATE POLICY "Admins can view all payout items"
     ON public.payout_batch_items FOR SELECT
     USING (
@@ -65,6 +69,7 @@ CREATE POLICY "Admins can view all payout items"
         )
     );
 
+DROP POLICY IF EXISTS "Admins can manage payout items" ON public.payout_batch_items;
 CREATE POLICY "Admins can manage payout items"
     ON public.payout_batch_items FOR ALL
     USING (

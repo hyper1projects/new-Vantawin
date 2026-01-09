@@ -6,6 +6,7 @@ ALTER TABLE public.pools ENABLE ROW LEVEL SECURITY;
 
 -- Policy to allow admins to insert pools
 -- We assume auth.uid() matches public.users.id and public.users.is_admin is true
+DROP POLICY IF EXISTS "Admins can create pools" ON public.pools;
 CREATE POLICY "Admins can create pools"
 ON public.pools
 FOR INSERT
@@ -19,6 +20,7 @@ WITH CHECK (
 );
 
 -- Policy to allow admins to update pools
+DROP POLICY IF EXISTS "Admins can update pools" ON public.pools;
 CREATE POLICY "Admins can update pools"
 ON public.pools
 FOR UPDATE
@@ -39,6 +41,7 @@ WITH CHECK (
 );
 
 -- Policy to allow admins to delete pools
+DROP POLICY IF EXISTS "Admins can delete pools" ON public.pools;
 CREATE POLICY "Admins can delete pools"
 ON public.pools
 FOR DELETE
@@ -59,6 +62,7 @@ USING (
 -- Safest is to just add the Admin ones which are definitely missing.
 
 -- If a public read policy is needed:
+DROP POLICY IF EXISTS "Public can view pools" ON public.pools;
 CREATE POLICY "Public can view pools"
 ON public.pools
 FOR SELECT

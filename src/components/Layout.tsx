@@ -18,7 +18,7 @@ const Layout = () => {
   const isMobile = useIsMobile();
 
   // Updated logic: hide RightSidebar if path starts with /pools or is in the excludedPaths array
-  const excludedPaths = ['/leaderboard', '/wallet', '/users']; // Paths where RightSidebar should not appear
+  const excludedPaths = ['/leaderboard', '/wallet', '/users', '/rewards']; // Paths where RightSidebar should not appear
   const showRightSidebar = !location.pathname.startsWith('/pools') && !excludedPaths.includes(location.pathname);
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = React.useState(false);
@@ -48,12 +48,15 @@ const Layout = () => {
       {/* This div now fills the full height of its parent (#root) and acts as a flex column */}
       <div className="relative h-full flex flex-col bg-vanta-blue-dark text-vanta-text-light overflow-x-hidden w-full">
         <MainHeader />
-        {isMobile && <MobileSportsSubNavbar />}
+        {/* Show sports sub-navbar on mobile and tablets (below 1024px) */}
+        <div className="lg:hidden">
+          <MobileSportsSubNavbar />
+        </div>
 
         {/* This div is the main content area, pushed down by padding-top */}
         {/* It takes the remaining flexible height and manages its own overflow */}
         <div className={`flex flex-1 ${headerPaddingTopClass} w-full overflow-hidden`}>
-          <div className="hidden md:block h-full flex-shrink-0">
+          <div className="hidden lg:block h-full flex-shrink-0">
             <Sidebar />
           </div>
           {/* This is the scrollable content area */}
@@ -68,9 +71,9 @@ const Layout = () => {
         </div>
         <BottomNavbar />
         {isMobile && (
-          <PredictionBottomSheet 
-            isOpen={isBottomSheetOpen} 
-            onOpenChange={handleBottomSheetOpenChange} 
+          <PredictionBottomSheet
+            isOpen={isBottomSheetOpen}
+            onOpenChange={handleBottomSheetOpenChange}
           />
         )}
       </div>

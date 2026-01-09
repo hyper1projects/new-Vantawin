@@ -199,7 +199,8 @@ Deno.serve(async (req) => {
             const { error: deleteError } = await supabaseClient
                 .from('matches')
                 .delete()
-                .lt('start_time', fiveHoursAgo);
+                .lt('start_time', fiveHoursAgo)
+                .neq('status', 'completed'); // Don't delete completed matches - needed for bet settlement
 
             if (deleteError) {
                 console.error("Cleanup Error:", deleteError);

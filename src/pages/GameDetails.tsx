@@ -47,28 +47,32 @@ const GameDetails: React.FC = () => {
   }
 
   return (
-    <div className="p-4 text-vanta-text-light">
+    <div className="p-4 max-w-5xl mx-auto text-vanta-text-light">
       <Button
         onClick={() => navigate(-1)}
         variant="ghost"
-        className="mb-6 text-vanta-neon-blue hover:bg-vanta-accent-dark-blue flex items-center gap-2"
+        className="mb-6 text-vanta-neon-blue hover:text-vanta-neon-blue hover:bg-transparent flex items-center gap-2"
       >
         <ArrowLeft size={20} /> Back to Games
       </Button>
 
-      <div
-        className="bg-vanta-blue-medium rounded-[27px] p-8 shadow-lg mb-6"
-        style={{ clipPath: 'polygon(0% 0%, 25% 0%, 30% 50px, 70% 50px, 75% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
-      >
+      {/* Hero Section - Match Header */}
+      <div className="mb-8">
         <MatchHeaderImage game={game} />
       </div>
 
-      <div className="space-y-6">
+      {/* Prediction Markets Section */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <span className="w-1 h-6 bg-vanta-neon-blue rounded-full"></span>
+          Prediction Markets
+        </h2>
+
         {game.questions.map((question) => {
           switch (question.type) {
             case 'win_match':
               return (
-                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg">
+                <div key={question.id}>
                   <FullTimeCard game={game} question={question} />
                 </div>
               );
@@ -76,7 +80,7 @@ const GameDetails: React.FC = () => {
             case 'total_goals_even':
             case 'is_draw':
               return (
-                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg">
+                <div key={question.id}>
                   <SimpleQuestionCard game={game} question={question} />
                 </div>
               );
@@ -85,7 +89,7 @@ const GameDetails: React.FC = () => {
             case 'over_3_5_goals':
             case 'score_goals':
               return (
-                <div key={question.id} className="bg-transparent rounded-[27px] p-8 shadow-lg">
+                <div key={question.id}>
                   <TotalGoalsCard game={game} question={question} />
                 </div>
               );

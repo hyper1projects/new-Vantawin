@@ -4,9 +4,12 @@ import { Eye, EyeOff, ArrowDownToLine, ArrowUpToLine, Gift, ChevronRight } from 
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { createPayment } from '@/services/paymentService';
+import { supabase } from '@/integrations/supabase/client';
 import PaymentRedirectModal from './PaymentRedirectModal';
 import DepositOptionsModal from './DepositOptionsModal';
 import DepositDetailsModal from './DepositDetailsModal';
+import WithdrawalOptionsModal from './WithdrawalOptionsModal';
+import WithdrawalDetailsModal from './WithdrawalDetailsModal';
 import { useAuth } from '@/context/AuthContext';
 import { WalletBalanceSkeleton } from './skeletons/WalletBalanceSkeleton';
 
@@ -17,11 +20,18 @@ interface WalletOverviewCardProps {
 const WalletOverviewCard: React.FC<WalletOverviewCardProps> = ({ showViewWallet = false }) => {
   const [showBalance, setShowBalance] = useState(true);
   const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // Deposit State
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  // Withdrawal State
+  const [isWithdrawalOptionsOpen, setIsWithdrawalOptionsOpen] = useState(false);
+  const [isWithdrawalDetailsOpen, setIsWithdrawalDetailsOpen] = useState(false);
+  const [isWithdrawalLoading, setIsWithdrawalLoading] = useState(false);
+
   const navigate = useNavigate();
-  const { balance, isLoading } = useAuth();
-  console.log('WalletOverviewCard balance:', balance); // DEBUG LOG
+  const { balance, isLoading, refreshBalance } = useAuth();
   const currentBalance = balance;
 
   const toggleBalanceVisibility = () => {
@@ -35,6 +45,37 @@ const WalletOverviewCard: React.FC<WalletOverviewCardProps> = ({ showViewWallet 
   const handleCryptoSelect = () => {
     setIsOptionsOpen(false);
     setIsDetailsOpen(true);
+  };
+
+  const handleWithdrawalClick = () => {
+    setIsWithdrawalOptionsOpen(true);
+  };
+
+  const handleWithdrawalCryptoSelect = () => {
+    setIsWithdrawalOptionsOpen(false);
+    setIsWithdrawalDetailsOpen(true);
+  };
+
+  const handleWithdrawalConfirm = async (amount: number, address: string, currency: string) => {
+    setIsWithdrawalLoading(true);
+    try {
+      const { error } = await supabase.rpc('request_withdrawal', {
+        p_amount: amount,
+        p_currency: currency,
+        p_wallet_address: address
+      });
+
+      if (error) throw error;
+
+      toast.success("Withdrawal Requested Successfully!");
+      refreshBalance();
+      setIsWithdrawalDetailsOpen(false);
+    } catch (err: any) {
+      console.error('Withdrawal Error:', err);
+      toast.error(err.message || "Withdrawal Failed");
+    } finally {
+      setIsWithdrawalLoading(false);
+    }
   };
 
   const handlePaymentProceed = async (amount: number) => {
@@ -64,63 +105,64 @@ const WalletOverviewCard: React.FC<WalletOverviewCardProps> = ({ showViewWallet 
     : `$ ****.**`;
 
   return (
-    <div className="bg-vanta-blue-medium p-6 shadow-lg text-vanta-text-light w-full rounded-[16px]">
+    <div className="bg-vanta-blue-medium p-4 md:p-6 shadow-lg text-vanta-text-light w-full rounded-[16px]">
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-4 md:mb-6">
         <div className="flex items-center space-x-2">
-          <span className="text-lg font-semibold text-gray-400">WALLET</span>
+          <span className="text-base md:text-lg font-semibold text-gray-400">WALLET</span>
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleBalanceVisibility}
-            className="text-gray-400 hover:bg-transparent hover:text-vanta-neon-blue"
+            className="text-gray-400 hover:bg-transparent hover:text-vanta-neon-blue h-8 w-8 md:h-10 md:w-10"
             aria-label={showBalance ? "Hide balance" : "Show balance"}
           >
-            {showBalance ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showBalance ? <EyeOff size={18} className="md:w-5 md:h-5" /> : <Eye size={18} className="md:w-5 md:h-5" />}
           </Button>
         </div>
         {showViewWallet && (
           <Button
             variant="ghost"
-            className="text-vanta-neon-blue hover:text-vanta-neon-blue hover:bg-white/5 px-2 flex items-center gap-1"
+            className="text-vanta-neon-blue hover:text-vanta-neon-blue hover:bg-white/5 px-2 flex items-center gap-1 text-sm md:text-base h-auto py-1"
             onClick={() => navigate('/wallet')}
           >
-            View Wallet <ChevronRight size={16} />
+            View <span className="hidden md:inline">Wallet</span> <ChevronRight size={16} />
           </Button>
         )}
       </div>
 
       {/* Balance Display Section */}
-      <div className="mb-12 text-left">
+      <div className="mb-8 md:mb-14 text-left">
         {isLoading ? (
           <WalletBalanceSkeleton />
         ) : (
           <>
-            <p className="text-5xl font-bold text-white mb-2">{formattedBalance}</p>
-            <p className="text-base text-gray-400">Today</p>
+            <p className="text-4xl md:text-5xl font-bold text-white mb-1 md:mb-2">{formattedBalance}</p>
+            <p className="text-sm md:text-base text-gray-400">Today</p>
           </>
         )}
       </div>
 
       {/* Action Buttons Section */}
-      <div className="flex justify-between space-x-4">
+      <div className="flex justify-between space-x-3 md:space-x-4">
         <Button
-          className="flex-1 bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[14px] py-3 text-lg font-bold"
+          className="flex-1 bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 rounded-[12px] md:rounded-[14px] py-2 md:py-3 text-base md:text-lg font-bold h-auto"
           onClick={handleDepositClick}
           disabled={isRedirecting}
         >
-          Deposit <ArrowDownToLine size={20} className="ml-2" />
+          Deposit <ArrowDownToLine size={18} className="ml-1 md:ml-2 md:w-5 md:h-5" />
         </Button>
         <Button
           variant="outline"
-          className="flex-1 bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 rounded-[14px] py-3 text-lg font-bold"
-          onClick={() => toast.info('Withdrawals are processed manually. Please contact support.')}
+          className="flex-1 bg-transparent border-2 border-vanta-neon-blue text-vanta-neon-blue hover:bg-vanta-neon-blue/10 hover:text-vanta-neon-blue rounded-[12px] md:rounded-[14px] py-2 md:py-3 text-base md:text-lg font-bold h-auto"
+          onClick={handleWithdrawalClick}
         >
-          Withdraw <ArrowUpToLine size={20} className="ml-2" />
+          Withdraw <ArrowUpToLine size={18} className="ml-1 md:ml-2 md:w-5 md:h-5" />
         </Button>
       </div>
 
       <PaymentRedirectModal isOpen={isRedirecting} />
+
       <DepositOptionsModal
         isOpen={isOptionsOpen}
         onClose={() => setIsOptionsOpen(false)}
@@ -131,6 +173,20 @@ const WalletOverviewCard: React.FC<WalletOverviewCardProps> = ({ showViewWallet 
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onConfirm={handlePaymentProceed}
+      />
+
+      {/* New Withdrawal Flow */}
+      <WithdrawalOptionsModal
+        isOpen={isWithdrawalOptionsOpen}
+        onClose={() => setIsWithdrawalOptionsOpen(false)}
+        onSelectCrypto={handleWithdrawalCryptoSelect}
+        onSelectBank={() => { }}
+      />
+      <WithdrawalDetailsModal
+        isOpen={isWithdrawalDetailsOpen}
+        onClose={() => setIsWithdrawalDetailsOpen(false)}
+        onConfirm={handleWithdrawalConfirm}
+        loading={isWithdrawalLoading}
       />
     </div>
   );

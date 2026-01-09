@@ -20,12 +20,14 @@ CREATE TABLE IF NOT EXISTS public.withdrawals (
 ALTER TABLE public.withdrawals ENABLE ROW LEVEL SECURITY;
 
 -- Users can view their own withdrawals
+DROP POLICY IF EXISTS "Users can view own withdrawals" ON public.withdrawals;
 CREATE POLICY "Users can view own withdrawals" 
 ON public.withdrawals FOR SELECT 
 USING (auth.uid() = user_id);
 
 -- Admins can view all (We will use Service Role in Admin Dashboard or policy)
 -- Let's add an Admin Policy for completeness if they use client-side auth
+DROP POLICY IF EXISTS "Admins can view all withdrawals" ON public.withdrawals;
 CREATE POLICY "Admins can view all withdrawals" 
 ON public.withdrawals FOR SELECT 
 USING (

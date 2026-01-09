@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
+import { calculatePoolPrizes } from '../utils/prizeCalculator';
 
 interface PoolPrizesSectionProps {
   pool: Pool;
@@ -43,9 +44,17 @@ const PoolPrizesSection: React.FC<PoolPrizesSectionProps> = ({ pool, className }
   const formatPrizeAmount = (amount: number) => `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const rakePercent = RAKE_STRUCTURE[pool.tier] || 10.0;
-  const grossPot = pool.prizePool; // This is the GUARANTEED or COLLECTED max found in parent
-  const rakeAmount = grossPot * (rakePercent / 100);
-  const netPot = grossPot - rakeAmount;
+
+  // Calculate Potential Pot based on Max Participants if available, otherwise fallback to current
+  const maxParticipants = pool.maxParticipants || pool.participants || 0;
+  // If maxParticipants is set, use it to calculate potential gross. Else use current.
+  // Note: If pool has guaranteed pot, logic might differ, but assuming entry fee * max is the "Potential" target.
+  const potentialGrossPot = pool.maxParticipants
+    ? (pool.entryFee * pool.maxParticipants)
+    : (pool.prizePool || 0);
+
+  const rakeAmount = potentialGrossPot * (rakePercent / 100);
+  const netPot = potentialGrossPot - rakeAmount;
 
   return (
     <div className={cn("bg-[#011B47] rounded-[18px] p-4 flex flex-col", className)}>
@@ -55,7 +64,14 @@ const PoolPrizesSection: React.FC<PoolPrizesSectionProps> = ({ pool, className }
             variant="ghost"
             className="flex items-center justify-between w-full p-0 h-auto text-white hover:bg-transparent hover:text-vanta-neon-blue cursor-pointer mb-4"
           >
-            <h3 className="text-xl font-bold">PRIZE DISTRIBUTION</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-bold">PRIZE DISTRIBUTION</h3>
+              {pool.prizeDistribution && (pool.prizeDistribution as any[]).length > 0 && (
+                <span className="text-[10px] bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/30">
+                  Top Rank Fixed
+                </span>
+              )}
+            </div>
             <ChevronDown size={20} className="transition-transform duration-200 data-[state=open]:rotate-180" />
           </Button>
         </CollapsibleTrigger>
@@ -64,8 +80,8 @@ const PoolPrizesSection: React.FC<PoolPrizesSectionProps> = ({ pool, className }
           {/* Pot Breakdown */}
           <div className="bg-black/20 rounded-lg p-3 mb-4 space-y-1 text-sm">
             <div className="flex justify-between text-gray-400">
-              <span>Gross Pot:</span>
-              <span>{formatPrizeAmount(grossPot)}</span>
+              <span>Potential Pot:</span>
+              <span>{formatPrizeAmount(potentialGrossPot)}</span>
             </div>
             <div className="flex justify-between text-gray-500">
               <span>Vanta Fee ({rakePercent}%):</span>
@@ -75,69 +91,23 @@ const PoolPrizesSection: React.FC<PoolPrizesSectionProps> = ({ pool, className }
               <span>Net Prize Pool:</span>
               <span className="text-yellow-400 font-extrabold">{formatPrizeAmount(netPot)}</span>
             </div>
+            <p className="text-[10px] text-gray-500 italic mt-2 text-center">
+              * Prizes shown assume pool reaches max capacity ({maxParticipants} players). Actual prizes vary by participant count.
+            </p>
           </div>
 
           <div className="space-y-3">
-            {/* Hybrid Payout Logic */}
             {(() => {
-              const totalParticipants = pool.participants || 0;
-              const top25Count = Math.ceil(totalParticipants * 0.25);
-              const top10Count = Math.ceil(totalParticipants * 0.10);
-
-              // Calculate Prizes
-              const p1 = netPot * 0.22;
-              const p2 = netPot * 0.13;
-              const p3 = netPot * 0.095;
-
-              // Shared Pot (55.5%)
-              const sharedPot = netPot * 0.555;
-              const sharedWinnersCount = Math.max(0, top25Count - 3);
-              const sharedPrize = sharedWinnersCount > 0 ? sharedPot / sharedWinnersCount : 0;
-
-              // Define Rows
-              const rows = [
-                { rank: '1st', amount: p1, badge: '🏆 Champion', color: 'text-yellow-400', glow: true },
-                { rank: '2nd', amount: p2, badge: '🥈 Runner Up', color: 'text-gray-300', glow: false },
-                { rank: '3rd', amount: p3, badge: '🥉 Podium', color: 'text-amber-600', glow: false },
-              ];
-
-              // Add Shared Tiers if applicable
-              if (sharedWinnersCount > 0) {
-                // Elite Tier (4th to Top 10%)
-                const eliteStart = 4;
-                const eliteEnd = Math.max(4, top10Count);
-
-                if (eliteEnd >= eliteStart) {
-                  rows.push({
-                    rank: `${eliteStart}th - ${eliteEnd}th`,
-                    amount: sharedPrize,
-                    badge: '🎖️ Elite',
-                    color: 'text-blue-400',
-                    glow: false
-                  });
-                }
-
-                // Pro Tier (Next after Elite to Top 25%)
-                const proStart = eliteEnd + 1;
-                const proEnd = top25Count;
-
-                if (proEnd >= proStart) {
-                  rows.push({
-                    rank: `${proStart}th - ${proEnd}th`,
-                    amount: sharedPrize,
-                    badge: '🏅 Pro',
-                    color: 'text-green-400',
-                    glow: false
-                  });
-                }
-              }
+              // Priority: Utility handles Manual DB vs Dynamic
+              // PASS maxParticipants to calculate the POTENTIAL structure
+              const rows = calculatePoolPrizes(netPot, maxParticipants, pool.prizeDistribution as any[]);
 
               return rows.map((item, index) => (
                 <div key={index} className="flex items-center justify-between text-lg py-2 border-b border-white/5 last:border-0">
                   <div className="flex flex-col">
                     <div className="flex items-center space-x-2">
-                      <span className={cn("font-bold text-base", item.color)}>{item.rank}</span>
-                      {item.badge && <span className="text-xs bg-white/10 px-2 py-0.5 rounded text-gray-300">{item.badge}</span>}
+                      {/* Badges HIDDEN here as requested */}
+                      <span className={cn("font-bold text-base", item.color || "text-gray-300")}>{item.rank}</span>
                     </div>
                   </div>
                   <span className={cn(

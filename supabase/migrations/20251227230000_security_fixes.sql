@@ -5,6 +5,7 @@
 -- 1. Rake Structures (Public Read, Admin Write)
 ALTER TABLE public.rake_structures ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public Read Rake Structures" ON public.rake_structures;
 CREATE POLICY "Public Read Rake Structures"
     ON public.rake_structures FOR SELECT
     USING (true);
@@ -12,6 +13,7 @@ CREATE POLICY "Public Read Rake Structures"
 -- 2. Payout Structures (Public Read, Admin Write)
 ALTER TABLE public.payout_structures ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public Read Payout Structures" ON public.payout_structures;
 CREATE POLICY "Public Read Payout Structures"
     ON public.payout_structures FOR SELECT
     USING (true);
@@ -19,6 +21,7 @@ CREATE POLICY "Public Read Payout Structures"
 -- 3. User Badges (Public Read, System/Admin Write)
 ALTER TABLE public.user_badges ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public Read User Badges" ON public.user_badges;
 CREATE POLICY "Public Read User Badges"
     ON public.user_badges FOR SELECT
     USING (true);
@@ -26,14 +29,17 @@ CREATE POLICY "Public Read User Badges"
 -- 4. Pool Participants (Public Read for stats, System/User Write)
 ALTER TABLE public.pool_participants ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public Read Pool Participants" ON public.pool_participants;
 CREATE POLICY "Public Read Pool Participants"
     ON public.pool_participants FOR SELECT
     USING (true);
 
+DROP POLICY IF EXISTS "Users can join (insert own)" ON public.pool_participants;
 CREATE POLICY "Users can join (insert own)"
     ON public.pool_participants FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can left (delete own)" ON public.pool_participants;
 CREATE POLICY "Users can left (delete own)"
     ON public.pool_participants FOR DELETE
     USING (auth.uid() = user_id);

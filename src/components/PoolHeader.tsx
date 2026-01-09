@@ -14,7 +14,7 @@ const PoolHeader: React.FC<PoolHeaderProps> = ({ pool }) => {
   const startDate = new Date(pool.startTime);
   const endDate = new Date(pool.endTime);
 
-  const formattedDateRange = `${format(startDate, 'MMM dd')} - ${format(endDate, 'MMM yyyy')}`;
+  const formattedDateRange = `${format(startDate, 'MMM dd')} - ${format(endDate, 'MMM dd, yyyy')}`;
 
   return (
     <div

@@ -7,8 +7,13 @@ import { Game } from '../types/game';
 import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 import TeamLogo from './TeamLogo';
+import { cn } from '@/lib/utils'; // Import cn
 
-const GameSearch: React.FC = () => {
+interface GameSearchProps {
+    className?: string;
+}
+
+const GameSearch: React.FC<GameSearchProps> = ({ className }) => {
     const { games, loading } = useMatchesContext();
     const { setSelectedMatch } = useMatchSelection();
     const navigate = useNavigate();
@@ -74,7 +79,7 @@ const GameSearch: React.FC = () => {
     };
 
     return (
-        <div ref={wrapperRef} className="relative w-64 md:w-80">
+        <div ref={wrapperRef} className={cn("relative w-64 md:w-80", className)}>
             <div className="relative bg-[#053256] rounded-[14px] h-10 items-center flex border transition-colors border-transparent focus-within:border-vanta-neon-blue/50">
                 <Search className="absolute left-3 text-[#00EEEE]" size={18} />
                 <Input

@@ -56,13 +56,19 @@ const PoolDetails: React.FC = () => {
         }
 
         if (data) {
-          console.log("Pool Data Fetched:", data);
-          console.log("Guaranteed Pot:", data.guaranteed_pot);
-
           // Calculate effective prize pool (Max of collected vs guaranteed)
           const collectedPot = data.total_pot || 0;
           const guaranteedPot = data.guaranteed_pot || 0;
           const effectivePrizePool = Math.max(collectedPot, guaranteedPot);
+
+          // Determine Participant Count
+          // 1. Try actual DB entries
+          let finalParticipants = data.tournament_entries[0]?.count ?? 0;
+
+          // 2. Fallback: If 0 entries (e.g. manual pool), derive from Total Pot / Entry Fee
+          if (finalParticipants === 0 && collectedPot > 0 && (data.entry_fee || 0) > 0) {
+            finalParticipants = Math.floor(collectedPot / data.entry_fee);
+          }
 
           const mappedPool: Pool = {
             id: data.id,
@@ -72,7 +78,7 @@ const PoolDetails: React.FC = () => {
             prizePool: effectivePrizePool,
             guaranteedPot: guaranteedPot,
             entryFee: data.entry_fee,
-            participants: data.tournament_entries[0]?.count ?? 0,
+            participants: finalParticipants,
             maxParticipants: data.max_participants,
             startTime: data.start_time,
             endTime: data.end_time,
@@ -173,11 +179,11 @@ const PoolDetails: React.FC = () => {
   return (
     <div className="p-0 text-vanta-text-light w-full relative">
       {/* Back button */}
-      <div className="absolute top-4 left-4 z-20">
+      <div className="absolute top-4 left-4 z-50">
         <Button
           onClick={() => navigate(-1)}
           variant="ghost"
-          className="text-vanta-neon-blue hover:bg-vanta-accent-dark-blue flex items-center gap-2"
+          className="text-vanta-neon-blue hover:text-vanta-neon-blue hover:bg-transparent flex items-center gap-2"
         >
           <ArrowLeft size={20} /> Back to Pools
         </Button>

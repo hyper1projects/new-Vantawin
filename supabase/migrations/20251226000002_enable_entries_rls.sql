@@ -2,6 +2,7 @@
 ALTER TABLE public.tournament_entries ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can view their own entries
+DROP POLICY IF EXISTS "Users can view their own entries" ON public.tournament_entries;
 CREATE POLICY "Users can view their own entries" 
 ON public.tournament_entries FOR SELECT 
 USING (user_id = auth.uid());

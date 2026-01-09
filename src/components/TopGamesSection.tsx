@@ -52,37 +52,53 @@ const TopGamesSection: React.FC = () => {
       </div>
 
       <div className="flex space-x-1 w-full justify-start px-1 -mt-2 mb-1 border-b border-gray-700 pb-1">
-        <Button
+        <button
           onClick={() => setSelectedFilter('All')}
-          className={getButtonClasses('All')}
+          className={cn(
+            "h-11 px-3 text-sm rounded-[12px] font-semibold transition-colors border-0 outline-none cursor-pointer",
+            "focus:outline-none focus-visible:outline-none [-webkit-tap-highlight-color:transparent]",
+            selectedFilter === 'All'
+              ? "bg-[#00EEEE] text-[#081028]"
+              : "bg-[#0B295B] text-white"
+          )}
         >
           All
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => setSelectedFilter('Live')}
-          className={getButtonClasses('Live')}
+          className={cn(
+            "h-11 px-3 text-sm rounded-[12px] font-semibold transition-colors border-0 outline-none cursor-pointer",
+            "focus:outline-none focus-visible:outline-none [-webkit-tap-highlight-color:transparent]",
+            selectedFilter === 'Live'
+              ? "bg-[#00EEEE] text-[#081028]"
+              : "bg-[#0B295B] text-white"
+          )}
         >
           Live
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => setSelectedFilter('Upcoming')}
-          className={getButtonClasses('Upcoming')}
+          className={cn(
+            "h-11 px-3 text-sm rounded-[12px] font-semibold transition-colors border-0 outline-none cursor-pointer",
+            "focus:outline-none focus-visible:outline-none [-webkit-tap-highlight-color:transparent]",
+            selectedFilter === 'Upcoming'
+              ? "bg-[#00EEEE] text-[#081028]"
+              : "bg-[#0B295B] text-white"
+          )}
         >
           Upcoming
-        </Button>
+        </button>
       </div>
 
-      <div className="w-full flex flex-col space-y-1 px-1">
+      <div className="flex flex-col gap-4 px-4 w-full">
         {loading ? (
-          [...Array(3)].map((_, i) => <div className="w-full" key={i}><GameCardSkeleton /></div>)
+          [...Array(3)].map((_, i) => <GameCardSkeleton key={i} />)
         ) : filteredGames.length > 0 ? (
           filteredGames.map((game) => (
-            <div className="w-full" key={game.id}>
-              <Oddscard
-                key={game.id}
-                game={game}
-              />
-            </div>
+            <Oddscard
+              key={game.id}
+              game={game}
+            />
           ))
         ) : (
           <p className="text-vanta-text-light text-center py-4">No games found for this filter.</p>

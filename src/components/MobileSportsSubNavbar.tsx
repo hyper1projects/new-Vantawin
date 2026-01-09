@@ -23,22 +23,24 @@ const MobileSportsSubNavbar: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-16 left-0 right-0 h-12 bg-vanta-blue-dark border-b border-gray-700 z-40 flex items-center px-4 md:hidden">
+    <div className="fixed top-16 left-0 right-0 h-12 bg-vanta-blue-dark border-b border-gray-700 z-40 flex items-center px-4 lg:hidden">
       <div className="flex items-center space-x-4 overflow-x-auto [-webkit-scrollbar:none] [scrollbar-width:none] flex-grow">
         {sportsCategories.map((category) => (
-          <Button
+          <button
             key={category}
-            variant="ghost"
             onClick={() => handleSelectCategory(category)}
             className={cn(
-              `relative font-medium text-sm px-2 py-1 h-auto flex-shrink-0`,
+              "relative font-medium text-sm px-2 py-1 flex-shrink-0 transition-colors duration-200",
+              "bg-transparent border-0 outline-none cursor-pointer",
+              "focus:outline-none focus-visible:outline-none",
+              "[-webkit-tap-highlight-color:transparent]",
               isActive(category)
-                ? 'text-vanta-neon-blue after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-vanta-neon-blue'
-                : 'text-[#B4B2C0] hover:bg-transparent hover:text-white'
+                ? "text-[#00EEEE]"
+                : "text-[#B4B2C0] hover:text-[#00EEEE] hover:drop-shadow-[0_0_5px_#00EEEE]"
             )}
           >
             {category}
-          </Button>
+          </button>
         ))}
       </div>
     </div>

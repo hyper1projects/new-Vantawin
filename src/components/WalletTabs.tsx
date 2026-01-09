@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '../lib/utils';
 import RewardsHistory from './RewardsHistory';
 import TransactionList from './TransactionList';
+import WithdrawalHistory from './WithdrawalHistory';
 
-type MainTab = 'transactions' | 'rewards'; // Re-added 'rewards'
+type MainTab = 'transactions' | 'rewards' | 'withdrawals';
 type TransactionFilter = 'all' | 'deposits' | 'withdrawals' | 'refunds';
 
 interface WalletTabsProps {
@@ -41,10 +42,12 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
     switch (activeMainTab) {
       case 'transactions':
         return <TransactionList />;
-      case 'rewards': // Re-added rewards case
+      case 'rewards':
         return (
           <RewardsHistory />
         );
+      case 'withdrawals':
+        return <WithdrawalHistory />;
       default:
         return null;
     }
@@ -59,11 +62,17 @@ const WalletTabs: React.FC<WalletTabsProps> = ({ className }) => {
         >
           Transactions
         </Button>
-        <Button // Re-added Rewards button
+        <Button
           className={getMainTabButtonClasses('rewards')}
           onClick={() => setActiveMainTab('rewards')}
         >
           Rewards
+        </Button>
+        <Button
+          className={getMainTabButtonClasses('withdrawals')}
+          onClick={() => setActiveMainTab('withdrawals')}
+        >
+          Withdrawals
         </Button>
       </div>
       {renderTabContent()}

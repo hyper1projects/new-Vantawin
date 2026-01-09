@@ -5,8 +5,15 @@ ADD COLUMN IF NOT EXISTS type text CHECK (type IN ('exact_rank', 'percentile')),
 ADD COLUMN IF NOT EXISTS percentile_cutoff numeric DEFAULT NULL, -- e.g., 0.10 for top 10%
 ADD COLUMN IF NOT EXISTS badge_name text DEFAULT NULL;
 
--- 2. Clear old fixed structures
-TRUNCATE TABLE public.payout_structures;
+-- 1b. Relax constraints on rank columns (since we use percentiles now)
+ALTER TABLE public.payout_structures ALTER COLUMN rank_start DROP NOT NULL;
+ALTER TABLE public.payout_structures ALTER COLUMN rank_end DROP NOT NULL;
+
+-- 2. Clear old fixed structures (Moved up to ensure clean state for constraints)
+-- 2. Clear old fixed structures (Using DELETE to be safe)
+DELETE FROM public.payout_structures;
+
+-- (Removed complex indexes to simplify)
 
 -- 3. Seed new Hybrid Structure
 -- Top 3 (Exact Ranks)
@@ -16,8 +23,6 @@ INSERT INTO public.payout_structures (type, rank_start, rank_end, percentage, ba
 ('exact_rank', 3, 3, 9.5, 'Podium', '3rd Place');
 
 -- Shared Tail (Top 25% Share 55.5%)
--- We use a single row to define the monetary pool for the "Field"
--- The logic will be: Anyone > Rank 3 AND <= Total * 0.25 shares this percentage.
 INSERT INTO public.payout_structures (type, percentile_cutoff, percentage, description) VALUES
 ('percentile', 0.25, 55.5, 'Winners Circle Shared Pool');
 

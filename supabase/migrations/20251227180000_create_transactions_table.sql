@@ -17,6 +17,8 @@ CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON public.transactions(cr
 -- RLS: Users can view their own transactions
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own transactions" ON public.transactions;
+
 CREATE POLICY "Users can view own transactions"
     ON public.transactions FOR SELECT
     USING (auth.uid() = user_id);

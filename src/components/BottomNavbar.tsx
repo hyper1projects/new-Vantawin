@@ -33,7 +33,7 @@ const BottomNavbar: React.FC = () => {
               key={item.name}
               to={item.path}
               className={cn(
-                "flex flex-col items-center justify-center p-2 rounded-md transition-colors duration-200",
+                "flex flex-col items-center justify-center p-2 min-w-[44px] min-h-[44px] rounded-md transition-colors duration-200",
                 isActive ? "text-vanta-neon-blue" : "text-vanta-text-light hover:text-vanta-neon-blue"
               )}
             >

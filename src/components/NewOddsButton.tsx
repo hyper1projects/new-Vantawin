@@ -14,7 +14,7 @@ const NewOddsButton: React.FC<NewOddsButtonProps> = ({ value, label, onClick, is
     <button
         onClick={onClick}
         className={cn(
-            "bg-[#0B295B] text-white border border-gray-600 h-8 px-3 text-sm rounded-md transition-colors shadow-inner font-semibold",
+            "bg-[#0B295B] text-white border border-gray-600 h-11 min-w-[44px] max-w-[60px] px-2 sm:px-3 text-xs sm:text-sm rounded-md transition-colors shadow-inner font-semibold whitespace-nowrap",
             isSelected ? "bg-vanta-neon-blue text-vanta-blue-dark" : "hover:border-vanta-accent-dark-blue"
         )}
     >

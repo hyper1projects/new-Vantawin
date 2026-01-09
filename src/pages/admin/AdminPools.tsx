@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../..
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminPoolList from './AdminPoolList';
 import AdminPoolConsolidation from './AdminPoolConsolidation';
+import AdminPayoutOverrides from './AdminPayoutOverrides';
 
 export default function AdminPools() {
     const [loading, setLoading] = useState(false);
@@ -96,6 +97,7 @@ export default function AdminPools() {
                 <TabsList className="bg-white/5 border-white/10">
                     <TabsTrigger value="create">Create Pool</TabsTrigger>
                     <TabsTrigger value="manage">Manage Pools</TabsTrigger>
+                    <TabsTrigger value="payouts">Payouts</TabsTrigger>
                     <TabsTrigger value="tools">Tools</TabsTrigger>
                 </TabsList>
 
@@ -276,6 +278,10 @@ export default function AdminPools() {
 
                 <TabsContent value="manage">
                     <AdminPoolList />
+                </TabsContent>
+
+                <TabsContent value="payouts">
+                    <AdminPayoutOverrides />
                 </TabsContent>
 
                 <TabsContent value="tools">

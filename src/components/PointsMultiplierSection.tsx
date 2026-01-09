@@ -27,7 +27,7 @@ const PointsMultiplierSection: React.FC<PointsMultiplierSectionProps> = ({ class
     .slice(0, 6);
 
   return (
-    <div className={`flex flex-col items-start space-y-6 ${className || ''}`}>
+    <div className={`flex flex-col items-start space-y-2 ${className || ''}`}>
       <div className="w-full">
         <SectionHeader title="Hot Today" className="w-full" textColor="text-white" />
       </div>

@@ -18,7 +18,7 @@ const UserTabs: React.FC = () => {
 
   const getMainTabButtonClasses = (tabValue: MainTab) => {
     return cn(
-      "px-6 py-3 rounded-[20px] text-lg font-semibold transition-colors duration-200",
+      "px-3 py-1.5 md:px-6 md:py-3 rounded-[14px] md:rounded-[20px] text-xs md:text-lg font-semibold transition-colors duration-200 whitespace-nowrap flex-shrink-0",
       activeMainTab === tabValue
         ? "bg-vanta-blue-medium text-vanta-neon-blue"
         : "bg-transparent text-vanta-text-light hover:bg-vanta-blue-light"
@@ -31,21 +31,21 @@ const UserTabs: React.FC = () => {
         return <MyGamesTab />;
       case 'rankHistory':
         return (
-          <div className="bg-vanta-blue-medium p-6 rounded-[27px] shadow-sm text-vanta-text-light w-full">
-            <h3 className="text-xl font-semibold mb-4">Rank History</h3>
+          <div className="bg-vanta-blue-medium p-4 md:p-6 rounded-[22px] md:rounded-[27px] shadow-sm text-vanta-text-light w-full">
+            <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Rank History</h3>
             <div className="text-vanta-text-light">
               {historyLoading ? (
-                <div className="text-center py-4 text-gray-400">Loading history...</div>
+                <div className="text-center py-4 text-gray-400 text-xs md:text-base">Loading history...</div>
               ) : history.length === 0 ? (
                 <div className="text-center py-4 text-gray-400">No rank history available yet. Complete a pool to see your ranking!</div>
               ) : (
                 <>
                   <p className="mb-4 text-gray-400 text-sm">Your performance in past tournaments.</p>
                   {history.map((entry) => (
-                    <div key={entry.poolId} className="flex justify-between items-center py-3 border-b border-gray-800 last:border-b-0 hover:bg-white/5 px-2 rounded-lg transition-colors">
+                    <div key={entry.poolId} className="flex justify-between items-center py-2 md:py-3 border-b border-gray-800 last:border-b-0 hover:bg-vanta-neon-blue/10 px-2 rounded-lg transition-colors text-xs md:text-sm">
                       <span className="font-medium text-vanta-neon-blue">Rank: #{entry.rank}</span>
-                      <span className="text-sm">{format(new Date(entry.date), 'MMM d, yyyy')}</span>
-                      <span className="text-sm text-gray-400">XP: {entry.xp.toLocaleString()}</span>
+                      <span className="text-gray-300">{format(new Date(entry.date), 'MMM d, yyyy')}</span>
+                      <span className="text-gray-400">XP: {entry.xp.toLocaleString()}</span>
                     </div>
                   ))}
                 </>
@@ -61,26 +61,26 @@ const UserTabs: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="bg-vanta-blue-dark p-2 rounded-[27px] flex space-x-2 w-full md:w-fit">
-        <Button
+    <div className="flex flex-col space-y-4 md:space-y-6">
+      <div className="bg-vanta-blue-dark p-1.5 md:p-2 rounded-[20px] md:rounded-[27px] flex space-x-1 md:space-x-2 w-full md:w-fit overflow-x-auto scrollbar-hide no-scrollbar">
+        <button
           className={getMainTabButtonClasses('myGames')}
           onClick={() => setActiveMainTab('myGames')}
         >
           My Games
-        </Button>
-        <Button
+        </button>
+        <button
           className={getMainTabButtonClasses('rankHistory')}
           onClick={() => setActiveMainTab('rankHistory')}
         >
           Rank History
-        </Button>
-        <Button
+        </button>
+        <button
           className={getMainTabButtonClasses('transactions')}
           onClick={() => setActiveMainTab('transactions')}
         >
           Transactions
-        </Button>
+        </button>
       </div>
       {renderTabContent()}
     </div>

@@ -161,25 +161,24 @@ export default function MyGamesTab() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4 bg-black/20 p-3 rounded-xl">
-                            <div>
-                                <div className="text-xs text-gray-500 uppercase tracking-tighter">Your Pick</div>
-                                <div className="text-[10px] text-gray-400 font-medium mb-0.5">{getQuestionName(bet)}</div>
-                                <div className="font-medium text-vanta-neon-blue truncate" title={getSelectionName(bet)}>
-                                    {getSelectionName(bet)}
+                        <div className="bg-black/20 p-2 md:p-3 rounded-xl flex items-center justify-between gap-1 md:gap-4">
+                            <div className="flex-1 min-w-0">
+                                <div className="text-[9px] md:text-xs text-gray-500 uppercase tracking-tighter mb-0.5">Your Pick</div>
+                                <div className="text-[10px] md:text-xs text-gray-300 truncate font-medium">
+                                    {getQuestionName(bet)}: <span className="text-vanta-neon-blue">{getSelectionName(bet)}</span>
                                 </div>
                             </div>
-                            <div>
-                                <div className="text-xs text-gray-500 uppercase tracking-tighter">Wager</div>
-                                <div className="font-medium text-vanta-text-light">
-                                    {bet.stake_vanta} Vanta
+                            <div className="text-center px-2">
+                                <div className="text-[9px] md:text-xs text-gray-500 uppercase tracking-tighter mb-0.5">Wager</div>
+                                <div className="text-[10px] md:text-base text-vanta-text-light font-bold">
+                                    {bet.stake_vanta}
                                 </div>
                             </div>
-                            <div>
-                                <div className="text-xs text-gray-500 uppercase tracking-tighter">
-                                    {isWin ? 'XP Gained' : 'Potential XP'}
+                            <div className="text-right">
+                                <div className="text-[9px] md:text-xs text-gray-500 uppercase tracking-tighter mb-0.5">
+                                    {isWin ? 'Gained' : 'Pot. XP'}
                                 </div>
-                                <div className={`font-bold ${isWin ? 'text-emerald-400' : 'text-gray-300'}`}>
+                                <div className={`font-bold text-[10px] md:text-base ${isWin ? 'text-emerald-400' : 'text-gray-300'}`}>
                                     {potentialWin} XP
                                 </div>
                             </div>

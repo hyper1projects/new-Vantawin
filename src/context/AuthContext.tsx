@@ -35,12 +35,19 @@ interface AuthContextType {
   balance: number;
   shardsBalance: number;
   displayName: string;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
   signIn: (identifier: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, username: string, password: string) => Promise<{ data: { user: User | null } | null; error: any }>;
   signOut: () => Promise<{ error: any }>;
   resetPasswordForEmail: (email: string) => Promise<{ error: any }>;
-  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number }>;
-  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; wallet_address?: string; avatar_url?: string; telegram_id?: number }) => Promise<{ error: any }>;
+  updatePassword: (newPassword: string) => Promise<{ error: any }>;
+  fetchUserProfile: (userId: string) => Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number; shardsBalance: number; emailNotifications: boolean; smsNotifications: boolean; pushNotifications: boolean }>;
+  updateUserProfile: (userId: string, updates: { username?: string; first_name?: string; last_name?: string; mobile_number?: string; date_of_birth?: string; gender?: string; wallet_address?: string; avatar_url?: string; telegram_id?: number; email_notifications?: boolean; sms_notifications?: boolean; push_notifications?: boolean }) => Promise<{ error: any }>;
+  deactivateAccount: (reason: string) => Promise<{ error: any }>;
+  deleteAccount: (reason: string) => Promise<{ error: any }>;
+  refreshBalance: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,6 +71,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [balance, setBalance] = useState<number>(0);
   const [shardsBalance, setShardsBalance] = useState<number>(0);
   const [displayName, setDisplayName] = useState<string>('Guest');
+  const [emailNotifications, setEmailNotifications] = useState<boolean>(true);
+  const [smsNotifications, setSmsNotifications] = useState<boolean>(false);
+  const [pushNotifications, setPushNotifications] = useState<boolean>(true);
   const navigate = useNavigate();
 
   const [initData, setInitData] = useState<any>(undefined);
@@ -86,7 +96,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, []);
 
-  const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number; shardsBalance: number } | null) => {
+  const setUserState = (profile: { username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number; shardsBalance: number; emailNotifications: boolean; smsNotifications: boolean; pushNotifications: boolean } | null) => {
     setUsername(profile?.username || null);
     setFirstName(profile?.firstName || null);
     setLastName(profile?.lastName || null);
@@ -98,16 +108,19 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     setWalletAddress(profile?.walletAddress || null);
     setBalance(profile?.balance || 0);
     setShardsBalance(profile?.shardsBalance || 0);
+    setEmailNotifications(profile?.emailNotifications ?? true);
+    setSmsNotifications(profile?.smsNotifications ?? false);
+    setPushNotifications(profile?.pushNotifications ?? true);
 
     if (!isTelegram) {
       setDisplayName(profile?.username || `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim() || 'Guest');
     }
   };
 
-  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number; shardsBalance: number }> => {
+  const fetchUserProfile = async (userId: string): Promise<{ username: string | null; firstName: string | null; lastName: string | null; mobileNumber: string | null; dateOfBirth: string | null; gender: string | null; walletAddress: string | null; avatarUrl: string | null; telegramId: number | null; balance: number; shardsBalance: number; emailNotifications: boolean; smsNotifications: boolean; pushNotifications: boolean }> => {
     const { data, error } = await supabase
-      .from('users') // NOTE: Changed from 'profiles' to 'users' based on schema migration 20251220110000. IF profiles is alias, ok. But migration said 'users'.
-      .select('username, first_name, last_name, phone_number, date_of_birth, gender, wallet_address, avatar_url, telegram_id, real_money_balance, shards_balance')
+      .from('users')
+      .select('username, first_name, last_name, phone_number, date_of_birth, gender, wallet_address, avatar_url, telegram_id, real_money_balance, shards_balance, email_notifications, sms_notifications, push_notifications')
       .eq('id', userId)
       .single();
 
@@ -127,6 +140,9 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
       telegramId: data?.telegram_id || null,
       balance: data?.real_money_balance || 0,
       shardsBalance: data?.shards_balance || 0,
+      emailNotifications: data?.email_notifications ?? true,
+      smsNotifications: data?.sms_notifications ?? false,
+      pushNotifications: data?.push_notifications ?? true,
     };
   };
 
@@ -303,10 +319,38 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
     return supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/update-password` });
   };
 
+  const updatePassword = async (newPassword: string) => {
+    return supabase.auth.updateUser({ password: newPassword });
+  };
+
+  const deactivateAccount = async (reason: string) => {
+    const { data, error } = await supabase.rpc('deactivate_account', { reason });
+    if (!error && data?.success) {
+      await signOut();
+    }
+    return { error: error || (data?.error ? { message: data.error } : null) };
+  };
+
+  const deleteAccount = async (reason: string) => {
+    const { data, error } = await supabase.rpc('delete_account', { reason });
+    if (!error && data?.success) {
+      await signOut();
+    }
+    return { error: error || (data?.error ? { message: data.error } : null) };
+  };
+
+  const refreshBalance = async () => {
+    if (user) {
+      const profile = await fetchUserProfile(user.id);
+      setUserState(profile);
+    }
+  };
+
   const value = {
     session, user, username, firstName, lastName, mobileNumber, dateOfBirth, gender, avatarUrl, walletAddress, balance, shardsBalance,
     isLoading, isTelegram, telegramUser, telegramId, displayName,
-    signIn, signUp, signOut, resetPasswordForEmail, fetchUserProfile, updateUserProfile
+    emailNotifications, smsNotifications, pushNotifications,
+    signIn, signUp, signOut, resetPasswordForEmail, updatePassword, fetchUserProfile, updateUserProfile, deactivateAccount, deleteAccount, refreshBalance
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

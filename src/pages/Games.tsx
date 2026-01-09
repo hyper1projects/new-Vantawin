@@ -20,6 +20,14 @@ const Games = () => {
 
   return (
     <div className="p-4">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <span className="w-1 h-6 bg-vanta-neon-blue rounded-full"></span>
+          Games
+        </h1>
+      </div>
+
       {/* Conditionally render content based on selectedSport */}
       {urlCategory === 'football' ? (
         <>

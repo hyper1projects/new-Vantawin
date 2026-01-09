@@ -8,14 +8,15 @@ import { cn } from '../lib/utils';
 import { format } from 'date-fns';
 import { useNavigate, Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Sparkles, Loader2, PlayCircle } from 'lucide-react';
+import { Sparkles, Loader2, PlayCircle, Trophy, Wallet, Users, Award } from 'lucide-react';
 import { useState } from 'react';
 
 interface PoolCardProps {
   pool: Pool;
+  isJoined: boolean;
 }
 
-const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
+const PoolCard: React.FC<PoolCardProps> = ({ pool, isJoined }) => {
   const navigate = useNavigate();
   const [isJoining, setIsJoining] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -113,32 +114,52 @@ const PoolCard: React.FC<PoolCardProps> = ({ pool }) => {
 
         <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-vanta-text-light mb-6">
           <div className="flex items-center">
-            <span className="font-medium text-gray-400 mr-2">Prize Pool:</span>
+            <Trophy className="w-4 h-4 text-yellow-400 mr-1.5" />
             <span className="font-semibold text-vanta-neon-blue">${formatPrizePool(pool.prizePool)}</span>
           </div>
           <div className="flex items-center">
-            <span className="font-medium text-gray-400 mr-2">Entry Fee:</span>
+            <Wallet className="w-4 h-4 text-green-400 mr-1.5" />
             <span className="font-semibold text-vanta-neon-blue">${pool.entryFee}</span>
           </div>
           <div className="flex items-center">
-            <span className="font-medium text-gray-400 mr-2">Participants:</span>
+            <Users className="w-4 h-4 text-purple-400 mr-1.5" />
             <span className="font-semibold">{pool.participants}/{pool.maxParticipants}</span>
           </div>
           <div className="flex items-center">
-            <span className="font-medium text-gray-400 mr-2">Tier:</span>
+            <Award className="w-4 h-4 text-cyan-400 mr-1.5" />
             <span className={cn("text-xs font-semibold px-2 py-1 rounded-md", getTierClasses(pool.tier))}>
               {pool.tier}
             </span>
           </div>
         </div>
 
-        <Button
-          className="w-full mt-auto bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 font-bold z-10 relative"
-          onClick={handleJoin}
-          disabled={isJoining}
-        >
-          {isJoining ? <Loader2 className="w-4 h-4 animate-spin" /> : "Join Now"}
-        </Button>
+        {pool.status === 'ended' ? (
+          <Button
+            className="w-full mt-auto bg-gray-700/50 text-gray-400 font-bold z-10 relative cursor-not-allowed hover:bg-gray-700/50"
+            disabled
+          >
+            Ended
+          </Button>
+        ) : isJoined ? (
+          <Button
+            className="w-full mt-auto bg-green-500/20 text-green-400 hover:bg-green-500/30 font-bold z-10 relative border border-green-500/30"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/pools/${pool.id}`);
+            }}
+          >
+            <PlayCircle className="w-4 h-4 mr-2" />
+            Joined
+          </Button>
+        ) : (
+          <Button
+            className="w-full mt-auto bg-vanta-neon-blue text-vanta-blue-dark hover:bg-vanta-neon-blue/90 font-bold z-10 relative"
+            onClick={handleJoin}
+            disabled={isJoining}
+          >
+            {isJoining ? <Loader2 className="w-4 h-4 animate-spin" /> : "Join Now"}
+          </Button>
+        )}
       </Link>
 
       <Dialog open={showSuccessModal} onOpenChange={(open) => {

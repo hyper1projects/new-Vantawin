@@ -22,7 +22,7 @@ const ChampionsLeagueSection: React.FC = () => {
   return (
     <div className="flex flex-col items-center space-y-6 bg-vanta-blue-medium rounded-[27px] shadow-sm pb-12">
       <CollapsibleSection title="Champions League Matches" count={championsLeagueGames.length} defaultOpen={true}>
-        <div className="w-full flex flex-col space-y-4 px-4 pt-4">
+        <div className="flex flex-col gap-4 px-4 pt-4 w-full">
           {loading ? (
             [...Array(3)].map((_, i) => <GameCardSkeleton key={i} />)
           ) : championsLeagueGames.length > 0 ? (

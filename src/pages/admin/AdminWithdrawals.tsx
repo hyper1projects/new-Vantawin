@@ -1,121 +1,153 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, CheckCircle, XCircle, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function AdminWithdrawals() {
-    const [withdrawals, setWithdrawals] = useState<any[]>([]);
+interface WithdrawalRequest {
+    id: string;
+    user_id: string;
+    amount: number;
+    currency: string;
+    wallet_address: string;
+    status: string;
+    created_at: string;
+    user?: { username: string };
+}
+
+const AdminWithdrawals = () => {
+    const [requests, setRequests] = useState<WithdrawalRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
 
-    const fetchWithdrawals = async () => {
-        setLoading(true);
-        const { data, error } = await supabase
-            .from('withdrawals')
-            .select('*, users(username, wallet_address)') // Assuming users has these
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error(error);
-            toast.error('Failed to load withdrawals');
-        }
-        else setWithdrawals(data || []);
-        setLoading(false);
-    };
-
     useEffect(() => {
-        fetchWithdrawals();
+        fetchRequests();
     }, []);
 
-    const handleProcess = async (id: string, action: 'approved' | 'rejected') => {
-        if (!confirm(`Are you sure you want to MARK this as ${action.toUpperCase()}?`)) return;
+    const fetchRequests = async () => {
+        setLoading(true);
+        console.log("AdminWithdrawals: Fetching requests...");
+        try {
+            const { data, error } = await supabase
+                .from('withdrawal_requests')
+                .select('*, users(username)')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: true });
 
-        setProcessingId(id);
-        const { error } = await supabase.rpc('process_withdrawal', {
-            p_withdrawal_id: id,
-            p_status: action,
-            p_notes: `Processed by Admin at ${new Date().toISOString()}`
-        });
-
-        if (error) {
-            toast.error(error.message);
-        } else {
-            toast.success(`Withdrawal ${action}`);
-            fetchWithdrawals();
+            if (error) {
+                console.error("AdminWithdrawals: Supabase error", error);
+                throw error;
+            }
+            console.log("AdminWithdrawals: Data received", data);
+            setRequests(data as any || []);
+        } catch (error) {
+            console.error('Error fetching requests:', error);
+            toast.error('Failed to load requests');
+        } finally {
+            setLoading(false);
         }
-        setProcessingId(null);
     };
 
-    if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+    const handleApprove = async (id: string) => {
+        setProcessingId(id);
+        try {
+            const { data, error } = await supabase.functions.invoke('process-withdrawal', {
+                body: { request_ids: [id] }
+            });
+
+            if (error) throw error;
+            if (data.error) throw new Error(data.error);
+
+            toast.success('Withdrawal Approved & Processed');
+            fetchRequests();
+        } catch (err: any) {
+            console.error('Approval Error:', err);
+            toast.error(`Approval Failed: ${err.message}`);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleReject = async (id: string) => {
+        if (!confirm('Are you sure you want to REJECT this withdrawal? The user will be refunded.')) return;
+
+        setProcessingId(id);
+        try {
+            const { error } = await supabase.rpc('reject_withdrawal', {
+                p_request_id: id,
+                p_reason: 'Admin Rejected'
+            });
+
+            if (error) throw error;
+
+            toast.success('Withdrawal Rejected & Refunded');
+            fetchRequests();
+        } catch (err: any) {
+            console.error('Rejection Error:', err);
+            toast.error(`Rejection Failed: ${err.message}`);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    if (loading) return <div className="p-8 text-center"><Loader2 className="animate-spin inline-block" /> Loading Requests...</div>;
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Withdrawal Requests</h2>
-                <button onClick={fetchWithdrawals} className="text-sm text-vanta-neon-blue hover:underline">Refresh</button>
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-400">Pending Withdrawals ({requests.length})</h2>
+                <Button variant="outline" size="sm" onClick={fetchRequests}>Refresh List</Button>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="text-gray-400 border-b border-white/10 text-sm">
-                            <th className="p-3">User</th>
-                            <th className="p-3">Amount</th>
-                            <th className="p-3">Wallet</th>
-                            <th className="p-3">Status</th>
-                            <th className="p-3">Date</th>
-                            <th className="p-3 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {withdrawals.length === 0 && (
-                            <tr>
-                                <td colSpan={6} className="p-8 text-center text-gray-500">No withdrawal requests found.</td>
-                            </tr>
-                        )}
-                        {withdrawals.map(w => (
-                            <tr key={w.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                <td className="p-3 font-medium">{w.users?.username || 'Unknown'}</td>
-                                <td className="p-3 text-emerald-400 font-bold">${w.amount}</td>
-                                <td className="p-3 text-xs font-mono text-gray-400">{w.wallet_address || w.users?.wallet_address}</td>
-                                <td className="p-3">
-                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${w.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500' :
-                                            w.status === 'rejected' ? 'bg-red-500/10 text-red-500' :
-                                                'bg-yellow-500/10 text-yellow-500'
-                                        }`}>
-                                        {w.status}
-                                    </span>
-                                </td>
-                                <td className="p-3 text-xs text-gray-400">
-                                    {new Date(w.created_at).toLocaleDateString()}
-                                </td>
-                                <td className="p-3 text-right">
-                                    {w.status === 'pending' && (
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                onClick={() => handleProcess(w.id, 'approved')}
-                                                disabled={!!processingId}
-                                                className="p-2 bg-emerald-500/10 text-emerald-500 rounded hover:bg-emerald-500/20 disabled:opacity-50"
-                                                title="Approve"
-                                            >
-                                                <CheckCircle className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleProcess(w.id, 'rejected')}
-                                                disabled={!!processingId}
-                                                className="p-2 bg-red-500/10 text-red-500 rounded hover:bg-red-500/20 disabled:opacity-50"
-                                                title="Reject"
-                                            >
-                                                <XCircle className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+            {requests.length === 0 ? (
+                <div className="p-12 bg-white/5 rounded-xl text-center text-gray-500">
+                    No pending withdrawal requests.
+                </div>
+            ) : (
+                <div className="grid gap-4">
+                    {requests.map((req) => (
+                        <div key={req.id} className="bg-black/20 border border-white/10 rounded-xl p-6 flex flex-col md:flex-row justify-between md:items-center gap-4 hover:bg-black/30 transition-colors">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-mono text-xs text-gray-500 bg-black/40 px-2 py-1 rounded">{req.id.slice(0, 8)}...</span>
+                                    <span className="font-bold text-lg text-white">{(req as any).users?.username || 'User'}</span>
+                                </div>
+                                <div className="text-2xl font-bold text-vanta-neon-blue">
+                                    ${req.amount.toFixed(2)} <span className="text-sm text-gray-400">{req.currency}</span>
+                                </div>
+                                <div className="text-xs text-gray-400 font-mono bg-black/20 p-2 rounded break-all">
+                                    {req.wallet_address}
+                                </div>
+                                <div className="text-xs text-gray-600">
+                                    Requested: {new Date(req.created_at).toLocaleString()}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    onClick={() => handleReject(req.id)}
+                                    disabled={!!processingId}
+                                    variant="destructive"
+                                    className="bg-red-500/20 text-red-400 hover:bg-red-500/40 border-0"
+                                >
+                                    <XCircle className="mr-2 h-4 w-4" />
+                                    Reject
+                                </Button>
+                                <Button
+                                    onClick={() => handleApprove(req.id)}
+                                    disabled={!!processingId}
+                                    className="bg-green-500/20 text-green-400 hover:bg-green-500/40 border-0"
+                                >
+                                    {processingId === req.id ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                                    Approve (Pay)
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
-}
+};
+
+export default AdminWithdrawals;

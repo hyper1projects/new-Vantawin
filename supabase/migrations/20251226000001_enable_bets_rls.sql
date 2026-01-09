@@ -3,6 +3,7 @@ ALTER TABLE public.bets ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can view their own bets
 -- They can see bets where the linked entry belongs to them
+DROP POLICY IF EXISTS "Users can view their own bets" ON public.bets;
 CREATE POLICY "Users can view their own bets" 
 ON public.bets FOR SELECT 
 USING (

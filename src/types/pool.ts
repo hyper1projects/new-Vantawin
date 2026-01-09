@@ -1,6 +1,9 @@
 export interface PoolPrize {
   rank: string;
   amount: number;
+  badge?: string;
+  color?: string;
+  glow?: boolean;
 }
 
 export interface Pool {

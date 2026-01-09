@@ -1,267 +1,146 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Download, AlertCircle, CheckCircle, ChevronDown, ChevronRight, Edit2, Save, X } from 'lucide-react';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-
-interface PayoutBatch {
-    id: string;
-    pool_id: string;
-    status: string;
-    total_amount: number;
-    created_at: string;
-    pools?: {
-        name: string;
-        tier: string;
-    };
-    loading?: boolean;
-}
-
-interface PayoutItem {
-    id: string;
-    user_id: string;
-    wallet_address: string;
-    amount: number;
-    currency: string;
-    rank: number;
-    status: string;
-    // Joined user info
-    // We might need to fetch user separately or join in query
-}
+import { Loader2, CheckCircle, Eye } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 export default function AdminPayouts() {
-    const [batches, setBatches] = useState<PayoutBatch[]>([]);
-    const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
-    const [items, setItems] = useState<PayoutItem[]>([]);
+    const [batches, setBatches] = useState<any[]>([]);
+    const [payoutItems, setPayoutItems] = useState<any[]>([]);
+    const [selectedBatch, setSelectedBatch] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [itemsLoading, setItemsLoading] = useState(false);
-
-    // Edit State
-    const [editingItem, setEditingItem] = useState<string | null>(null);
-    const [editForm, setEditForm] = useState<{ wallet: string; amount: number }>({ wallet: '', amount: 0 });
+    const [approving, setApproving] = useState(false);
 
     useEffect(() => {
-        fetchBatches();
+        fetchPendingBatches();
     }, []);
 
-    useEffect(() => {
-        if (selectedBatchId) {
-            fetchItems(selectedBatchId);
-        } else {
-            setItems([]);
-        }
-    }, [selectedBatchId]);
-
-    const fetchBatches = async () => {
+    const fetchPendingBatches = async () => {
         setLoading(true);
         const { data, error } = await supabase
             .from('payout_batches')
-            .select('*, pools(name, tier)')
+            .select(`
+                id,
+                status,
+                total_amount,
+                created_at,
+                pools (
+                    id,
+                    name,
+                    end_time
+                )
+            `)
+            .eq('status', 'processing') // or 'draft' depending on flow, but func sets to processing
             .order('created_at', { ascending: false });
 
-        if (error) console.error('Error fetching batches:', error);
-        else setBatches(data || []);
+        if (error) {
+            console.error(error);
+            toast.error('Failed to fetch pending batches');
+        } else {
+            setBatches(data || []);
+        }
         setLoading(false);
     };
 
-    const fetchItems = async (batchId: string) => {
-        setItemsLoading(true);
+    const loadBatchItems = async (batchId: string) => {
+        setSelectedBatch(batchId);
         const { data, error } = await supabase
             .from('payout_batch_items')
-            .select('*')
+            .select('*, users(username)')
             .eq('batch_id', batchId)
             .order('rank', { ascending: true });
 
-        if (error) console.error('Error fetching items:', error);
-        else setItems(data || []);
-        setItemsLoading(false);
-    };
-
-    const handleEditClick = (item: PayoutItem) => {
-        setEditingItem(item.id);
-        setEditForm({ wallet: item.wallet_address, amount: item.amount });
-    };
-
-    const handleSaveItem = async (itemId: string) => {
-        const { error } = await supabase
-            .from('payout_batch_items')
-            .update({
-                wallet_address: editForm.wallet,
-                amount: editForm.amount
-            })
-            .eq('id', itemId);
-
         if (error) {
-            alert('Failed to update item');
+            console.error(error);
+            toast.error('Failed to load batch items');
         } else {
-            setItems(items.map(i => i.id === itemId ? { ...i, wallet_address: editForm.wallet, amount: editForm.amount } : i));
-            setEditingItem(null);
-            // Re-fetch batch to update total? Or just optimistically update batch total? 
-            // For now, reload batch list
-            fetchBatches();
+            setPayoutItems(data || []);
         }
     };
 
-    const downloadJson = () => {
-        if (!items.length) return;
+    const handleApprove = async () => {
+        if (!selectedBatch) return;
+        if (!confirm('Are you sure you want to approve and distribute these funds? This action involves real money.')) return;
 
-        // Format for NOWPayments Mass Payout
-        // Expected format: Array of { "amount": number, "currency": string, "address": string, "extra_id": null }
-        // Or checking docs: Mass payout usually takes a specific structure. 
-        // We will dump a simple array that matches their example input usually.
-        const payload = items
-            .filter(i => i.status !== 'excluded')
-            .map(i => ({
-                amount: i.amount,
-                currency: i.currency,
-                address: i.wallet_address,
-                extra_id: null, // or user_id for tracking
-                ipn_callback_url: null // optional
-            }));
+        setApproving(true);
+        const { error } = await supabase.rpc('approve_payout_batch', { p_batch_id: selectedBatch });
 
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `payout_batch_${selectedBatchId}.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+        if (error) {
+            console.error(error);
+            toast.error(`Approval Failed: ${error.message}`);
+        } else {
+            toast.success('Payouts Approved & Distributed!');
+            setSelectedBatch(null);
+            setPayoutItems([]);
+            fetchPendingBatches();
+        }
+        setApproving(false);
     };
 
-    return (
-        <div className="text-white space-y-6">
-            <h2 className="text-2xl font-bold mb-4">Payout Batches</h2>
+    if (loading) return <div className="p-8"><Loader2 className="animate-spin" /></div>;
 
-            {/* Batch List */}
-            <div className="bg-[#011B47] rounded-xl border border-white/10 p-4">
-                {loading ? (
-                    <div className="flex justify-center p-8"><Loader2 className="animate-spin text-vanta-neon-blue" /></div>
-                ) : batches.length === 0 ? (
-                    <p className="text-gray-400 text-center py-8">No payout batches generated yet.</p>
-                ) : (
-                    <div className="space-y-2">
-                        {batches.map(batch => (
-                            <div
-                                key={batch.id}
-                                onClick={() => setSelectedBatchId(selectedBatchId === batch.id ? null : batch.id)}
-                                className={`p-4 rounded-lg cursor-pointer transition-colors border ${selectedBatchId === batch.id ? 'bg-vanta-accent-dark-blue border-vanta-neon-blue' : 'bg-white/5 border-transparent hover:bg-white/10'}`}
-                            >
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center space-x-4">
-                                        {selectedBatchId === batch.id ? <ChevronDown className="text-vanta-neon-blue" /> : <ChevronRight className="text-gray-400" />}
-                                        <div>
-                                            <h3 className="font-bold text-white">{batch.pools?.name} <span className="text-xs text-gray-400 ml-2">({batch.pools?.tier})</span></h3>
-                                            <span className="text-xs text-gray-400">{new Date(batch.created_at).toLocaleString()}</span>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-mono text-emerald-400 font-bold">${batch.total_amount?.toLocaleString()}</div>
-                                        <div className={`text-xs px-2 py-0.5 rounded-full inline-block ${batch.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                                            {batch.status.toUpperCase()}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+    return (
+        <div className="space-y-6">
+            <h2 className="text-xl font-semibold">Pending Payout Batches</h2>
+
+            {/* List of Batches */}
+            {batches.length === 0 && !selectedBatch && (
+                <div className="p-12 text-center text-gray-500 bg-white/5 rounded-xl">
+                    No batches waiting for approval.
+                </div>
+            )}
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {batches.map(batch => (
+                    <div key={batch.id} className={`p-4 border rounded-xl cursor-pointer transition-colors ${selectedBatch === batch.id ? 'bg-vanta-neon-blue/20 border-vanta-neon-blue' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                        onClick={() => loadBatchItems(batch.id)}
+                    >
+                        <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-bold text-white">{batch.pools?.name || 'Unknown Pool'}</h3>
+                            <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full uppercase">{batch.status}</span>
+                        </div>
+
+                        <p className="text-xs text-gray-400">Total Payout: <span className="text-green-400 font-mono">${batch.total_amount}</span></p>
+                        <p className="text-xs text-gray-500 mt-1">Created: {new Date(batch.created_at).toLocaleDateString()}</p>
+
+                        <div className="flex items-center gap-2 mt-3 text-vanta-neon-blue text-sm">
+                            <Eye size={16} /> Review Distribution
+                        </div>
                     </div>
-                )}
+                ))}
             </div>
 
-            {/* Selected Batch Details */}
-            {selectedBatchId && (
-                <div className="bg-[#011B47] rounded-xl border border-white/10 p-6 animate-in slide-in-from-top-4">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-bold text-white">Batch Details</h3>
-                        <button
-                            onClick={downloadJson}
-                            className="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold transition-colors"
-                        >
-                            <Download size={18} />
-                            <span>Download JSON</span>
-                        </button>
+            {/* Selected Detail View */}
+            {selectedBatch && (
+                <div className="bg-black/20 border border-white/10 rounded-xl p-6 mt-8 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-bold">Distribution Plan</h3>
+                        <Button onClick={handleApprove} disabled={approving} className="bg-green-600 hover:bg-green-700">
+                            {approving ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle className="mr-2" />}
+                            Execute Distribution
+                        </Button>
                     </div>
 
-                    {itemsLoading ? (
-                        <div className="flex justify-center p-12"><Loader2 className="animate-spin text-vanta-neon-blue" /></div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="border-white/10 hover:bg-transparent">
-                                        <TableHead className="text-gray-400">Rank</TableHead>
-                                        <TableHead className="text-gray-400">Wallet Address</TableHead>
-                                        <TableHead className="text-right text-gray-400">Amount</TableHead>
-                                        <TableHead className="text-right text-gray-400">Status</TableHead>
-                                        <TableHead className="text-right text-gray-400">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {items.map((item) => (
-                                        <TableRow key={item.id} className="border-white/10 hover:bg-white/5">
-                                            <TableCell className="font-medium">#{item.rank}</TableCell>
-
-                                            {/* Wallet Address Cell */}
-                                            <TableCell className="font-mono text-xs text-gray-300">
-                                                {editingItem === item.id ? (
-                                                    <input
-                                                        className="bg-[#001233] border border-vanta-neon-blue rounded px-2 py-1 w-full text-white"
-                                                        value={editForm.wallet}
-                                                        onChange={(e) => setEditForm({ ...editForm, wallet: e.target.value })}
-                                                    />
-                                                ) : (
-                                                    <span className={item.wallet_address === 'NO_WALLET_LINKED' ? 'text-red-400 font-bold' : ''}>
-                                                        {item.wallet_address}
-                                                    </span>
-                                                )}
-                                            </TableCell>
-
-                                            {/* Amount Cell */}
-                                            <TableCell className="text-right font-mono text-emerald-400 font-bold">
-                                                {editingItem === item.id ? (
-                                                    <input
-                                                        type="number"
-                                                        className="bg-[#001233] border border-vanta-neon-blue rounded px-2 py-1 w-24 text-right text-white"
-                                                        value={editForm.amount}
-                                                        onChange={(e) => setEditForm({ ...editForm, amount: Number(e.target.value) })}
-                                                    />
-                                                ) : (
-                                                    `$${item.amount.toLocaleString()}`
-                                                )}
-                                            </TableCell>
-
-                                            {/* Status Cell */}
-                                            <TableCell className="text-right">
-                                                <span className={`text-xs px-2 py-1 rounded-full ${item.status === 'excluded' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                                                    {item.status}
-                                                </span>
-                                            </TableCell>
-
-                                            {/* Actions */}
-                                            <TableCell className="text-right">
-                                                {editingItem === item.id ? (
-                                                    <div className="flex justify-end space-x-2">
-                                                        <button onClick={() => handleSaveItem(item.id)} className="p-1 text-green-400 hover:bg-green-400/20 rounded"><Save size={16} /></button>
-                                                        <button onClick={() => setEditingItem(null)} className="p-1 text-red-400 hover:bg-red-400/20 rounded"><X size={16} /></button>
-                                                    </div>
-                                                ) : (
-                                                    <button onClick={() => handleEditClick(item)} className="p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded">
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    )}
+                    <table className="w-full text-left text-sm">
+                        <thead>
+                            <tr className="text-gray-400 border-b border-white/10">
+                                <th className="p-2">Rank</th>
+                                <th className="p-2">User</th>
+                                <th className="p-2">Amount</th>
+                                <th className="p-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {payoutItems.map(p => (
+                                <tr key={p.id} className="border-b border-white/5">
+                                    <td className="p-2 font-mono">#{p.rank}</td>
+                                    <td className="p-2">{p.users?.username || 'Unknown'}</td>
+                                    <td className="p-2 text-green-400 font-bold">${p.amount}</td>
+                                    <td className="p-2 text-xs opacity-50">{p.status}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             )}
         </div>

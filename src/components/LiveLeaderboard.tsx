@@ -1,355 +1,560 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, TrendingUp, Trophy } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import LeaderboardPodium from './LeaderboardPodium';
-import LeaderboardTable from './LeaderboardTable';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Trophy, Medal, User, Edit, Crown, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import UserProfileModal from './UserProfileModal';
-import { LeaderboardRowSkeleton } from './skeletons/LeaderboardRowSkeleton';
+import { calculatePoolPrizes } from '../utils/prizeCalculator';
 
 interface LeaderboardEntry {
-    entry_id: string;
-    user_id: string; // Added for correct matching
+    pool_id: string;
+    tier: string;
     username: string;
+    user_id: string; // From new RPC
     total_xp: number;
-    rank: number;
     vanta_balance: number;
-    est_payout?: number;
-    win_rate?: number;
-    avatar_url?: string;
-    total_wins?: number;
-    total_bets?: number;
+    entry_id: string;
+    total_bets: number;
+    win_rate: number;
+    rank: number;
     badge_name?: string;
-}
-// ... (rest of imports/interface)
-
-
-interface PayoutStructure {
-    rank_start: number;
-    rank_end: number;
-    percentage: number;
-    type?: string;
+    est_payout?: number;
+    manual_payout?: number;
+    manual_rank?: number;
+    total_wins?: number; // From new RPC
 }
 
-export default function LiveLeaderboard({ poolId, currentUserId }: { poolId: string, currentUserId?: string }) {
-    const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [cutoffRank, setCutoffRank] = useState(0);
-    const [netPot, setNetPot] = useState(0);
-    const [poolStatus, setPoolStatus] = useState<string>('ongoing');
-    const [payouts, setPayouts] = useState<PayoutStructure[]>([]);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+interface LiveLeaderboardProps {
+    poolId: string;
+    poolStatus: string;
+    prizeDistribution?: any[];
+    prizePool?: number;
+}
 
-    // Modal State
-    const [selectedUser, setSelectedUser] = useState<any | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({ poolId, poolStatus, prizeDistribution = [], prizePool = 0 }) => {
+    console.log("[LiveLeaderboard] Rendered with:", { poolId, poolStatus, prizePool, prizeDistribution }); // DEBUG
+    const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
 
-    const handleUserClick = (user: any) => {
-        // Map UI entry back to what Modal expects
-        setSelectedUser({
-            username: user.playerName,
-            avatarUrl: user.avatarUrl,
-            totalWins: user.totalWins || 0,
-            totalGames: user.totalGames || 0,
-            winRate: user.winRate || 0,
-            userId: entries.find(e => e.username === user.playerName)?.user_id || '', // Find original ID
-            poolId: poolId
-        });
-        setIsModalOpen(true);
-    };
+    // Edit State
+    const [editingEntry, setEditingEntry] = useState<LeaderboardEntry | null>(null);
+    const [manualRank, setManualRank] = useState('');
+    const [manualPayout, setManualPayout] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Profile Modal State
+    const [selectedUser, setSelectedUser] = useState<{
+        username: string;
+        avatarUrl?: string | null;
+        totalWins: number;
+        totalGames: number;
+        winRate: number;
+        userId: string;
+        poolId: string;
+    } | null>(null);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
     useEffect(() => {
-        let intervalId: NodeJS.Timeout;
+        checkAdmin();
+        getCurrentUser();
 
-        const fetchData = async () => {
-            if (!poolId) return;
-            setLoading(true);
-            try {
-                // 1. Fetch Pool Info (Pot, Tier, Status)
-                const { data: poolData } = await supabase.from('pools').select('total_pot, tier, status').eq('id', poolId).single();
-                if (!poolData) throw new Error('Pool not found');
+        let channel: any;
 
-                setPoolStatus(poolData.status);
+        // Only subscribe to realtime updates if pool is NOT ended
+        if (poolStatus !== 'ended') {
+            channel = supabase
+                .channel(`leaderboard:${poolId}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'tournament_entries',
+                        filter: `pool_id=eq.${poolId}`
+                    },
+                    () => {
+                        fetchLeaderboard();
+                    }
+                )
+                .subscribe();
+        }
 
-                // 2. Fetch Rake
-                const { data: rakeData } = await supabase.from('rake_structures').select('percentage').eq('tier', poolData.tier).single();
-                const rake = rakeData?.percentage || 10;
-
-                // 3. Calculate Net Pot
-                const pot = poolData.total_pot || 0;
-                const net = pot * (1 - (rake / 100));
-                setNetPot(net);
-
-                // 4. Fetch Payout Structure
-                const { data: payoutData } = await supabase.from('payout_structures').select('*').order('rank_start', { ascending: true });
-                setPayouts(payoutData || []);
-
-                // 5. Initial Leaderboard Fetch
-                await fetchLeaderboard(net, payoutData || []);
-
-                // 6. Setup Interval
-                intervalId = setInterval(() => fetchLeaderboard(net, payoutData || []), 30000);
-
-            } catch (err) {
-                console.error('Error init leaderboard:', err);
-                setLoading(false);
-            }
-        };
-
-        fetchData();
+        fetchLeaderboard();
 
         return () => {
-            if (intervalId) clearInterval(intervalId);
+            if (channel) supabase.removeChannel(channel);
         };
-    }, [poolId]);
+    }, [poolId, poolStatus]);
 
-    async function fetchLeaderboard(currentNetPot: number, currentPayouts: PayoutStructure[]) {
+    const checkAdmin = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data } = await supabase.from('users').select('is_admin').eq('id', user.id).single();
+            if (data?.is_admin) setIsAdmin(true);
+        }
+    };
+
+    const getCurrentUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) setCurrentUserId(user.id);
+    };
+
+    const fetchLeaderboard = async () => {
         try {
             const { data, error } = await supabase
                 .rpc('get_pool_leaderboard', { p_pool_id: poolId });
 
-            // Sort logic moved to client or assumed from RPC (RPC does rank() OVER but order of return is not guaranteed unless ORDER BY is in RETURN QUERY)
-            // Wait, my RPC has `rank() OVER` but the final SELECT in RPC doesn't strictly enforce ORDER BY output unless I add it.
-            // But usually it respects the window function order if simple. To be safe, let's sort in JS or assume RPC sorts.
-            // Actually, for safety, I should ensure RPC has ORDER BY or sort here.
-            // The previous code had .limit(100). The RPC returns all (filtered by pool).
-            // Let's just take the data.
+            if (error) throw error;
+            if (data) {
+                let mappedData = data.map((entry: any) => ({
+                    ...entry,
+                    rank: parseInt(entry.rank)
+                }));
 
-            console.log('Leaderboard Fetch:', { poolId, count: data?.length, error }); // DEBUG LOG
+                // 1. Sort by Rank
+                mappedData.sort((a: any, b: any) => a.rank - b.rank);
+
+                // 2. Identify Winners / Apply Prizes
+                const totalEntries = mappedData.length;
+                let winners = mappedData.map((e: any) => ({ ...e })); // Clone
+
+                // Rake Calculation
+                // Assuming prizePool passed in is GROSS. If it's NET from DB, rake is already done? 
+                // Usually DB `total_pot` is gross. Let's apply rake to match backend.
+                // Backend logic: v_net_pot := total_pot * (1 - (v_rake / 100.0));
+                // Default rake 10% if unknown.
+                const rake = 10; // Simplification, ideally passed as prop or fetched
+                const netPot = prizePool * (1 - (rake / 100.0));
+
+                if (prizePool && totalEntries > 0) {
+                    console.log("[PayoutDebug] Entries:", totalEntries, "Pool:", prizePool, "Net:", netPot); // DEBUG
+
+                    // Use centralized calculator to get prize distribution
+                    // Passing null for dbDistribution to rely on default logic unless manual override exists
+                    const prizes = calculatePoolPrizes(netPot, totalEntries, prizeDistribution);
+
+                    // Create a map for fast lookup: rank -> amount
+                    const prizeMap = new Map<number, number>();
+                    // also map rank -> badge
+                    const badgeMap = new Map<number, string>();
+
+                    prizes.forEach(p => {
+                        // Parse rank string "1st", "4th - 10th" etc to range
+                        const rankStr = p.rank;
+                        let start = 0;
+                        let end = 0;
+
+                        if (rankStr === '1st') start = end = 1;
+                        else if (rankStr === '2nd') start = end = 2;
+                        else if (rankStr === '3rd') start = end = 3;
+                        else if (rankStr.includes('-')) {
+                            const parts = rankStr.replace(/th|st|nd|rd/g, '').split('-');
+                            start = parseInt(parts[0]);
+                            end = parseInt(parts[1]);
+                        } else {
+                            // Single rank like "4th"
+                            start = end = parseInt(rankStr.replace(/\D/g, ''));
+                        }
+
+                        if (start > 0) {
+                            // If it's a range, p.amount is the TOTAL for that range? 
+                            // No, calculatePoolPrizes returns 'amount' which is usually per-user for that row? 
+                            // Let's check prizeCalculator.ts.
+                            // Yes, 'amount' in PoolPrize is the displayed amount. 
+                            // For ranges, it calls addFinalRow with 'val' which is per-user.
+                            // So p.amount is PER USER.
+
+                            const effectiveEnd = Math.min(end, totalEntries);
+                            for (let r = start; r <= effectiveEnd; r++) {
+                                prizeMap.set(r, p.amount);
+                                if (p.badge) badgeMap.set(r, p.badge.replace(/🏆|🥈|🥉|🏅|✨|🚀/g, '').trim());
+                            }
+                        }
+                    });
+
+                    const top10Cutoff = Math.ceil(totalEntries * 0.1);
+
+                    // Assign to Entries
+                    winners = winners.map((e: any) => {
+                        // Manual Override Check
+                        if (e.manual_payout !== null && e.manual_payout !== undefined) {
+                            return { ...e, est_payout: parseFloat(e.manual_payout) };
+                        }
+
+                        const prize = prizeMap.get(e.rank) || 0;
+                        const calculatorBadge = badgeMap.get(e.rank);
+
+                        // If user has a DB badge, keep it, otherwise use calculator badge
+                        let finalBadge = e.badge_name || calculatorBadge;
+
+                        // Strict Top 10% enforcement for non-podium badges
+                        if (finalBadge && !['Champion', 'Runner Up', 'Podium'].includes(finalBadge)) {
+                            if (e.rank > top10Cutoff) {
+                                finalBadge = null;
+                            }
+                        }
+
+                        return { ...e, est_payout: prize, badge_name: finalBadge };
+                    });
+                }
+
+                setLeaderboard(winners);
+            }
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleEditClick = (entry: LeaderboardEntry, e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent row click
+        setEditingEntry(entry);
+        setManualRank(entry.manual_rank?.toString() || entry.rank?.toString() || '');
+        setManualPayout(entry.manual_payout?.toString() || entry.est_payout?.toString() || '');
+    };
+
+    const handleUserClick = async (entry: LeaderboardEntry) => {
+        console.log("handleUserClick:", entry); // Debug Log
+
+        let targetUserId = entry.user_id;
+
+        if (!targetUserId) {
+            console.warn("Missing user_id, attempting fetch by username...", entry.username);
+            const { data: userData } = await supabase
+                .from('users')
+                .select('id')
+                .eq('username', entry.username)
+                .single();
+
+            if (userData) {
+                targetUserId = userData.id;
+            } else {
+                console.error("Could not resolve user_id for", entry.username);
+                return;
+            }
+        }
+
+        setSelectedUser({
+            username: entry.username,
+            avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.username}`,
+            totalWins: entry.total_wins || Math.round(entry.total_bets * (entry.win_rate / 100)) || 0, // Fallback calculation
+            totalGames: entry.total_bets,
+            winRate: entry.win_rate,
+            userId: targetUserId,
+            poolId: entry.pool_id
+        });
+        setIsProfileOpen(true);
+    };
+
+
+    const handleSaveOverride = async () => {
+        if (!editingEntry) return;
+        setIsSaving(true);
+        try {
+            const updates: any = {};
+            updates.manual_rank = manualRank === '' ? null : parseInt(manualRank);
+            updates.manual_payout = manualPayout === '' ? null : parseFloat(manualPayout);
+
+            const { error } = await supabase
+                .from('tournament_entries')
+                .update(updates)
+                .eq('id', editingEntry.entry_id);
 
             if (error) throw error;
 
-            if (data) {
-                // 1. Get accurate Total Count of entries for this pool (without limit)
-                const { count: totalEntriesCount } = await supabase
-                    .from('tournament_entries')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('pool_id', poolId);
+            setEditingEntry(null);
+            fetchLeaderboard();
 
-                const validTotalCount = totalEntriesCount || data.length;
-
-                // Determine Cutoff (Top 25% Rule) based on TRUE total count
-                const dynamicCutoff = Math.floor(validTotalCount * 0.25);
-
-                // Calculate Payouts for each entry
-                const sharedWinnersCount = Math.max(dynamicCutoff - 3, 1); // Avoid division by zero
-
-                const enhancedEntries = data.map((entry: any) => {
-                    const rank = entry.rank;
-
-                    // 1. Try Exact Match (e.g. 1st, 2nd, 3rd)
-                    let payoutRow = currentPayouts.find(p => p.type === 'exact_rank' && rank >= p.rank_start && rank <= p.rank_end);
-
-                    // 2. Fallback: Percentile Match (Shared Pool)
-                    if (!payoutRow && rank <= dynamicCutoff) {
-                        payoutRow = currentPayouts.find(p => p.type === 'percentile');
-                    }
-
-                    let est_payout = 0;
-                    let payout_percentage = 0;
-
-                    if (payoutRow) {
-                        const totalTierPrize = currentNetPot * (payoutRow.percentage / 100);
-
-                        if (payoutRow.type === 'percentile') {
-                            // Split the shared pool among all qualifiers
-                            est_payout = totalTierPrize / sharedWinnersCount;
-                        } else {
-                            // Fixed rank gets the whole slice
-                            est_payout = totalTierPrize;
-                        }
-
-                        payout_percentage = payoutRow.percentage;
-                    }
-                    return { ...entry, est_payout, payout_percentage };
-                });
-
-                setEntries(enhancedEntries);
-
-                const tableMax = Math.max(...currentPayouts.map(p => p.rank_end), 0);
-
-                // Use the stricter of the two (Simulated DB table limit vs Dynamic 25%)
-                setCutoffRank(Math.min(dynamicCutoff, tableMax));
-            }
-        } catch (err: any) {
-            console.error('Error fetching leaderboard:', err);
-            setErrorMsg(err.message || 'Failed to load leaderboard');
+        } catch (e: any) {
+            alert('Failed to update: ' + e.message);
         } finally {
-            setLoading(false);
+            setIsSaving(false);
         }
+    };
+
+    // ... (previous code)
+
+    if (isLoading) {
+        return <div className="p-8 text-center text-gray-500">Loading Leaderboard...</div>;
     }
 
+    // Filter Logic: Show only Winners (Payout > 0) OR the Current User
+    const displayedLeaderboard = leaderboard.filter(e =>
+        (e.est_payout && e.est_payout > 0) || (e.user_id === currentUserId)
+    );
 
-
-    // Map entries to the format expected by the UI components
-    const uiEntries = entries.map((e: any) => ({
-        rank: e.rank,
-        playerName: e.username || 'Unknown',
-        avatarUrl: e.avatar_url,
-        xp: e.total_xp,
-        winRate: e.win_rate || 0,
-        prizeNaira: e.est_payout || 0,
-        isCurrentUser: e.user_id === currentUserId,
-        totalWins: e.total_wins || 0,
-        totalGames: e.total_bets || 0,
-        badge: e.badge_name,
-        payoutPercentage: e.payout_percentage
-    }));
-
-    // Filter to only show winners (payout > 0)
-    const winners = uiEntries.filter(e => e.prizeNaira > 0);
-
-    // DEBUG: Check if badges are present in the mapped data
-    console.log('Leaderboard Sample (Top 5):', uiEntries.slice(0, 5).map(e => ({
-        rank: e.rank,
-        name: e.playerName,
-        badge: e.badge,
-        prize: e.prizeNaira
-    })));
-
-    console.log('LiveLeaderboard Render:', { poolStatus, loading, entriesCount: entries.length, winnersCount: winners.length, errorMsg });
-
-    if (loading) {
-        return (
-            <div className="w-full space-y-2">
-                {/* Simulate Podium Skeleton if needed, or just list rows */}
-                <div className="bg-[#011B47] rounded-[27px] p-6 mb-8 border border-white/5">
-                    <div className="flex justify-center items-end space-x-4 h-48 mb-6">
-                        {/* Simple Podium Skeleton Placeholder */}
-                        <div className="w-24 h-24 bg-white/5 rounded-t-lg animate-pulse"></div>
-                        <div className="w-28 h-32 bg-white/10 rounded-t-lg animate-pulse"></div>
-                        <div className="w-24 h-20 bg-white/5 rounded-t-lg animate-pulse"></div>
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    {[...Array(5)].map((_, i) => (
-                        <LeaderboardRowSkeleton key={i} />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
-    // Handle Ended/Processing State
-    if (poolStatus === 'processing' || poolStatus === 'ended') {
-        return (
-            <div className="w-full" >
-                <div className="flex flex-col items-center justify-center p-8 mb-8 text-center bg-[#011B47] rounded-[27px] border border-vanta-accent-dark-blue/50">
-                    <Loader2 className="h-12 w-12 text-yellow-500 animate-spin mb-4" />
-                    <h2 className="text-2xl font-bold text-white mb-2">Payouts are being processed</h2>
-                    <p className="text-gray-400">Please wait while we finalize the results and calculate winnings.</p>
-                    {errorMsg && (
-                        <div className="mt-4 p-3 bg-red-500/20 border border-red-500/40 rounded-lg text-red-200 text-sm">
-                            Debug Error: {errorMsg}
-                        </div>
-                    )}
-                </div>
-
-                {(winners.length > 0 || uiEntries.length > 0) && (
-                    <div className="mb-6">
-                        <h3 className="text-emerald-400 font-bold mb-4 px-2">
-                            {winners.length > 0 ? "Pending Payouts" : "Leaderboard Results"}
-                        </h3>
-                        <LeaderboardTable
-                            entries={winners.length > 0 ? winners : uiEntries.slice(0, 50)}
-                            showPaymentStatus={winners.length > 0}
-                            onUserClick={handleUserClick}
-                        />
-                    </div>
-                )}
-            </div >
-        );
-    }
-
-    // Handle Completed/Settled State
-    if (poolStatus === 'completed' || poolStatus === 'settled') {
-        return (
-            <div className="flex flex-col items-center justify-center p-12 text-center bg-[#011B47] rounded-[27px] border border-vanta-accent-dark-blue/50">
-                <Trophy className="h-16 w-16 text-vanta-neon-blue mb-6" />
-                <h2 className="text-2xl font-bold text-white mb-2">Leaderboard Finalized</h2>
-                <p className="text-gray-400 max-w-md mb-8">
-                    This pool has ended and payouts have been distributed. Ready for the next challenge?
-                </p>
-
-                <div className="bg-[#001233] p-6 rounded-xl border border-white/5 w-full max-w-sm mb-8">
-                    <p className="text-lg font-bold text-white mb-4">Join a Pool, predict on your favorite teams, climb leaderboard</p>
-
-                    <Link to={currentUserId ? "/pools" : "/auth"}>
-                        <button className="w-full bg-vanta-neon-blue hover:bg-cyan-400 text-[#001233] font-bold py-3 rounded-lg transition-colors shadow-[0_0_15px_rgba(34,211,238,0.3)]">
-                            GO
-                        </button>
-                    </Link>
-                </div>
-            </div>
-        );
-    }
-
-
-
-
-    // Filter to get Top 3 (Based on Rank, regardless of prize)
-    const top3Players = uiEntries.filter(entry => entry.rank <= 3);
-
-    // Winners Table (Rank > 3)
-    const remainingWinners = winners.filter(entry => entry.rank > 3);
-
-    // Find user's entry if they are not in the winners list
-    const userEntry = uiEntries.find(e => e.isCurrentUser);
-    const isUserWinning = userEntry ? userEntry.rank <= cutoffRank : false;
+    const topThree = leaderboard.filter(e => e.rank <= 3);
+    const firstPlace = topThree.find(e => e.rank === 1);
+    const secondPlace = topThree.find(e => e.rank === 2);
+    const thirdPlace = topThree.find(e => e.rank === 3);
 
     return (
-        <div className="w-full">
-            {/* Removed Header as requested */}
+        <div className="w-full bg-[#011B47]/80 backdrop-blur-md rounded-[24px] border border-white/5 overflow-hidden flex flex-col">
 
-            {entries.length === 0 ? (
-                <div className="p-12 text-center text-gray-400 bg-[#011B47] rounded-[27px]">
-                    <p className="text-lg">No bets placed yet. Be the first!</p>
-                </div>
-            ) : (
-                <>
-                    <LeaderboardPodium topPlayers={top3Players} onUserClick={handleUserClick} className="mb-12" />
-
-                    {/* Winners Table */}
-                    {remainingWinners.length > 0 && (
-                        <div className="mb-6">
-                            <h3 className="text-emerald-400 font-bold mb-4 px-2">In The Money</h3>
-                            <LeaderboardTable entries={remainingWinners} onUserClick={handleUserClick} />
-                        </div>
-                    )}
-
-                    {/* Start of Payout Cutoff Indicator if list is truncated */}
-                    {cutoffRank < entries.length && (
-                        <div className="relative py-4 text-center">
-                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div className="w-full border-t border-red-500/20 border-dashed"></div>
-                            </div>
-                            <span className="relative bg-[#001233] px-3 text-xs text-red-400 font-mono">
-                                PAYOUT CUTOFF (Top {cutoffRank})
+            {/* Header */}
+            <div className="p-4 md:p-6 bg-white/5 border-b border-white/5 flex justify-between items-center">
+                <h3 className="font-bold text-base md:text-xl text-white flex items-center gap-2">
+                    {poolStatus === 'ended' ? (
+                        <>
+                            <Medal className="text-vanta-neon-blue w-5 h-5 md:w-6 md:h-6" />
+                            <span className="bg-gradient-to-r from-vanta-neon-blue to-cyan-200 bg-clip-text text-transparent">
+                                Final Standings
                             </span>
+                        </>
+                    ) : (
+                        <>
+                            <Trophy className="text-yellow-400 w-5 h-5 md:w-6 md:h-6" />
+                            <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+                                Live Standings
+                            </span>
+                        </>
+                    )}
+                </h3>
+                <span className="text-[10px] md:text-xs text-gray-400 font-mono px-2 py-1 md:px-3 bg-black/20 rounded-full border border-white/5">
+                    {leaderboard.length} ENTRANTS
+                </span>
+            </div>
+
+            {/* PODIUM SECTION */}
+            {leaderboard.length > 0 && (
+                <div className="relative pt-8 pb-12 md:pt-12 md:pb-16 px-2 md:px-4 bg-gradient-to-b from-[#012A5E]/50 to-transparent flex justify-center items-end gap-2 md:gap-8">
+
+                    {/* 2nd Place */}
+                    {secondPlace && (
+                        <div
+                            className="flex flex-col items-center cursor-pointer group order-1"
+                            onClick={() => handleUserClick(secondPlace)}
+                        >
+                            <div className="relative mb-2 md:mb-3">
+                                <Avatar className="h-12 w-12 md:h-20 md:w-20 border-2 md:border-4 border-gray-300 shadow-[0_0_30px_rgba(209,213,219,0.3)] z-10">
+                                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${secondPlace.username}`} />
+                                    <AvatarFallback className="bg-gray-800 text-gray-300 text-[10px] md:text-base">2ND</AvatarFallback>
+                                </Avatar>
+                                <div className="absolute -bottom-2 md:-bottom-3 left-1/2 -translate-x-1/2 bg-gray-300 text-vanta-dark font-bold text-[10px] md:text-xs px-1.5 py-0.5 rounded-full border-2 border-vanta-dark z-20">
+                                    #2
+                                </div>
+                            </div>
+                            <div className="text-center mt-2 p-2 md:p-3 bg-white/5 rounded-xl border border-gray-500/30 w-24 md:w-40 transition-transform group-hover:-translate-y-1 duration-300 backdrop-blur-sm">
+                                <div className="font-bold text-white truncate text-xs md:text-base">{secondPlace.username}</div>
+                                <div className="text-[10px] md:text-xs text-gray-400 font-mono mb-0.5 md:mb-1">{secondPlace.total_xp.toLocaleString()} XP</div>
+                                {secondPlace.est_payout && (
+                                    <div className="text-gray-300 font-bold text-xs md:text-sm">
+                                        ${secondPlace.est_payout.toFixed(2)}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
 
-                    {/* Current User Stats (if not in winners list) */}
-                    {userEntry && !isUserWinning && (
-                        <div className="mt-4">
-                            <h3 className="text-gray-400 font-bold mb-2 px-2 text-sm">Your Position</h3>
-                            <LeaderboardTable
-                                entries={[userEntry]}
-                                onUserClick={handleUserClick}
-                                className="border border-vanta-neon-blue/30 bg-vanta-accent-dark-blue/50"
-                            />
+                    {/* 1st Place (Center, Largest) */}
+                    {firstPlace && (
+                        <div
+                            className="flex flex-col items-center cursor-pointer group order-2 -mt-4 md:-mt-6 z-10"
+                            onClick={() => handleUserClick(firstPlace)}
+                        >
+                            <div className="relative mb-3 md:mb-4">
+                                <Avatar className="h-16 w-16 md:h-28 md:w-28 border-2 md:border-4 border-yellow-400 shadow-[0_0_50px_rgba(250,204,21,0.5)] z-10 ring-2 md:ring-4 ring-yellow-400/20">
+                                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${firstPlace.username}`} />
+                                    <AvatarFallback className="bg-yellow-900 text-yellow-100 text-xs md:text-base">1ST</AvatarFallback>
+                                </Avatar>
+                                <div className="absolute -bottom-3 md:-bottom-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-950 font-black text-xs md:text-sm px-2 py-0.5 md:px-3 md:py-1 rounded-full border-2 md:border-4 border-vanta-dark z-20 shadow-lg">
+                                    #1
+                                </div>
+                            </div>
+                            <div className="text-center mt-3 md:mt-4 p-2 md:p-4 bg-gradient-to-b from-yellow-500/10 to-yellow-500/5 rounded-2xl border border-yellow-500/30 w-28 md:w-48 transition-transform group-hover:-translate-y-2 duration-300 backdrop-blur-md shadow-[0_10px_30px_-10px_rgba(234,179,8,0.2)]">
+                                <div className="font-black text-sm md:text-lg text-white truncate mb-0.5 md:mb-1">{firstPlace.username}</div>
+                                <div className="text-[10px] md:text-sm text-yellow-200/80 font-mono font-bold mb-1 md:mb-2">{firstPlace.total_xp.toLocaleString()} XP</div>
+                                {firstPlace.est_payout && (
+                                    <div className="text-yellow-400 font-black text-sm md:text-lg shadow-yellow-400/20 drop-shadow-md">
+                                        ${firstPlace.est_payout.toFixed(2)}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
-                </>
+
+                    {/* 3rd Place */}
+                    {thirdPlace && (
+                        <div
+                            className="flex flex-col items-center cursor-pointer group order-3"
+                            onClick={() => handleUserClick(thirdPlace)}
+                        >
+                            <div className="relative mb-2 md:mb-3">
+                                <Avatar className="h-12 w-12 md:h-20 md:w-20 border-2 md:border-4 border-amber-700 shadow-[0_0_30px_rgba(180,83,9,0.3)] z-10">
+                                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${thirdPlace.username}`} />
+                                    <AvatarFallback className="bg-amber-900 text-amber-100 text-[10px] md:text-base">3RD</AvatarFallback>
+                                </Avatar>
+                                <div className="absolute -bottom-2 md:-bottom-3 left-1/2 -translate-x-1/2 bg-amber-700 text-amber-100 font-bold text-[10px] md:text-xs px-1.5 py-0.5 rounded-full border-2 border-vanta-dark z-20">
+                                    #3
+                                </div>
+                            </div>
+                            <div className="text-center mt-2 p-2 md:p-3 bg-white/5 rounded-xl border border-amber-700/30 w-24 md:w-40 transition-transform group-hover:-translate-y-1 duration-300 backdrop-blur-sm">
+                                <div className="font-bold text-white truncate text-xs md:text-base">{thirdPlace.username}</div>
+                                <div className="text-[10px] md:text-xs text-gray-400 font-mono mb-0.5 md:mb-1">{thirdPlace.total_xp.toLocaleString()} XP</div>
+                                {thirdPlace.est_payout && (
+                                    <div className="text-amber-500 font-bold text-xs md:text-sm">
+                                        ${thirdPlace.est_payout.toFixed(2)}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
             )}
 
 
+            <div className="overflow-x-auto bg-[#001233]/50">
+                <table className="w-full">
+                    <thead>
+                        <tr className="text-left text-xs text-gray-400 border-b border-white/5 bg-black/20">
+                            <th className="p-2 md:p-4 pl-4 md:pl-6 font-medium whitespace-nowrap">Rank</th>
+                            <th className="p-2 md:p-4 font-medium whitespace-nowrap">Player</th>
+                            <th className="p-2 md:p-4 font-medium text-right whitespace-nowrap">XP</th>
+                            <th className="hidden md:table-cell p-2 md:p-4 font-medium text-right whitespace-nowrap">Win Rate</th>
+                            <th className="p-2 md:p-4 pr-4 md:pr-6 font-medium text-right whitespace-nowrap">Est. Payout</th>
+                            {isAdmin && <th className="p-2 md:p-4 font-medium text-center whitespace-nowrap">Admin</th>}
+                        </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                        {displayedLeaderboard.length > 0 ? (
+                            displayedLeaderboard.map((entry) => (
+                                <tr
+                                    key={entry.entry_id}
+                                    className={`
+                                        border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer relative group
+                                        ${entry.user_id === currentUserId ? 'bg-vanta-neon-blue/10 border-l-2 border-l-vanta-neon-blue' : ''}
+                                        ${entry.rank <= 3 ? 'bg-white/[0.02]' : ''}
+                                    `}
+                                    onClick={() => handleUserClick(entry)}
+                                >
+                                    <td className="p-2 md:p-4 pl-3 md:pl-6 font-bold text-white relative whitespace-nowrap text-xs md:text-base">
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            {/* Rank Indicator */}
+                                            <div className={`
+                                                w-5 h-5 md:w-6 md:h-6 flex items-center justify-center rounded-full text-[10px] md:text-xs
+                                                ${entry.rank === 1 ? 'bg-yellow-400 text-black font-black box-shadow-glow-yellow' :
+                                                    entry.rank === 2 ? 'bg-gray-300 text-black font-bold' :
+                                                        entry.rank === 3 ? 'bg-amber-700 text-white font-bold' : 'text-gray-500'}
+                                            `}>
+                                                {entry.rank}
+                                            </div>
+                                            {entry.manual_rank && <span className="text-[8px] md:text-[9px] text-purple-400 border border-purple-500/30 px-1 rounded bg-purple-500/10">FIXED</span>}
+                                        </div>
+                                    </td>
+                                    <td className="p-2 md:p-4 whitespace-nowrap text-xs md:text-base">
+                                        <div className="flex items-center gap-2 md:gap-3">
+                                            <Avatar className={`h-6 w-6 md:h-8 md:w-8 border ${entry.user_id === currentUserId ? 'border-vanta-neon-blue' : 'border-white/10'}`}>
+                                                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.username}`} />
+                                                <AvatarFallback><User size={10} /></AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <div className={`font-semibold flex items-center gap-2 transition-colors ${entry.user_id === currentUserId ? 'text-vanta-neon-blue' : 'text-white group-hover:text-cyan-200'}`}>
+                                                    <span className="max-w-[80px] md:max-w-xs truncate">{entry.username}</span>
+                                                    {entry.badge_name && (
+                                                        <Badge variant="secondary" className="text-[8px] md:text-[9px] h-3 md:h-3.5 px-1 bg-white/10 text-white/70 border-0 hidden sm:flex">
+                                                            {entry.badge_name}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="p-2 md:p-4 text-right text-white font-mono font-bold tracking-wide whitespace-nowrap text-xs md:text-sm">
+                                        {entry.total_xp.toLocaleString()}
+                                    </td>
+                                    <td className="hidden md:table-cell p-2 md:p-4 text-right text-gray-400 font-mono whitespace-nowrap text-xs md:text-sm">
+                                        {entry.win_rate}%
+                                    </td>
+                                    <td className="p-2 md:p-4 pr-3 md:pr-6 text-right whitespace-nowrap text-xs md:text-sm">
+                                        {entry.est_payout && entry.est_payout > 0 ? (
+                                            <span className={`font-bold px-1.5 py-0.5 md:px-2 md:py-1 rounded text-[10px] md:text-xs ${entry.rank === 1 ? 'text-yellow-400 bg-yellow-400/10' : 'text-green-400 bg-green-400/10'}`}>
+                                                ${entry.est_payout.toFixed(2)}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-700">-</span>
+                                        )}
+                                    </td>
+                                    {isAdmin && (
+                                        <td className="p-2 md:p-4 text-center whitespace-nowrap">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-7 w-7 p-0 text-white/30 hover:text-white hover:bg-white/10"
+                                                onClick={(e) => handleEditClick(entry, e)}
+                                            >
+                                                <Edit size={12} />
+                                            </Button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={isAdmin ? 6 : 5} className="p-12 text-center text-gray-500 italic">
+                                    No entries found yet. Be the first to join!
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Admin Edit Modal */}
+            <Dialog open={!!editingEntry} onOpenChange={(open) => !open && setEditingEntry(null)}>
+                <DialogContent className="bg-vanta-dark border-white/10 text-white sm:max-w-[400px]">
+                    {/* ... keep existing modal content ... */}
+                    <DialogHeader>
+                        <DialogTitle>Override Entry: {editingEntry?.username}</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>Manual Rank override</Label>
+                            <Input
+                                type="number"
+                                placeholder="Leave empty for auto"
+                                value={manualRank}
+                                onChange={(e) => setManualRank(e.target.value)}
+                                className="bg-black/20 font-mono"
+                            />
+                            <p className="text-xs text-gray-500">Set a fixed rank to resolve ties manually.</p>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Manual Payout ($)</Label>
+                            <Input
+                                type="number"
+                                placeholder="Leave empty for auto"
+                                value={manualPayout}
+                                onChange={(e) => setManualPayout(e.target.value)}
+                                className="bg-black/20 font-mono"
+                            />
+                            <p className="text-xs text-gray-500">Force a specific prize amount.</p>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setEditingEntry(null)}>Cancel</Button>
+                        <Button onClick={handleSaveOverride} disabled={isSaving} className="bg-vanta-neon-blue text-black font-bold">
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Override
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* User Profile Modal */}
             <UserProfileModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isProfileOpen}
+                onClose={() => setIsProfileOpen(false)}
                 user={selectedUser}
             />
-        </div >
+        </div>
     );
-}
+};
+
+export default LiveLeaderboard;

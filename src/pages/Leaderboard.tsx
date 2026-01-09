@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import LiveLeaderboard from '../components/LiveLeaderboard';
+import FinalLeaderboard from '../components/FinalLeaderboard';
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, ChevronDown, Trophy, Coins, Zap, Target } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,15 +16,21 @@ interface UserPool {
   pool_id: string;
   pool_name: string;
   tier: string;
+  status?: string;
+  end_time?: string;
+  prize_pool?: number;
+  prize_distribution?: any[];
 }
 
 const Leaderboard = () => {
+  const [params] = useSearchParams();
   const [userPools, setUserPools] = useState<UserPool[]>([]);
   const [activePoolId, setActivePoolId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
-  const activePoolName = userPools.find(p => p.pool_id === activePoolId)?.pool_name || 'Leaderboard';
+  const activePool = userPools.find(p => p.pool_id === activePoolId);
+  const activePoolName = activePool?.pool_name || 'Leaderboard';
 
   useEffect(() => {
     const init = async () => {
@@ -33,32 +40,79 @@ const Leaderboard = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) setCurrentUserId(user.id);
 
-        let targetPoolId: string | null = null;
-        let fetchedUserPools: UserPool[] = [];
+        // Check for URL param overrides (Admin / Direct Link)
+        const urlPoolId = params.get('poolId');
 
-        // 1. If User is logged in, fetch ALL pools they are participating in
-        if (user) {
+        if (urlPoolId) {
+          // Fetch specific pool details for the header
+          // FIXED: prize_pool -> total_pot
+          const { data: poolData } = await supabase
+            .from('pools')
+            .select('name, tier, status, end_time, total_pot, prize_distribution')
+            .eq('id', urlPoolId)
+            .single();
+
+          if (poolData) {
+            const fetchedUserPools: UserPool[] = [{
+              pool_id: urlPoolId,
+              pool_name: poolData.name,
+              tier: poolData.tier,
+              status: poolData.status,
+              end_time: poolData.end_time,
+              prize_pool: poolData.total_pot, // Mapped from total_pot
+              prize_distribution: poolData.prize_distribution
+            }];
+            setUserPools(fetchedUserPools);
+            setActivePoolId(urlPoolId);
+          }
+        } else if (user) {
+          // 1. If User is logged in (and no URL override), fetch ALL pools they are participating in
+          // FIXED: prize_pool -> total_pot
           const { data: myEntries } = await supabase
             .from('tournament_entries')
-            .select('pool_id, pools(name, tier)')
+            .select('pool_id, pools(name, tier, status, end_time, total_pot, prize_distribution)')
             .eq('user_id', user.id)
             .order('created_at', { ascending: false });
 
           if (myEntries && myEntries.length > 0) {
-            fetchedUserPools = myEntries.map((e: any) => ({
+            const fetchedUserPools: UserPool[] = myEntries.map((e: any) => ({
               pool_id: e.pool_id,
               pool_name: e.pools?.name || 'Unknown Pool',
-              tier: e.pools?.tier || 'Bronze'
-            }));
-            setUserPools(fetchedUserPools);
-            targetPoolId = fetchedUserPools[0].pool_id; // Default to most recent
+              tier: e.pools?.tier || 'Bronze',
+              status: e.pools?.status || 'ongoing',
+              end_time: e.pools?.end_time,
+              prize_pool: e.pools?.total_pot, // Mapped from total_pot
+              prize_distribution: e.pools?.prize_distribution
+            })).filter(pool => {
+              // Show ongoing pools OR ended pools within 12 hours
+              if (pool.status !== 'ended') return true;
+              if (!pool.end_time) return false;
+              const endTime = new Date(pool.end_time).getTime();
+              const twelveHours = 12 * 60 * 60 * 1000;
+              return (Date.now() - endTime) < twelveHours;
+            });
+
+            if (fetchedUserPools.length > 0) {
+              // Sort: Ongoing/Upcoming first, then by date desc
+              fetchedUserPools.sort((a, b) => {
+                const statusScore = (s?: string) => s === 'ongoing' || s === 'upcoming' ? 2 : 1;
+                const scoreA = statusScore(a.status);
+                const scoreB = statusScore(b.status);
+                if (scoreA !== scoreB) return scoreB - scoreA;
+                // If status same, new ones first (using pool_id is rough proxy if time not avail, but we have end_time? Created_at is better but not in UserPool interface. Assuming myEntries query ordered by created_at desc, sort is stable-ish or we rely on the query order for secondary)
+                return 0;
+              });
+
+              setUserPools(fetchedUserPools);
+              setActivePoolId(fetchedUserPools[0].pool_id);
+            } else {
+              setUserPools([]);
+              setActivePoolId(null);
+            }
           }
+        } else {
+          setActivePoolId(null);
         }
-
-        // 2. Removed Global Fallback - we want to show CTA if no user pool found
-        // Logic intentionally removed to keep targetPoolId as null if user has no entries
-
-        setActivePoolId(targetPoolId);
 
       } catch (error) {
         console.error("Error fetching active pool:", error);
@@ -68,7 +122,7 @@ const Leaderboard = () => {
     };
 
     init();
-  }, []);
+  }, [params]); // Added params dependency
 
   if (isLoading) {
     return (
@@ -78,10 +132,31 @@ const Leaderboard = () => {
     )
   }
 
+  const formatEndTime = (dateStr?: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
   return (
     <div className="p-4">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <span className="w-1 h-6 bg-vanta-neon-blue rounded-full"></span>
+          Leaderboard
+        </h1>
+      </div>
+
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <SectionHeader title={activePoolName} textColor="text-vanta-text-light" className="mb-0" />
+        <div className="flex flex-col">
+          {activePool?.end_time && (
+            <div className="text-sm text-gray-400 font-mono flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${activePool.status === 'ended' ? 'bg-red-500' : 'bg-emerald-500 animate-pulse'}`}></span>
+              {activePool.status === 'ended' ? 'Ended: ' : 'Ends: '} {formatEndTime(activePool.end_time)}
+            </div>
+          )}
+        </div>
 
         {/* Pool Switcher Dropdown */}
         {userPools.length > 0 && (
@@ -100,7 +175,8 @@ const Leaderboard = () => {
                   onClick={() => setActivePoolId(pool.pool_id)}
                 >
                   <span className="truncate">{pool.pool_name}</span>
-                  <span className="ml-auto text-xs text-gray-500 border border-gray-700 rounded px-1">{pool.tier}</span>
+                  {pool.status === 'ended' && <span className="ml-auto text-xs text-red-400 border border-red-500/30 px-1 rounded">Ended</span>}
+                  {pool.status !== 'ended' && <span className="ml-auto text-xs text-gray-500 border border-gray-700 rounded px-1">{pool.tier}</span>}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -109,7 +185,16 @@ const Leaderboard = () => {
       </div>
 
       {activePoolId ? (
-        <LiveLeaderboard poolId={activePoolId} currentUserId={currentUserId} />
+        activePool?.status === 'ended' ? (
+          <FinalLeaderboard poolId={activePoolId} />
+        ) : (
+          <LiveLeaderboard
+            poolId={activePoolId}
+            poolStatus={activePool?.status || 'ongoing'}
+            prizePool={activePool?.prize_pool}
+            prizeDistribution={activePool?.prize_distribution}
+          />
+        )
       ) : (
         <div className="flex flex-col items-center justify-center min-h-[60vh] p-4">
           <div className="relative w-full max-w-md bg-gradient-to-b from-[#011B47] to-[#001233] rounded-[32px] p-8 border border-vanta-neon-blue/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
@@ -158,6 +243,9 @@ const Leaderboard = () => {
                 <p className="mt-4 text-xs text-gray-500">
                   {currentUserId ? "Find an active pool to join!" : "Login to start your winning streak"}
                 </p>
+                {currentUserId && userPools.length === 0 && (
+                  null
+                )}
               </div>
             </div>
           </div>
